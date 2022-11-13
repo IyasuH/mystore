@@ -1,21 +1,34 @@
+// ignore: file_names
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:syncfusion_flutter_gauges/gauges.dart';
 
-class SalesSplineAreaChart extends StatefulWidget {
-  const SalesSplineAreaChart({super.key});
+import '../models/weeklyData.dart';
+
+// ignore: must_be_immutable
+class SplineAreaChart extends StatefulWidget {
+  String chartName;
+  Color primaryColor;
+  Color secondaryColor;
+  List<SplineAreaData> chartData;
+  SplineAreaChart({
+    super.key,
+    required this.chartName,
+    required this.primaryColor,
+    required this.secondaryColor,
+    required this.chartData,
+  });
 
   @override
-  State<SalesSplineAreaChart> createState() => _SalesSplineAreaChartState();
+  State<SplineAreaChart> createState() => _SplineAreaChartState();
 }
 
-class _SalesSplineAreaChartState extends State<SalesSplineAreaChart> {
+class _SplineAreaChartState extends State<SplineAreaChart> {
   @override
   Widget build(BuildContext context) {
-    return _buildSalesSplineAreaChart();
+    return _buildSplineAreaChart();
   }
 
-  SfCartesianChart _buildSalesSplineAreaChart() {
+  SfCartesianChart _buildSplineAreaChart() {
     return SfCartesianChart(
       // title: ChartTitle(text: 'Weekly Sales'),
       plotAreaBorderWidth: 0,
@@ -30,44 +43,36 @@ class _SalesSplineAreaChartState extends State<SalesSplineAreaChart> {
     );
   }
 
-  List<_SplineAreaData>? chartData;
+  // List<SplineAreaData>? chartData;
 
-  @override
-  void initState() {
-    chartData = <_SplineAreaData>[
-      _SplineAreaData(1, 1000),
-      _SplineAreaData(2, 540),
-      _SplineAreaData(3, 1300),
-      _SplineAreaData(4, 630),
-      _SplineAreaData(5, 1200),
-      _SplineAreaData(6, 970),
-      _SplineAreaData(7, 880),
-    ];
-    super.initState();
-  }
+  // @override
+  // void initState() {
+  //   chartData = salesData;
+  //   super.initState();
+  // }
 
-  List<ChartSeries<_SplineAreaData, double>> _getSalesSplieAreaSeries() {
-    return <ChartSeries<_SplineAreaData, double>>[
-      SplineAreaSeries<_SplineAreaData, double>(
+  List<ChartSeries<SplineAreaData, double>> _getSalesSplieAreaSeries() {
+    return <ChartSeries<SplineAreaData, double>>[
+      SplineAreaSeries<SplineAreaData, double>(
           borderWidth: 2,
-          name: 'Sales',
-          dataSource: chartData!,
-          color: const Color.fromARGB(30, 0, 169, 181),
-          borderColor: Colors.cyan,
-          xValueMapper: (_SplineAreaData sales, _) => sales.day,
-          yValueMapper: (_SplineAreaData sales, _) => sales.daily)
+          name: widget().chartName,
+          dataSource: widget().chartData,
+          color: widget().secondaryColor,
+          borderColor: widget().primaryColor,
+          xValueMapper: (SplineAreaData sales, _) => sales.day,
+          yValueMapper: (SplineAreaData sales, _) => sales.daily)
     ];
   }
 
-  @override
-  void dispose() {
-    chartData!.clear();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   chartData!.clear();
+  //   super.dispose();
+  // }
 }
 
-class _SplineAreaData {
-  _SplineAreaData(this.day, this.daily);
-  final double day;
-  final double daily;
-}
+// class _SplineAreaData {
+//   _SplineAreaData(this.day, this.daily);
+//   final double day;
+//   final double daily;
+// }
