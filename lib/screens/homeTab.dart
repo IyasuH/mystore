@@ -6,6 +6,8 @@ import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 import '../Widgets/circularProgressBars.dart';
 import '../Widgets/splineAreaCart.dart';
+import '../models/clients.dart';
+import '../models/weeklyData.dart';
 
 class HomeTab extends StatefulWidget {
   const HomeTab({super.key});
@@ -16,22 +18,449 @@ class HomeTab extends StatefulWidget {
 
 class _HomeTabState extends State<HomeTab> {
   // _HomeTabState();
-  late Timer _timer;
-  double salesProgressValue = 0;
-  // this value later gate from calcualting monthly sales change
-  double maxSalesValue = 37;
-  @override
-  void initState() {
-    super.initState();
-    if (mounted) {
-      _timer = Timer.periodic(const Duration(milliseconds: 30), (Timer timer) {
-        setState(() {
-          if (salesProgressValue < maxSalesValue) {
-            salesProgressValue++;
-          }
-        });
-      });
-    }
+  _salesContainer() {
+    Color salesPrimaryColor = const Color.fromRGBO(0, 188, 212, 1);
+    Color salesSecondaryColor = const Color.fromARGB(30, 0, 169, 181);
+    return Container(
+      height: 120,
+      decoration: BoxDecoration(
+        color: Colors.black26,
+        borderRadius: const BorderRadius.all(
+          Radius.circular(15),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: salesSecondaryColor,
+            blurStyle: BlurStyle.outer,
+            blurRadius: 5,
+            spreadRadius: 1.1,
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.fromLTRB(20, 20, 12, 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              const Text(
+                'Sales',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const Text(
+                'Total Sales Today',
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              Text(
+                '\$ 500',
+                style: TextStyle(
+                  color: salesPrimaryColor,
+                  fontSize: 26,
+                  fontWeight: FontWeight.w700,
+                ),
+              )
+            ],
+          ),
+          SizedBox(
+            width: 140,
+            child: SplineAreaChart(
+              chartName: 'Sales',
+              primaryColor: salesPrimaryColor,
+              secondaryColor: salesSecondaryColor,
+              chartData: salesData,
+            ),
+          ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CircualrProgressBar(
+                value: 37,
+                primaryColor: salesPrimaryColor,
+                secondaryColor: salesSecondaryColor,
+              ),
+              Icon(
+                Icons.trending_up_rounded,
+                color: salesPrimaryColor,
+              )
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  _profitContainer() {
+    Color profitPrimaryColor = const Color.fromARGB(255, 38, 255, 0);
+    Color profitSecondaryColor = const Color.fromARGB(30, 19, 224, 0);
+
+    return Container(
+      height: 120,
+      decoration: BoxDecoration(
+        color: Colors.black26,
+        borderRadius: const BorderRadius.all(
+          Radius.circular(15),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: profitSecondaryColor,
+            blurStyle: BlurStyle.outer,
+            blurRadius: 5,
+            spreadRadius: 1.1,
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.fromLTRB(20, 20, 12, 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              const Text(
+                'Profit',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const Text(
+                'Total Profit Today',
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              Text(
+                '\$ 120',
+                style: TextStyle(
+                  color: profitPrimaryColor,
+                  fontSize: 26,
+                  fontWeight: FontWeight.w700,
+                ),
+              )
+            ],
+          ),
+          SizedBox(
+            width: 140,
+            child: SplineAreaChart(
+              chartName: 'Profit',
+              primaryColor: profitPrimaryColor,
+              secondaryColor: profitSecondaryColor,
+              chartData: profitData,
+            ),
+          ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            // ignore: prefer_const_literals_to_create_immutables
+            children: [
+              CircualrProgressBar(
+                value: 37,
+                primaryColor: profitPrimaryColor,
+                secondaryColor: profitSecondaryColor,
+              ),
+              Icon(
+                Icons.trending_up_rounded,
+                color: profitPrimaryColor,
+              )
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  expenseContainer() {
+    Color expensePrimaryColor = const Color.fromARGB(255, 255, 20, 110);
+    Color expenseSecondaryColor = const Color.fromARGB(30, 194, 0, 91);
+
+    return Container(
+      height: 120,
+      decoration: BoxDecoration(
+        color: Colors.black26,
+        borderRadius: const BorderRadius.all(
+          Radius.circular(15),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: expenseSecondaryColor,
+            blurStyle: BlurStyle.outer,
+            blurRadius: 5,
+            spreadRadius: 1.1,
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.fromLTRB(20, 20, 12, 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              const Text(
+                'Expenses',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const Text(
+                'Customers Today',
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              Text(
+                '\$ 236',
+                style: TextStyle(
+                  color: expensePrimaryColor,
+                  fontSize: 26,
+                  fontWeight: FontWeight.w700,
+                ),
+              )
+            ],
+          ),
+          SizedBox(
+            width: 140,
+            child: SplineAreaChart(
+              chartName: 'Customers',
+              primaryColor: expensePrimaryColor,
+              secondaryColor: expenseSecondaryColor,
+              chartData: expenseData,
+            ),
+          ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            // ignore: prefer_const_literals_to_create_immutables
+            children: [
+              CircualrProgressBar(
+                value: 18,
+                primaryColor: expensePrimaryColor,
+                secondaryColor: expenseSecondaryColor,
+              ),
+              Icon(
+                Icons.trending_down_rounded,
+                color: expensePrimaryColor,
+              )
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  clientsContainer() {
+    Color clientsPrimaryColor = const Color.fromARGB(255, 234, 164, 45);
+    Color clientsSecondaryColor = const Color.fromARGB(30, 203, 145, 0);
+
+    return Container(
+      height: 320,
+      decoration: BoxDecoration(
+        color: Colors.black26,
+        borderRadius: const BorderRadius.all(
+          Radius.circular(15),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: clientsSecondaryColor,
+            blurStyle: BlurStyle.outer,
+            blurRadius: 5,
+            spreadRadius: 1.1,
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.fromLTRB(20, 20, 12, 20),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  const Text(
+                    'Clients',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const Text(
+                    'Customers Today',
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  Text(
+                    '18',
+                    style: TextStyle(
+                      color: clientsPrimaryColor,
+                      fontSize: 26,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  )
+                ],
+              ),
+              SizedBox(
+                width: 140,
+                height: 80,
+                child: SplineAreaChart(
+                  chartName: 'Customers',
+                  primaryColor: clientsPrimaryColor,
+                  secondaryColor: clientsSecondaryColor,
+                  chartData: customerData,
+                ),
+              ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                // ignore: prefer_const_literals_to_create_immutables
+                children: [
+                  CircualrProgressBar(
+                    value: 81,
+                    primaryColor: clientsPrimaryColor,
+                    secondaryColor: clientsSecondaryColor,
+                  ),
+                  Icon(
+                    Icons.trending_up_rounded,
+                    color: clientsPrimaryColor,
+                  )
+                ],
+              ),
+            ],
+          ),
+          topclients()
+        ],
+      ),
+    );
+  }
+
+  topclients() {
+    return Padding(
+      padding: const EdgeInsets.only(left: 8, right: 8, top: 8),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                // ignore: prefer_const_literals_to_create_immutables
+                children: [
+                  const Text(
+                    'Top Clients',
+                    style: TextStyle(
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 4,
+                  ),
+                  const Text(
+                    'Client name',
+                    style: TextStyle(
+                      color: Colors.grey,
+                      letterSpacing: 1.5,
+                    ),
+                  ),
+                ],
+              ),
+              const Text(
+                'Amount',
+                style: TextStyle(
+                  color: Colors.grey,
+                  letterSpacing: 1.5,
+                ),
+              )
+            ],
+          ),
+          const SizedBox(
+            height: 7,
+          ),
+          SizedBox(
+            height: 140,
+            child: ListView.builder(
+              itemCount: topClients.length,
+              itemBuilder: (BuildContext context, int index) {
+                return Container(
+                  margin: const EdgeInsets.symmetric(vertical: 3),
+                  // padding: EdgeInsets.only(top: 3),
+                  height: 60,
+                  decoration: const BoxDecoration(
+                    border: Border(
+                      top: BorderSide(
+                        width: 1.5,
+                        color: Color.fromARGB(80, 203, 145, 0),
+                      ),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Text(
+                            topClients[index].customerName,
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 1,
+                            ),
+                          ),
+                          Text(
+                            topClients[index].companyName,
+                            style: const TextStyle(
+                              color: Colors.grey,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          )
+                        ],
+                      ),
+                      SizedBox(
+                        width: 150,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            topClients[index].change == 1
+                                ? const Icon(Icons.arrow_drop_up_sharp,
+                                    color: Colors.green, size: 32)
+                                : const Icon(Icons.arrow_drop_down_sharp,
+                                    color: Colors.red, size: 32),
+                            Text(
+                              '\$ ${topClients[index].amount}',
+                              style: const TextStyle(
+                                color: Color.fromARGB(255, 234, 164, 45),
+                                fontWeight: FontWeight.w700,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                );
+              },
+            ),
+          )
+        ],
+      ),
+    );
   }
 
   @override
@@ -50,7 +479,7 @@ class _HomeTabState extends State<HomeTab> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: const [
                       Text(
-                        'Hi Ghulam',
+                        'Hi Iyasu',
                         style: TextStyle(
                           fontSize: 26,
                           fontWeight: FontWeight.w800,
@@ -80,58 +509,19 @@ class _HomeTabState extends State<HomeTab> {
               const SizedBox(
                 height: 25,
               ),
-              Container(
-                height: 120,
-                decoration: const BoxDecoration(
-                    color: Colors.black26,
-                    borderRadius: BorderRadius.all(Radius.circular(15))),
-                padding: const EdgeInsets.fromLTRB(20, 20, 12, 20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const <Widget>[
-                        Text(
-                          'Sales',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        Text(
-                          'Total Sales Today',
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        Text(
-                          '\$ 500',
-                          style: TextStyle(
-                            color: Colors.cyan,
-                            fontSize: 26,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        )
-                      ],
-                    ),
-                    const SizedBox(
-                        width: 140, height: 150, child: SalesSplineAreaChart()),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        SalesCircualrProgressBar(),
-                        Icon(
-                          Icons.trending_up_rounded,
-                          color: Colors.cyan,
-                        )
-                      ],
-                    ),
-                  ],
-                ),
-              )
+              _salesContainer(),
+              const SizedBox(
+                height: 25,
+              ),
+              _profitContainer(),
+              const SizedBox(
+                height: 25,
+              ),
+              expenseContainer(),
+              const SizedBox(
+                height: 25,
+              ),
+              clientsContainer(),
             ],
           ),
         ),
