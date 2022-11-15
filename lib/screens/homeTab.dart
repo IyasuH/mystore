@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:mystore/screens/salesTab.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
@@ -21,78 +22,86 @@ class _HomeTabState extends State<HomeTab> {
   _salesContainer() {
     Color salesPrimaryColor = const Color.fromRGBO(0, 188, 212, 1);
     Color salesSecondaryColor = const Color.fromARGB(30, 0, 169, 181);
-    return Container(
-      height: 120,
-      decoration: BoxDecoration(
-        color: Colors.black26,
-        borderRadius: const BorderRadius.all(
-          Radius.circular(15),
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => SalesTab(),
         ),
-        boxShadow: [
-          BoxShadow(
-            color: salesSecondaryColor,
-            blurStyle: BlurStyle.outer,
-            blurRadius: 5,
-            spreadRadius: 1.1,
-          ),
-        ],
       ),
-      padding: const EdgeInsets.fromLTRB(20, 20, 12, 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              const Text(
-                'Sales',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const Text(
-                'Total Sales Today',
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              Text(
-                '\$ 500',
-                style: TextStyle(
-                  color: salesPrimaryColor,
-                  fontSize: 26,
-                  fontWeight: FontWeight.w700,
-                ),
-              )
-            ],
+      child: Container(
+        height: 120,
+        decoration: BoxDecoration(
+          color: Colors.black26,
+          borderRadius: const BorderRadius.all(
+            Radius.circular(15),
           ),
-          SizedBox(
-            width: 140,
-            child: SplineAreaChart(
-              chartName: 'Sales',
-              primaryColor: salesPrimaryColor,
-              secondaryColor: salesSecondaryColor,
-              chartData: salesData,
+          boxShadow: [
+            BoxShadow(
+              color: salesSecondaryColor,
+              blurStyle: BlurStyle.outer,
+              blurRadius: 5,
+              spreadRadius: 1.1,
             ),
-          ),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CircualrProgressBar(
-                value: 37,
+          ],
+        ),
+        padding: const EdgeInsets.fromLTRB(20, 20, 12, 20),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                const Text(
+                  'Sales',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const Text(
+                  'Total Sales Today',
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                Text(
+                  '\$ 500',
+                  style: TextStyle(
+                    color: salesPrimaryColor,
+                    fontSize: 26,
+                    fontWeight: FontWeight.w700,
+                  ),
+                )
+              ],
+            ),
+            SizedBox(
+              width: 140,
+              child: SplineAreaChart(
+                chartName: 'Sales',
                 primaryColor: salesPrimaryColor,
                 secondaryColor: salesSecondaryColor,
+                chartData: salesData,
               ),
-              Icon(
-                Icons.trending_up_rounded,
-                color: salesPrimaryColor,
-              )
-            ],
-          ),
-        ],
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CircualrProgressBar(
+                  value: 37,
+                  primaryColor: salesPrimaryColor,
+                  secondaryColor: salesSecondaryColor,
+                ),
+                Icon(
+                  Icons.trending_up_rounded,
+                  color: salesPrimaryColor,
+                )
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -101,79 +110,87 @@ class _HomeTabState extends State<HomeTab> {
     Color profitPrimaryColor = const Color.fromARGB(255, 38, 255, 0);
     Color profitSecondaryColor = const Color.fromARGB(30, 19, 224, 0);
 
-    return Container(
-      height: 120,
-      decoration: BoxDecoration(
-        color: Colors.black26,
-        borderRadius: const BorderRadius.all(
-          Radius.circular(15),
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => SalesTab(),
         ),
-        boxShadow: [
-          BoxShadow(
-            color: profitSecondaryColor,
-            blurStyle: BlurStyle.outer,
-            blurRadius: 5,
-            spreadRadius: 1.1,
-          ),
-        ],
       ),
-      padding: const EdgeInsets.fromLTRB(20, 20, 12, 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              const Text(
-                'Profit',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const Text(
-                'Total Profit Today',
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              Text(
-                '\$ 120',
-                style: TextStyle(
-                  color: profitPrimaryColor,
-                  fontSize: 26,
-                  fontWeight: FontWeight.w700,
-                ),
-              )
-            ],
+      child: Container(
+        height: 120,
+        decoration: BoxDecoration(
+          color: Colors.black26,
+          borderRadius: const BorderRadius.all(
+            Radius.circular(15),
           ),
-          SizedBox(
-            width: 140,
-            child: SplineAreaChart(
-              chartName: 'Profit',
-              primaryColor: profitPrimaryColor,
-              secondaryColor: profitSecondaryColor,
-              chartData: profitData,
+          boxShadow: [
+            BoxShadow(
+              color: profitSecondaryColor,
+              blurStyle: BlurStyle.outer,
+              blurRadius: 5,
+              spreadRadius: 1.1,
             ),
-          ),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            // ignore: prefer_const_literals_to_create_immutables
-            children: [
-              CircualrProgressBar(
-                value: 37,
+          ],
+        ),
+        padding: const EdgeInsets.fromLTRB(20, 20, 12, 20),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                const Text(
+                  'Profit',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const Text(
+                  'Total Profit Today',
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                Text(
+                  '\$ 120',
+                  style: TextStyle(
+                    color: profitPrimaryColor,
+                    fontSize: 26,
+                    fontWeight: FontWeight.w700,
+                  ),
+                )
+              ],
+            ),
+            SizedBox(
+              width: 140,
+              child: SplineAreaChart(
+                chartName: 'Profit',
                 primaryColor: profitPrimaryColor,
                 secondaryColor: profitSecondaryColor,
+                chartData: profitData,
               ),
-              Icon(
-                Icons.trending_up_rounded,
-                color: profitPrimaryColor,
-              )
-            ],
-          ),
-        ],
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              // ignore: prefer_const_literals_to_create_immutables
+              children: [
+                CircualrProgressBar(
+                  value: 37,
+                  primaryColor: profitPrimaryColor,
+                  secondaryColor: profitSecondaryColor,
+                ),
+                Icon(
+                  Icons.trending_up_rounded,
+                  color: profitPrimaryColor,
+                )
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -182,79 +199,87 @@ class _HomeTabState extends State<HomeTab> {
     Color expensePrimaryColor = const Color.fromARGB(255, 255, 20, 110);
     Color expenseSecondaryColor = const Color.fromARGB(30, 194, 0, 91);
 
-    return Container(
-      height: 120,
-      decoration: BoxDecoration(
-        color: Colors.black26,
-        borderRadius: const BorderRadius.all(
-          Radius.circular(15),
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => SalesTab(),
         ),
-        boxShadow: [
-          BoxShadow(
-            color: expenseSecondaryColor,
-            blurStyle: BlurStyle.outer,
-            blurRadius: 5,
-            spreadRadius: 1.1,
-          ),
-        ],
       ),
-      padding: const EdgeInsets.fromLTRB(20, 20, 12, 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              const Text(
-                'Expenses',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const Text(
-                'Customers Today',
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              Text(
-                '\$ 236',
-                style: TextStyle(
-                  color: expensePrimaryColor,
-                  fontSize: 26,
-                  fontWeight: FontWeight.w700,
-                ),
-              )
-            ],
+      child: Container(
+        height: 120,
+        decoration: BoxDecoration(
+          color: Colors.black26,
+          borderRadius: const BorderRadius.all(
+            Radius.circular(15),
           ),
-          SizedBox(
-            width: 140,
-            child: SplineAreaChart(
-              chartName: 'Customers',
-              primaryColor: expensePrimaryColor,
-              secondaryColor: expenseSecondaryColor,
-              chartData: expenseData,
+          boxShadow: [
+            BoxShadow(
+              color: expenseSecondaryColor,
+              blurStyle: BlurStyle.outer,
+              blurRadius: 5,
+              spreadRadius: 1.1,
             ),
-          ),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            // ignore: prefer_const_literals_to_create_immutables
-            children: [
-              CircualrProgressBar(
-                value: 18,
+          ],
+        ),
+        padding: const EdgeInsets.fromLTRB(20, 20, 12, 20),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                const Text(
+                  'Expenses',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const Text(
+                  'Customers Today',
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                Text(
+                  '\$ 236',
+                  style: TextStyle(
+                    color: expensePrimaryColor,
+                    fontSize: 26,
+                    fontWeight: FontWeight.w700,
+                  ),
+                )
+              ],
+            ),
+            SizedBox(
+              width: 140,
+              child: SplineAreaChart(
+                chartName: 'Customers',
                 primaryColor: expensePrimaryColor,
                 secondaryColor: expenseSecondaryColor,
+                chartData: expenseData,
               ),
-              Icon(
-                Icons.trending_down_rounded,
-                color: expensePrimaryColor,
-              )
-            ],
-          ),
-        ],
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              // ignore: prefer_const_literals_to_create_immutables
+              children: [
+                CircualrProgressBar(
+                  value: 18,
+                  primaryColor: expensePrimaryColor,
+                  secondaryColor: expenseSecondaryColor,
+                ),
+                Icon(
+                  Icons.trending_down_rounded,
+                  color: expensePrimaryColor,
+                )
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -263,87 +288,95 @@ class _HomeTabState extends State<HomeTab> {
     Color clientsPrimaryColor = const Color.fromARGB(255, 234, 164, 45);
     Color clientsSecondaryColor = const Color.fromARGB(30, 203, 145, 0);
 
-    return Container(
-      height: 320,
-      decoration: BoxDecoration(
-        color: Colors.black26,
-        borderRadius: const BorderRadius.all(
-          Radius.circular(15),
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => SalesTab(),
         ),
-        boxShadow: [
-          BoxShadow(
-            color: clientsSecondaryColor,
-            blurStyle: BlurStyle.outer,
-            blurRadius: 5,
-            spreadRadius: 1.1,
-          ),
-        ],
       ),
-      padding: const EdgeInsets.fromLTRB(20, 20, 12, 20),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  const Text(
-                    'Clients',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w700,
+      child: Container(
+        height: 320,
+        decoration: BoxDecoration(
+          color: Colors.black26,
+          borderRadius: const BorderRadius.all(
+            Radius.circular(15),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: clientsSecondaryColor,
+              blurStyle: BlurStyle.outer,
+              blurRadius: 5,
+              spreadRadius: 1.1,
+            ),
+          ],
+        ),
+        padding: const EdgeInsets.fromLTRB(20, 20, 12, 20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    const Text(
+                      'Clients',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
-                  ),
-                  const Text(
-                    'Customers Today',
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontWeight: FontWeight.w500,
+                    const Text(
+                      'Customers Today',
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                  ),
-                  Text(
-                    '18',
-                    style: TextStyle(
-                      color: clientsPrimaryColor,
-                      fontSize: 26,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  )
-                ],
-              ),
-              SizedBox(
-                width: 140,
-                height: 80,
-                child: SplineAreaChart(
-                  chartName: 'Customers',
-                  primaryColor: clientsPrimaryColor,
-                  secondaryColor: clientsSecondaryColor,
-                  chartData: customerData,
+                    Text(
+                      '18',
+                      style: TextStyle(
+                        color: clientsPrimaryColor,
+                        fontSize: 26,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    )
+                  ],
                 ),
-              ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                // ignore: prefer_const_literals_to_create_immutables
-                children: [
-                  CircualrProgressBar(
-                    value: 81,
+                SizedBox(
+                  width: 140,
+                  height: 80,
+                  child: SplineAreaChart(
+                    chartName: 'Customers',
                     primaryColor: clientsPrimaryColor,
                     secondaryColor: clientsSecondaryColor,
+                    chartData: customerData,
                   ),
-                  Icon(
-                    Icons.trending_up_rounded,
-                    color: clientsPrimaryColor,
-                  )
-                ],
-              ),
-            ],
-          ),
-          topclients()
-        ],
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  // ignore: prefer_const_literals_to_create_immutables
+                  children: [
+                    CircualrProgressBar(
+                      value: 81,
+                      primaryColor: clientsPrimaryColor,
+                      secondaryColor: clientsSecondaryColor,
+                    ),
+                    Icon(
+                      Icons.trending_up_rounded,
+                      color: clientsPrimaryColor,
+                    )
+                  ],
+                ),
+              ],
+            ),
+            topclients()
+          ],
+        ),
       ),
     );
   }
@@ -477,12 +510,15 @@ class _HomeTabState extends State<HomeTab> {
                 children: <Widget>[
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
+                    children: [
                       Text(
-                        'Hi Iyasu',
+                        'Hi Eyasu',
                         style: TextStyle(
                           fontSize: 26,
-                          fontWeight: FontWeight.w800,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 1.4,
+                          wordSpacing: 1.8,
+                          color: Colors.grey[400],
                         ),
                       ),
                       SizedBox(

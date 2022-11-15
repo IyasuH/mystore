@@ -35,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
           borderRadius: BorderRadius.all(Radius.circular(43)),
           boxShadow: [
             BoxShadow(
-              color: Color.fromARGB(153, 89, 225, 54),
+              color: const Color.fromARGB(80, 19, 224, 0),
               spreadRadius: 1.5,
               blurRadius: 5,
               blurStyle: BlurStyle.outer,
@@ -52,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
             type: BottomNavigationBarType.fixed,
             backgroundColor: Colors.black45,
             currentIndex: _currentTab,
-            selectedItemColor: const Color.fromARGB(255, 80, 220, 63),
+            selectedItemColor: const Color.fromARGB(255, 38, 255, 0),
             selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
             iconSize: 28,
             unselectedItemColor: Colors.grey,
