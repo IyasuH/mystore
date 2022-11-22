@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:mystore/screens/expenseTab.dart';
 import 'package:mystore/screens/salesTab.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
@@ -203,7 +204,7 @@ class _HomeTabState extends State<HomeTab> {
       onTap: () => Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => SalesTab(),
+          builder: (_) => ExpensesTab(),
         ),
       ),
       child: Container(
