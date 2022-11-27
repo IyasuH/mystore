@@ -10,6 +10,8 @@ import '../Widgets/circularProgressBars.dart';
 import '../Widgets/splineAreaCart.dart';
 import '../models/clients.dart';
 import '../models/weeklyData.dart';
+import 'customerTab.dart';
+import 'proftTab.dart';
 
 class HomeTab extends StatefulWidget {
   const HomeTab({super.key});
@@ -115,7 +117,7 @@ class _HomeTabState extends State<HomeTab> {
       onTap: () => Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => SalesTab(),
+          builder: (_) => ProfitTab(),
         ),
       ),
       child: Container(
@@ -293,7 +295,7 @@ class _HomeTabState extends State<HomeTab> {
       onTap: () => Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => SalesTab(),
+          builder: (_) => CustomerTab(),
         ),
       ),
       child: Container(
