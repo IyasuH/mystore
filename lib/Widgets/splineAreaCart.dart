@@ -55,10 +55,10 @@ class _SplineAreaChartState extends State<SplineAreaChart> {
     return <ChartSeries<SplineAreaData, double>>[
       SplineAreaSeries<SplineAreaData, double>(
           borderWidth: 2,
-          name: widget().chartName,
-          dataSource: widget().chartData,
-          color: widget().secondaryColor,
-          borderColor: widget().primaryColor,
+          name: widget.chartName,
+          dataSource: widget.chartData,
+          color: widget.secondaryColor,
+          borderColor: widget.primaryColor,
           xValueMapper: (SplineAreaData sales, _) => sales.day,
           yValueMapper: (SplineAreaData sales, _) => sales.daily)
     ];
