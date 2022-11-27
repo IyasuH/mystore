@@ -37,7 +37,7 @@ class _CircualrProgressBarState extends State<CircualrProgressBar> {
     if (mounted) {
       _timer = Timer.periodic(const Duration(milliseconds: 30), (Timer timer) {
         setState(() {
-          if (salesProgressValue < widget().value) {
+          if (salesProgressValue < widget.value) {
             salesProgressValue++;
           }
         });
@@ -60,7 +60,7 @@ class _CircualrProgressBarState extends State<CircualrProgressBar> {
             radiusFactor: 1,
             axisLineStyle: AxisLineStyle(
               thickness: 0.15,
-              color: widget().secondaryColor,
+              color: widget.secondaryColor,
               thicknessUnit: GaugeSizeUnit.factor,
             ),
             pointers: <GaugePointer>[
@@ -73,7 +73,7 @@ class _CircualrProgressBarState extends State<CircualrProgressBar> {
                 animationDuration: 75,
                 animationType: AnimationType.linear,
                 cornerStyle: CornerStyle.bothCurve,
-                color: widget().primaryColor,
+                color: widget.primaryColor,
               ),
             ],
             annotations: <GaugeAnnotation>[
