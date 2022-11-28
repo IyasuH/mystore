@@ -33,3 +33,76 @@ List<TopClients> topClients = [
     change: 1,
   ),
 ];
+
+class Customers {
+  final String customerName;
+  final String companyName;
+  final String phoneNumber;
+  final String tinNumber;
+  final String city;
+  final double totalPurchase;
+  final int visits;
+  final String membership;
+  Customers(
+      {required this.customerName,
+      required this.companyName,
+      required this.phoneNumber,
+      required this.tinNumber,
+      required this.city,
+      required this.totalPurchase,
+      required this.visits,
+      this.membership = 'None'});
+}
+
+List<Customers> customers = [
+  Customers(
+    customerName: 'Eyasu',
+    companyName: 'Mozazgi',
+    phoneNumber: '0941279805',
+    tinNumber: '096404',
+    city: 'Addis',
+    totalPurchase: 2000,
+    visits: 5,
+    membership: 'Golden',
+  ),
+  Customers(
+    customerName: 'Dagi',
+    companyName: 'CoffeeGo',
+    phoneNumber: '0941279805',
+    tinNumber: '096404',
+    city: 'Addis',
+    totalPurchase: 3000,
+    visits: 6,
+    membership: 'Silver',
+  ),
+  Customers(
+    customerName: 'Bety',
+    companyName: 'BuilX',
+    phoneNumber: '0941279805',
+    tinNumber: '096404',
+    city: 'Addis',
+    totalPurchase: 1000,
+    visits: 2,
+    membership: 'Basic',
+  ),
+  Customers(
+    customerName: 'Hermi',
+    companyName: 'BuilX',
+    phoneNumber: '0941279805',
+    tinNumber: '096404',
+    city: 'Addis',
+    totalPurchase: 1000,
+    visits: 2,
+    membership: 'Basic',
+  ),
+  Customers(
+    customerName: 'Beki',
+    companyName: 'BuilX',
+    phoneNumber: '0941279805',
+    tinNumber: '096404',
+    city: 'Addis',
+    totalPurchase: 1000,
+    visits: 2,
+    membership: 'Basic',
+  )
+];
