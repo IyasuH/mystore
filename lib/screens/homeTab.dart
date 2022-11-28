@@ -64,7 +64,7 @@ class _HomeTabState extends State<HomeTab> {
                   ),
                 ),
                 const Text(
-                  'Total Sales Today',
+                  'Today\'s Sales',
                   style: TextStyle(
                     color: Colors.grey,
                     fontWeight: FontWeight.w500,
@@ -152,7 +152,7 @@ class _HomeTabState extends State<HomeTab> {
                   ),
                 ),
                 const Text(
-                  'Total Profit Today',
+                  'Today\'s Profit',
                   style: TextStyle(
                     color: Colors.grey,
                     fontWeight: FontWeight.w500,
@@ -241,14 +241,14 @@ class _HomeTabState extends State<HomeTab> {
                   ),
                 ),
                 const Text(
-                  'Customers Today',
+                  'Today\'s Expenses',
                   style: TextStyle(
                     color: Colors.grey,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
                 Text(
-                  '\$ 236',
+                  '\ETB 236',
                   style: TextStyle(
                     color: expensePrimaryColor,
                     fontSize: 26,
