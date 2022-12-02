@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+// ignore: depend_on_referenced_packages
+import 'package:avatars/avatars.dart';
 
 import '../models/clients.dart';
 
@@ -79,8 +81,8 @@ class _AcoountTabState extends State<AcoountTab> {
                   height: 165,
                   child: ClipRRect(
                     borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(10),
-                      bottomLeft: Radius.circular(10),
+                      topLeft: Radius.circular(20),
+                      bottomLeft: Radius.circular(20),
                     ),
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
@@ -118,7 +120,7 @@ class _AcoountTabState extends State<AcoountTab> {
                               Row(
                                 // ignore: prefer_const_literals_to_create_immutables
                                 children: [
-                                  const Text('4562 1122 4595 7852'),
+                                  const Text('.... 1122 4595 7852'),
                                 ],
                               ),
                               Row(
@@ -131,13 +133,24 @@ class _AcoountTabState extends State<AcoountTab> {
                               Row(
                                 // mainAxisAlignment:
                                 //     MainAxisAlignment.spaceBetween,
-                                children: const [
-                                  Text('EAYASU HAILEGEBRIEL'),
-                                  CircleAvatar(
+                                children: [
+                                  const Text('EAYASU HAILEGEBRIEL'),
+                                  Avatar(
                                     // radius: 30,
-                                    backgroundImage:
-                                        AssetImage('assets/masterCard.png'),
+                                    sources: [
+                                      GenericSource(
+                                          AssetImage('assets/MasterCard.png'))
+                                    ],
+                                    // backgroundImage:
+                                    //     const AssetImage('assets/masterCard.png'),
                                     backgroundColor: Colors.green,
+                                    shape: AvatarShape.rectangle(
+                                      75,
+                                      60,
+                                      const BorderRadius.all(
+                                        Radius.circular(3.0),
+                                      ),
+                                    ),
                                   )
                                 ],
                               )
