@@ -41,6 +41,7 @@ dependencies:
   fl_chart: ^0.55.2
   flutter_datetime_picker: ^1.5.1
   avatars: ^3.0.2
+  dotted_border: ^2.0.0+3
   # pie_chart: ^5.3.2
 
 dev_dependencies:
