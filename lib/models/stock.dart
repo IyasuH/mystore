@@ -56,4 +56,20 @@ List<Stock> stocks = [
     singlePrice: 120,
     bulckPrice: 110,
   ),
+  Stock(
+    itemId: 6,
+    itemName: 'Chloride',
+    itemQuantity: 50,
+    purchasedDate: '10/12/2022',
+    singlePrice: 100,
+    bulckPrice: 90,
+  ),
+  Stock(
+    itemId: 7,
+    itemName: 'Methanol',
+    itemQuantity: 75,
+    purchasedDate: '18/09/2022',
+    singlePrice: 130,
+    bulckPrice: 125,
+  ),
 ];

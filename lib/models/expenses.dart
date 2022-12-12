@@ -63,4 +63,18 @@ List<Expenses> expenses = [
     amount: 1200,
     date: '13/09/2022',
   ),
+  Expenses(
+    id: 8,
+    fixed: false,
+    name: 'bonus wedge',
+    amount: 3000,
+    date: '20/09/2022',
+  ),
+  Expenses(
+    id: 9,
+    fixed: false,
+    name: 'repairs',
+    amount: 5000,
+    date: '13/10/2022',
+  ),
 ];
