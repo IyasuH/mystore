@@ -35,13 +35,22 @@ class _CircualrProgressBarState extends State<CircualrProgressBar> {
   void initState() {
     super.initState();
     if (mounted) {
-      _timer = Timer.periodic(const Duration(milliseconds: 30), (Timer timer) {
-        setState(() {
-          if (salesProgressValue < widget.value) {
-            salesProgressValue++;
+      _timer = Timer.periodic(
+        const Duration(milliseconds: 30),
+        (Timer timer) {
+          if (mounted) {
+            setState(
+              () {
+                if (salesProgressValue < widget.value) {
+                  salesProgressValue++;
+                } else {
+                  return;
+                }
+              },
+            );
           }
-        });
-      });
+        },
+      );
     }
   }
 

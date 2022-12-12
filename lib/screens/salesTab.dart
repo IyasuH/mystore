@@ -6,6 +6,7 @@ import 'homeTab.dart';
 
 class SalesTab extends StatefulWidget {
   const SalesTab({super.key});
+
   @override
   State<SalesTab> createState() => _SalesTabState();
 }
@@ -30,9 +31,11 @@ class _SalesTabState extends State<SalesTab> {
               DropdownButton(
                 value: selectedValue,
                 onChanged: (String? newValue) {
-                  setState(() {
-                    selectedValue = newValue!;
-                  });
+                  if (mounted) {
+                    setState(() {
+                      selectedValue = newValue!;
+                    });
+                  }
                 },
                 items: const [
                   DropdownMenuItem(

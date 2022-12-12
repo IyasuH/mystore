@@ -58,9 +58,11 @@ class _HomeScreenState extends State<HomeScreen> {
             unselectedItemColor: Colors.grey,
             showUnselectedLabels: true,
             onTap: (index) {
-              setState(() {
-                _currentTab = index;
-              });
+              if (mounted) {
+                setState(() {
+                  _currentTab = index;
+                });
+              }
             },
             // ignore: prefer_const_literals_to_create_immutables
             items: [
