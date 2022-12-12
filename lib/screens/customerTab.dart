@@ -88,7 +88,16 @@ class _CustomerTabState extends State<CustomerTab> {
                     height: 100,
                     // ignore: prefer_const_constructors
                     decoration: BoxDecoration(
-                      color: Color.fromARGB(50, 203, 145, 0),
+                      // ignore: prefer_const_literals_to_create_immutables
+                      boxShadow: [
+                        const BoxShadow(
+                          color: Color.fromARGB(255, 234, 164, 45),
+                          blurStyle: BlurStyle.outer,
+                          blurRadius: 5,
+                        )
+                      ],
+                      color: Colors.black12,
+                      // color: Color.fromARGB(50, 203, 145, 0),
                       borderRadius: const BorderRadius.all(
                         Radius.circular(15),
                       ),
@@ -140,7 +149,16 @@ class _CustomerTabState extends State<CustomerTab> {
                     padding: const EdgeInsets.symmetric(horizontal: 10.0),
                     height: 45,
                     decoration: const BoxDecoration(
-                      color: Color.fromARGB(50, 203, 145, 0),
+                      // color: Color.fromARGB(50, 203, 145, 0),
+                      color: Colors.black12,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color.fromARGB(255, 234, 164, 45),
+                          blurStyle: BlurStyle.outer,
+                          blurRadius: 5,
+                        )
+                      ],
+
                       borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(15),
                           topRight: Radius.circular(15)),
@@ -162,6 +180,7 @@ class _CustomerTabState extends State<CustomerTab> {
                           width: 155,
                           padding: const EdgeInsets.symmetric(horizontal: 8),
                           decoration: const BoxDecoration(
+                            color: Colors.black12,
                             border: Border(
                               bottom: BorderSide(
                                 color: Color.fromARGB(255, 235, 164, 45),
@@ -196,13 +215,22 @@ class _CustomerTabState extends State<CustomerTab> {
                         const EdgeInsets.only(left: 10, right: 3, bottom: 7),
                     height: 365,
                     decoration: const BoxDecoration(
+                      color: Colors.black12,
                       // color: Colors.amber,
+                      // boxShadow: [
+                      //   BoxShadow(
+                      //     color: Color.fromARGB(50, 203, 145, 0),
+                      //     blurStyle: BlurStyle.solid,
+                      //   )
+                      // ],
                       boxShadow: [
                         BoxShadow(
-                          color: Color.fromARGB(50, 203, 145, 0),
-                          blurStyle: BlurStyle.solid,
+                          color: Color.fromARGB(255, 234, 164, 45),
+                          blurStyle: BlurStyle.outer,
+                          blurRadius: 5,
                         )
                       ],
+
                       borderRadius: BorderRadius.only(
                         bottomLeft: Radius.circular(15),
                         bottomRight: Radius.circular(15),
@@ -312,7 +340,16 @@ class _CustomerTabState extends State<CustomerTab> {
                         margin: const EdgeInsets.symmetric(vertical: 20),
                         padding: const EdgeInsets.all(15),
                         decoration: const BoxDecoration(
-                          color: Color.fromARGB(50, 203, 145, 0),
+                          color: Colors.black12,
+                          // color: Color.fromARGB(50, 203, 145, 0),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color.fromARGB(255, 234, 164, 45),
+                              blurStyle: BlurStyle.outer,
+                              blurRadius: 5,
+                            )
+                          ],
+
                           borderRadius: BorderRadius.all(
                             Radius.circular(10),
                           ),
@@ -325,7 +362,16 @@ class _CustomerTabState extends State<CustomerTab> {
                         margin: const EdgeInsets.symmetric(vertical: 20),
                         padding: const EdgeInsets.all(15),
                         decoration: const BoxDecoration(
-                          color: Color.fromARGB(50, 203, 145, 0),
+                          color: Colors.black12,
+                          // color: Color.fromARGB(50, 203, 145, 0),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color.fromARGB(255, 234, 164, 45),
+                              blurStyle: BlurStyle.outer,
+                              blurRadius: 5,
+                            )
+                          ],
+
                           borderRadius: BorderRadius.all(
                             Radius.circular(10),
                           ),
@@ -343,7 +389,16 @@ class _CustomerTabState extends State<CustomerTab> {
                         margin: const EdgeInsets.symmetric(vertical: 20),
                         padding: const EdgeInsets.all(15),
                         decoration: const BoxDecoration(
-                          color: Color.fromARGB(50, 203, 145, 0),
+                          color: Colors.black12,
+                          // color: Color.fromARGB(50, 203, 145, 0),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color.fromARGB(255, 234, 164, 45),
+                              blurStyle: BlurStyle.outer,
+                              blurRadius: 5,
+                            )
+                          ],
+
                           borderRadius: BorderRadius.all(
                             Radius.circular(10),
                           ),
@@ -356,7 +411,16 @@ class _CustomerTabState extends State<CustomerTab> {
                         margin: const EdgeInsets.symmetric(vertical: 20),
                         padding: const EdgeInsets.all(15),
                         decoration: const BoxDecoration(
-                          color: Color.fromARGB(50, 203, 145, 0),
+                          color: Colors.black12,
+                          // color: Color.fromARGB(50, 203, 145, 0),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color.fromARGB(255, 234, 164, 45),
+                              blurStyle: BlurStyle.outer,
+                              blurRadius: 5,
+                            )
+                          ],
+
                           borderRadius: BorderRadius.all(
                             Radius.circular(10),
                           ),

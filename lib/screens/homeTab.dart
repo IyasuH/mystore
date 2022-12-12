@@ -502,69 +502,103 @@ class _HomeTabState extends State<HomeTab> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: ListView(children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 17),
-          child: Column(
-            children: <Widget>[
-              Row(
-                // ignore: prefer_const_constructors
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Hi Eyasu',
-                        style: TextStyle(
-                          fontSize: 26,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 1.4,
-                          wordSpacing: 1.8,
-                          color: Colors.grey[400],
-                        ),
+      child: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.fromLTRB(13, 24, 13, 10),
+            child: Row(
+              // ignore: prefer_const_constructors
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Hi Eyasu',
+                      style: TextStyle(
+                        fontSize: 26,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 1.4,
+                        wordSpacing: 1.8,
+                        color: Colors.grey[400],
                       ),
-                      SizedBox(
-                        height: 7,
+                    ),
+                    const SizedBox(
+                      height: 7,
+                    ),
+                    // ignore: prefer_const_constructors
+                    Text(
+                      'Welcome Back!',
+                      style: const TextStyle(
+                        color: Colors.grey,
+                        fontSize: 16,
+                        letterSpacing: 1.5,
+                        fontWeight: FontWeight.w500,
                       ),
-                      Text(
-                        'Welcome Back!',
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 16,
-                          letterSpacing: 1.5,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      )
+                    )
+                  ],
+                ),
+                Container(
+                  width: 45,
+                  height: 45,
+                  decoration: const BoxDecoration(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(13),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.green,
+                          blurRadius: 7,
+                          blurStyle: BlurStyle.outer,
+                        )
+                      ]),
+                  child: IconButton(
+                      onPressed: () {},
+                      icon: const Icon(
+                        size: 30,
+                        Icons.person,
+                        // color: Color.fromARGB(255, 80, 220, 63),
+                      )),
+                )
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 640,
+            child: ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(10),
+                topRight: Radius.circular(10),
+              ),
+              child: ListView(children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  child: Column(
+                    children: <Widget>[
+                      const SizedBox(
+                        height: 25,
+                      ),
+                      _salesContainer(),
+                      const SizedBox(
+                        height: 25,
+                      ),
+                      _profitContainer(),
+                      const SizedBox(
+                        height: 25,
+                      ),
+                      expenseContainer(),
+                      const SizedBox(
+                        height: 25,
+                      ),
+                      clientsContainer(),
                     ],
                   ),
-                  const Icon(
-                    size: 45,
-                    Icons.account_circle_outlined,
-                    color: Color.fromARGB(255, 80, 220, 63),
-                  )
-                ],
-              ),
-              const SizedBox(
-                height: 25,
-              ),
-              _salesContainer(),
-              const SizedBox(
-                height: 25,
-              ),
-              _profitContainer(),
-              const SizedBox(
-                height: 25,
-              ),
-              expenseContainer(),
-              const SizedBox(
-                height: 25,
-              ),
-              clientsContainer(),
-            ],
+                ),
+              ]),
+            ),
           ),
-        ),
-      ]),
+        ],
+      ),
     );
   }
 }

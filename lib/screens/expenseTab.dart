@@ -38,6 +38,7 @@ class ExpenseBarChart extends StatelessWidget {
     );
   }
 
+  Color expensePrimaryColor = const Color.fromARGB(255, 255, 20, 110);
   Widget bottomTitles(double value, TitleMeta meta) {
     const style = TextStyle(
         color: Color.fromARGB(255, 187, 187, 187),
@@ -186,8 +187,20 @@ class ExpenseBarChart extends StatelessWidget {
         ];
       }
     }
-    return Card(
-      color: Colors.black,
+    return Container(
+      margin: const EdgeInsets.fromLTRB(7, 5, 7, 10),
+      decoration: const BoxDecoration(
+        color: Colors.black26,
+        // color: Colors.indigo,
+        borderRadius: BorderRadius.all(Radius.circular(15)),
+        boxShadow: [
+          BoxShadow(
+            color: Color.fromARGB(255, 255, 20, 110),
+            blurStyle: BlurStyle.outer,
+            blurRadius: 5,
+          )
+        ],
+      ),
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -236,7 +249,7 @@ class ExpenseBarChart extends StatelessWidget {
               height: 12,
             ),
             // LegendWidget(),
-            SizedBox(
+            Container(
               height: 200,
               child: BarChart(
                 BarChartData(
@@ -344,8 +357,9 @@ class _ExpensesTabState extends State<ExpensesTab> {
           // Colors.blue,
           )
     ];
+
     return Scaffold(
-      backgroundColor: Colors.black,
+      // backgroundColor: Colors.black,
       appBar: AppBar(
         title: const Text('Expenses'),
         actions: [
@@ -429,262 +443,439 @@ class _ExpensesTabState extends State<ExpensesTab> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
-                  DropdownButton(
-                    value: selectedYear,
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectedYear = newValue!;
-                      });
-                    },
-                    items: const [
-                      DropdownMenuItem(
-                        value: '2022',
-                        child: Text('2022'),
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 7, top: 12),
+                    padding: const EdgeInsets.symmetric(horizontal: 7),
+                    decoration: const BoxDecoration(
+                      color: Colors.black26,
+                      // color: Colors.purple,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(14),
+                        bottomLeft: Radius.circular(14),
                       ),
-                      DropdownMenuItem(
-                        value: '2023',
-                        child: Text('2023'),
-                      ),
-                      DropdownMenuItem(
-                        value: '2024',
-                        child: Text('2024'),
-                      ),
-                      DropdownMenuItem(
-                        value: '2025',
-                        child: Text('2025'),
-                      ),
-                      DropdownMenuItem(
-                        value: '2026',
-                        child: Text('2026'),
-                      ),
-                      DropdownMenuItem(
-                        value: '2027',
-                        child: Text('2027'),
-                      ),
-                      DropdownMenuItem(
-                        value: '2028',
-                        child: Text('2028'),
-                      ),
-                      DropdownMenuItem(
-                        value: '2029',
-                        child: Text('2029'),
-                      ),
-                      DropdownMenuItem(
-                        value: '2030',
-                        child: Text('2030'),
-                      ),
-                    ],
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color.fromARGB(255, 255, 20, 110),
+                          blurStyle: BlurStyle.outer,
+                          blurRadius: 4,
+                        )
+                      ],
+                    ),
+                    child: DropdownButton(
+                      value: selectedYear,
+                      onChanged: (String? newValue) {
+                        if (mounted) {
+                          setState(() {
+                            selectedYear = newValue!;
+                          });
+                        }
+                      },
+                      items: const [
+                        DropdownMenuItem(
+                          value: '2022',
+                          child: Text('2022'),
+                        ),
+                        DropdownMenuItem(
+                          value: '2023',
+                          child: Text('2023'),
+                        ),
+                        DropdownMenuItem(
+                          value: '2024',
+                          child: Text('2024'),
+                        ),
+                        DropdownMenuItem(
+                          value: '2025',
+                          child: Text('2025'),
+                        ),
+                        DropdownMenuItem(
+                          value: '2026',
+                          child: Text('2026'),
+                        ),
+                        DropdownMenuItem(
+                          value: '2027',
+                          child: Text('2027'),
+                        ),
+                        DropdownMenuItem(
+                          value: '2028',
+                          child: Text('2028'),
+                        ),
+                        DropdownMenuItem(
+                          value: '2029',
+                          child: Text('2029'),
+                        ),
+                        DropdownMenuItem(
+                          value: '2030',
+                          child: Text('2030'),
+                        ),
+                      ],
+                    ),
                   ),
-                  DropdownButton(
-                    value: selectedMonth,
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectedMonth = newValue!;
-                      });
-                    },
-                    items: const [
-                      DropdownMenuItem(
-                        value: '01',
-                        child: Text('Jan'),
+                  Container(
+                    margin:
+                        const EdgeInsets.only(top: 12, bottom: 7, right: 10),
+                    padding: const EdgeInsets.symmetric(horizontal: 7),
+                    decoration: const BoxDecoration(
+                      color: Colors.black26,
+                      // color: Colors.purple,
+                      borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(14),
+                        bottomRight: Radius.circular(14),
                       ),
-                      DropdownMenuItem(
-                        value: '02',
-                        child: Text('Feb'),
-                      ),
-                      DropdownMenuItem(
-                        value: '03',
-                        child: Text('Mar'),
-                      ),
-                      DropdownMenuItem(
-                        value: '04',
-                        child: Text('Apr'),
-                      ),
-                      DropdownMenuItem(
-                        value: '05',
-                        child: Text('May'),
-                      ),
-                      DropdownMenuItem(
-                        value: '06',
-                        child: Text('Jun'),
-                      ),
-                      DropdownMenuItem(
-                        value: '07',
-                        child: Text('Jul'),
-                      ),
-                      DropdownMenuItem(
-                        value: '08',
-                        child: Text('Aug'),
-                      ),
-                      DropdownMenuItem(
-                        value: '09',
-                        child: Text('Sep'),
-                      ),
-                      DropdownMenuItem(
-                        value: '10',
-                        child: Text('Oct'),
-                      ),
-                      DropdownMenuItem(
-                        value: '11',
-                        child: Text('Nov'),
-                      ),
-                      DropdownMenuItem(
-                        value: '12',
-                        child: Text('Dec'),
-                      ),
-                    ],
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color.fromARGB(255, 255, 20, 110),
+                          blurStyle: BlurStyle.outer,
+                          blurRadius: 4,
+                        )
+                      ],
+                      // border: Border(
+                      //   top: BorderSide(
+                      //     color: Colors.redAccent,
+                      //     width: 1.1,
+                      //   ),
+                      // ),
+                    ),
+                    child: DropdownButton(
+                      value: selectedMonth,
+                      onChanged: (String? newValue) {
+                        if (mounted) {
+                          setState(() {
+                            selectedMonth = newValue!;
+                          });
+                        }
+                      },
+                      items: const [
+                        DropdownMenuItem(
+                          value: '01',
+                          child: Text('Jan'),
+                        ),
+                        DropdownMenuItem(
+                          value: '02',
+                          child: Text('Feb'),
+                        ),
+                        DropdownMenuItem(
+                          value: '03',
+                          child: Text('Mar'),
+                        ),
+                        DropdownMenuItem(
+                          value: '04',
+                          child: Text('Apr'),
+                        ),
+                        DropdownMenuItem(
+                          value: '05',
+                          child: Text('May'),
+                        ),
+                        DropdownMenuItem(
+                          value: '06',
+                          child: Text('Jun'),
+                        ),
+                        DropdownMenuItem(
+                          value: '07',
+                          child: Text('Jul'),
+                        ),
+                        DropdownMenuItem(
+                          value: '08',
+                          child: Text('Aug'),
+                        ),
+                        DropdownMenuItem(
+                          value: '09',
+                          child: Text('Sep'),
+                        ),
+                        DropdownMenuItem(
+                          value: '10',
+                          child: Text('Oct'),
+                        ),
+                        DropdownMenuItem(
+                          value: '11',
+                          child: Text('Nov'),
+                        ),
+                        DropdownMenuItem(
+                          value: '12',
+                          child: Text('Dec'),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
-              const Text('Monthly Expenses'),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: DataTable(
-                  showBottomBorder: true,
-                  sortColumnIndex: _sortColumnIndex,
-                  sortAscending: _sortAsc,
-                  columns: [
-                    const DataColumn(label: Text('Id'), numeric: true),
-                    DataColumn(
-                      label: const Text('Expense'),
-                      onSort: ((columnIndex, sortAscending) {
-                        setState(() {
-                          if (columnIndex == _sortColumnIndex) {
-                            _sortAsc = _sortExpenseName = sortAscending;
-                          } else {
-                            _sortColumnIndex = columnIndex;
-                            _sortAsc = _sortExpenseName;
-                          }
-                          expenses.sort((a, b) => a.name.compareTo(b.name));
-                          if (!_sortAsc) {
-                            expenses.sort((a, b) => b.name.compareTo(a.name));
-                          }
-                        });
-                      }),
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                decoration: const BoxDecoration(
+                  // color: Colors.amber
+                  color: Colors.black26,
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(15),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color.fromARGB(255, 255, 20, 110),
+                      blurStyle: BlurStyle.outer,
+                      blurRadius: 5,
+                    )
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 10.0),
+                      child: Text('Monthly Expenses'),
                     ),
-                    DataColumn(
-                      label: const Text('Amount'),
-                      numeric: true,
-                      onSort: (columnIndex, sortAscending) {
-                        setState(() {
-                          if (columnIndex == _sortColumnIndex) {
-                            _sortAsc = _sortExpenseAmount = sortAscending;
-                          } else {
-                            _sortColumnIndex = columnIndex;
-                            _sortAsc = _sortExpenseAmount;
-                          }
-                          expenses.sort((a, b) => a.amount.compareTo(b.amount));
-                          if (!_sortAsc) {
-                            expenses
-                                .sort((a, b) => b.amount.compareTo(a.amount));
-                          }
-                        });
-                      },
-                    ),
-                    DataColumn(
-                      label: const Text('Fixed'),
-                      onSort: (columnIndex, sortAscending) {
-                        setState(() {
-                          if (columnIndex == _sortColumnIndex) {
-                            _sortAsc = _sortExpenseFixed = sortAscending;
-                          } else {
-                            _sortColumnIndex = columnIndex;
-                            _sortAsc = _sortExpenseFixed;
-                          }
-                          expenses.sort((a, b) =>
-                              a.fixed.toString().compareTo(b.fixed.toString()));
-                          if (!_sortAsc) {
-                            expenses.sort((a, b) => b.fixed
-                                .toString()
-                                .compareTo(a.fixed.toString()));
-                          }
-                        });
-                      },
-                    ),
-                    DataColumn(
-                      label: const Text('Date'),
-                      onSort: (columnIndex, sortAscending) {
-                        setState(() {
-                          if (columnIndex == _sortColumnIndex) {
-                            _sortAsc = _sortExpenseDate = sortAscending;
-                          } else {
-                            _sortColumnIndex = columnIndex;
-                            _sortAsc = _sortExpenseDate;
-                          }
-                          expenses.sort((a, b) => a.date.compareTo(b.date));
-                          if (!_sortAsc) {
-                            expenses.sort((a, b) => b.date.compareTo(a.date));
-                          }
-                        });
-                      },
+                    Container(
+                      decoration: const BoxDecoration(
+                        border: Border(
+                          top: BorderSide(
+                            color: Color.fromARGB(255, 255, 20, 110),
+                            // width: 1.5,
+                          ),
+                        ),
+                      ),
+                      height: 300,
+                      child: ListView(children: [
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: DataTable(
+                            showBottomBorder: true,
+                            sortColumnIndex: _sortColumnIndex,
+                            sortAscending: _sortAsc,
+                            columns: [
+                              const DataColumn(
+                                  label: Text('Id'), numeric: true),
+                              DataColumn(
+                                label: const Text('Expense'),
+                                onSort: ((columnIndex, sortAscending) {
+                                  if (mounted) {
+                                    setState(() {
+                                      if (columnIndex == _sortColumnIndex) {
+                                        _sortAsc =
+                                            _sortExpenseName = sortAscending;
+                                      } else {
+                                        _sortColumnIndex = columnIndex;
+                                        _sortAsc = _sortExpenseName;
+                                      }
+                                      expenses.sort(
+                                          (a, b) => a.name.compareTo(b.name));
+                                      if (!_sortAsc) {
+                                        expenses.sort(
+                                            (a, b) => b.name.compareTo(a.name));
+                                      }
+                                    });
+                                  }
+                                }),
+                              ),
+                              DataColumn(
+                                label: const Text('Amount'),
+                                numeric: true,
+                                onSort: (columnIndex, sortAscending) {
+                                  if (mounted) {
+                                    setState(() {
+                                      if (columnIndex == _sortColumnIndex) {
+                                        _sortAsc =
+                                            _sortExpenseAmount = sortAscending;
+                                      } else {
+                                        _sortColumnIndex = columnIndex;
+                                        _sortAsc = _sortExpenseAmount;
+                                      }
+                                      expenses.sort((a, b) =>
+                                          a.amount.compareTo(b.amount));
+                                      if (!_sortAsc) {
+                                        expenses.sort((a, b) =>
+                                            b.amount.compareTo(a.amount));
+                                      }
+                                    });
+                                  }
+                                },
+                              ),
+                              DataColumn(
+                                label: const Text('Fixed'),
+                                onSort: (columnIndex, sortAscending) {
+                                  if (mounted) {
+                                    setState(() {
+                                      if (columnIndex == _sortColumnIndex) {
+                                        _sortAsc =
+                                            _sortExpenseFixed = sortAscending;
+                                      } else {
+                                        _sortColumnIndex = columnIndex;
+                                        _sortAsc = _sortExpenseFixed;
+                                      }
+                                      expenses.sort((a, b) => a.fixed
+                                          .toString()
+                                          .compareTo(b.fixed.toString()));
+                                      if (!_sortAsc) {
+                                        expenses.sort((a, b) => b.fixed
+                                            .toString()
+                                            .compareTo(a.fixed.toString()));
+                                      }
+                                    });
+                                  }
+                                },
+                              ),
+                              DataColumn(
+                                label: const Text('Date'),
+                                onSort: (columnIndex, sortAscending) {
+                                  if (mounted) {
+                                    setState(() {
+                                      if (columnIndex == _sortColumnIndex) {
+                                        _sortAsc =
+                                            _sortExpenseDate = sortAscending;
+                                      } else {
+                                        _sortColumnIndex = columnIndex;
+                                        _sortAsc = _sortExpenseDate;
+                                      }
+                                      expenses.sort(
+                                          (a, b) => a.date.compareTo(b.date));
+                                      if (!_sortAsc) {
+                                        expenses.sort(
+                                            (a, b) => b.date.compareTo(a.date));
+                                      }
+                                    });
+                                  }
+                                },
+                              ),
+                            ],
+                            rows: _exepensesRows(),
+                          ),
+                        ),
+                      ]),
                     ),
                   ],
-                  rows: _exepensesRows(),
                 ),
               ),
               // this is for Circular Pie Chart(to compare fixed and variable expenses)
-              SfCircularChart(
-                title: ChartTitle(text: 'Expenses Type'),
-                legend: Legend(
-                  position: LegendPosition.auto,
-                  isVisible: true,
-                  isResponsive: false,
-                  overflowMode: LegendItemOverflowMode.wrap,
-                  shouldAlwaysShowScrollbar: false,
-                ),
-                tooltipBehavior: TooltipBehavior(enable: true),
-                series: <CircularSeries>[
-                  PieSeries<FixedVariableData, String>(
-                    dataSource: expensesType,
-                    // pointColorMapper: (FixedVariableData data, _) => data.color,
-                    xValueMapper: (FixedVariableData data, _) => data.x,
-                    yValueMapper: (FixedVariableData data, _) => data.y,
-                    explode: true,
-                    explodeIndex: 1,
-                  )
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Container(
+                    width: 185,
+                    height: 300,
+                    margin: const EdgeInsets.symmetric(vertical: 10),
+                    decoration: const BoxDecoration(
+                      color: Colors.black26,
+                      // color: Colors.blueAccent,
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(15),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color.fromARGB(255, 255, 20, 110),
+                          blurStyle: BlurStyle.outer,
+                          blurRadius: 5,
+                        )
+                      ],
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10.0, horizontal: 10.0),
+                    child: Column(
+                      children: const [
+                        Text(
+                          'Total Expense',
+                          style: TextStyle(fontSize: 18),
+                        )
+                      ],
+                    ),
+                  ),
+                  Container(
+                    width: 185,
+                    decoration: const BoxDecoration(
+                      // color: Colors.pinkAccent,
+                      color: Colors.black26,
+                      borderRadius: BorderRadius.all(Radius.circular(15)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color.fromARGB(255, 255, 20, 110),
+                          blurStyle: BlurStyle.outer,
+                          blurRadius: 5,
+                        )
+                      ],
+                    ),
+                    margin: const EdgeInsets.symmetric(vertical: 10),
+                    child: SfCircularChart(
+                      title: ChartTitle(text: 'Expenses Type'),
+                      legend: Legend(
+                        position: LegendPosition.auto,
+                        isVisible: true,
+                        isResponsive: false,
+                        overflowMode: LegendItemOverflowMode.wrap,
+                        shouldAlwaysShowScrollbar: false,
+                      ),
+                      tooltipBehavior: TooltipBehavior(enable: true),
+                      series: <CircularSeries>[
+                        PieSeries<FixedVariableData, String>(
+                          dataSource: expensesType,
+                          // pointColorMapper: (FixedVariableData data, _) => data.color,
+                          xValueMapper: (FixedVariableData data, _) => data.x,
+                          yValueMapper: (FixedVariableData data, _) => data.y,
+                          explode: true,
+                          explodeIndex: 1,
+                        )
+                      ],
+                    ),
+                  ),
                 ],
               ),
-              SfCircularChart(
-                title: ChartTitle(text: 'Fixed Expenses'),
-                legend: Legend(
-                  position: LegendPosition.auto,
-                  isVisible: true,
-                  isResponsive: false,
-                  overflowMode: LegendItemOverflowMode.wrap,
-                  shouldAlwaysShowScrollbar: false,
-                ),
-                tooltipBehavior: TooltipBehavior(enable: true),
-                series: <CircularSeries>[
-                  DoughnutSeries<FixedVariableData, String>(
-                    dataSource: fixedExpenseData,
-                    // pointColorMapper: (FixedVariableData data, _) => data.color,
-                    xValueMapper: (FixedVariableData data, _) => data.x,
-                    yValueMapper: (FixedVariableData data, _) => data.y,
-                    enableTooltip: true,
-                    explode: true,
-                    explodeIndex: 1,
-                  )
-                ],
-              ),
-              SfCircularChart(
-                title: ChartTitle(text: 'Variable Expenses'),
-                legend: Legend(
-                  position: LegendPosition.auto,
-                  isVisible: true,
-                  isResponsive: false,
-                  overflowMode: LegendItemOverflowMode.wrap,
-                  shouldAlwaysShowScrollbar: false,
-                ),
-                tooltipBehavior: TooltipBehavior(enable: true),
-                series: <CircularSeries>[
-                  DoughnutSeries<FixedVariableData, String>(
-                    dataSource: variableExpenseData,
-                    // pointColorMapper: (FixedVariableData data, _) => data.color,
-                    enableTooltip: true,
-                    xValueMapper: (FixedVariableData data, _) => data.x,
-                    yValueMapper: (FixedVariableData data, _) => data.y,
-                    explode: true,
-                    explodeIndex: 1,
-                  )
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Container(
+                    margin: const EdgeInsets.symmetric(vertical: 10),
+                    width: 185,
+                    decoration: const BoxDecoration(
+                      color: Colors.deepPurple,
+                      borderRadius: BorderRadius.all(Radius.circular(15)),
+                    ),
+                    child: SfCircularChart(
+                      title: ChartTitle(text: 'Fixed Expenses'),
+                      legend: Legend(
+                        position: LegendPosition.auto,
+                        isVisible: true,
+                        isResponsive: false,
+                        overflowMode: LegendItemOverflowMode.wrap,
+                        shouldAlwaysShowScrollbar: false,
+                      ),
+                      tooltipBehavior: TooltipBehavior(enable: true),
+                      series: <CircularSeries>[
+                        DoughnutSeries<FixedVariableData, String>(
+                          dataSource: fixedExpenseData,
+                          // pointColorMapper: (FixedVariableData data, _) => data.color,
+                          xValueMapper: (FixedVariableData data, _) => data.x,
+                          yValueMapper: (FixedVariableData data, _) => data.y,
+                          enableTooltip: true,
+                          explode: true,
+                          explodeIndex: 1,
+                        )
+                      ],
+                    ),
+                  ),
+                  Container(
+                    width: 185,
+                    margin: const EdgeInsets.symmetric(vertical: 10),
+                    decoration: const BoxDecoration(
+                      color: Colors.deepOrange,
+                      borderRadius: BorderRadius.all(Radius.circular(15)),
+                    ),
+                    child: SfCircularChart(
+                      title: ChartTitle(text: 'Variable Expenses'),
+                      legend: Legend(
+                        position: LegendPosition.auto,
+                        isVisible: true,
+                        isResponsive: false,
+                        overflowMode: LegendItemOverflowMode.wrap,
+                        shouldAlwaysShowScrollbar: false,
+                      ),
+                      tooltipBehavior: TooltipBehavior(enable: true),
+                      series: <CircularSeries>[
+                        DoughnutSeries<FixedVariableData, String>(
+                          dataSource: variableExpenseData,
+                          // pointColorMapper: (FixedVariableData data, _) => data.color,
+                          enableTooltip: true,
+                          xValueMapper: (FixedVariableData data, _) => data.x,
+                          yValueMapper: (FixedVariableData data, _) => data.y,
+                          explode: true,
+                          explodeIndex: 1,
+                        )
+                      ],
+                    ),
+                  ),
                 ],
               ),
               ExpenseBarChart(selectedYear),
