@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 class TopClients {
   final String customerName;
   final String companyName;
@@ -17,7 +15,7 @@ class TopClients {
 List<TopClients> topClients = [
   TopClients(
     customerName: 'Eyasu',
-    companyName: 'SubZeroSoftaware',
+    companyName: 'SubZero',
     amount: 36057,
     change: 1,
   ),
@@ -55,6 +53,106 @@ class Customers {
 }
 
 List<Customers> customers = [
+  Customers(
+    customerName: 'Eyasu',
+    companyName: 'Mozazgi',
+    phoneNumber: '0941279805',
+    tinNumber: '096404',
+    city: 'Addis',
+    totalPurchase: 2000,
+    visits: 5,
+    membership: 'Golden',
+  ),
+  Customers(
+    customerName: 'Dagi',
+    companyName: 'CoffeeGo',
+    phoneNumber: '0941279805',
+    tinNumber: '096404',
+    city: 'Addis',
+    totalPurchase: 3000,
+    visits: 6,
+    membership: 'Silver',
+  ),
+  Customers(
+    customerName: 'Bety',
+    companyName: 'BuilX',
+    phoneNumber: '0941279805',
+    tinNumber: '096404',
+    city: 'Addis',
+    totalPurchase: 1000,
+    visits: 2,
+    membership: 'Basic',
+  ),
+  Customers(
+    customerName: 'Hermi',
+    companyName: 'BuilX',
+    phoneNumber: '0941279805',
+    tinNumber: '096404',
+    city: 'Addis',
+    totalPurchase: 1000,
+    visits: 2,
+    membership: 'Basic',
+  ),
+  Customers(
+    customerName: 'Beki',
+    companyName: 'BuilX',
+    phoneNumber: '0941279805',
+    tinNumber: '096404',
+    city: 'Addis',
+    totalPurchase: 1000,
+    visits: 2,
+    membership: 'Basic',
+  ),
+  Customers(
+    customerName: 'Eyasu',
+    companyName: 'Mozazgi',
+    phoneNumber: '0941279805',
+    tinNumber: '096404',
+    city: 'Addis',
+    totalPurchase: 2000,
+    visits: 5,
+    membership: 'Golden',
+  ),
+  Customers(
+    customerName: 'Dagi',
+    companyName: 'CoffeeGo',
+    phoneNumber: '0941279805',
+    tinNumber: '096404',
+    city: 'Addis',
+    totalPurchase: 3000,
+    visits: 6,
+    membership: 'Silver',
+  ),
+  Customers(
+    customerName: 'Bety',
+    companyName: 'BuilX',
+    phoneNumber: '0941279805',
+    tinNumber: '096404',
+    city: 'Addis',
+    totalPurchase: 1000,
+    visits: 2,
+    membership: 'Basic',
+  ),
+  Customers(
+    customerName: 'Hermi',
+    companyName: 'BuilX',
+    phoneNumber: '0941279805',
+    tinNumber: '096404',
+    city: 'Addis',
+    totalPurchase: 1000,
+    visits: 2,
+    membership: 'Basic',
+  ),
+  Customers(
+    customerName: 'Beki',
+    companyName: 'BuilX',
+    phoneNumber: '0941279805',
+    tinNumber: '096404',
+    city: 'Addis',
+    totalPurchase: 1000,
+    visits: 2,
+    membership: 'Basic',
+  ),
   Customers(
     customerName: 'Eyasu',
     companyName: 'Mozazgi',
