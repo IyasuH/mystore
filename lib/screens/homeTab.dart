@@ -248,7 +248,7 @@ class _HomeTabState extends State<HomeTab> {
                   ),
                 ),
                 Text(
-                  '\ETB 236',
+                  '\$ 236',
                   style: TextStyle(
                     color: expensePrimaryColor,
                     fontSize: 26,
