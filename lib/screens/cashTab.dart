@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../models/accounts.dart';
+import '../models/sales.dart';
+
 class CashTab extends StatefulWidget {
   const CashTab({super.key});
 
@@ -8,8 +11,16 @@ class CashTab extends StatefulWidget {
 }
 
 class _CashTabState extends State<CashTab> {
+  List cashSales = [];
   @override
   Widget build(BuildContext context) {
+    cashSales = [];
+    for (var element in sales) {
+      // here assuming that bankId 1 is for cash
+      if (element.bankId == 1) {
+        cashSales.add(element);
+      }
+    }
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(13, 24, 13, 10),
@@ -41,55 +52,67 @@ class _CashTabState extends State<CashTab> {
                   children: <Widget>[
                     Column(
                       children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 5),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            // ignore: prefer_const_literals_to_create_immutables
+                            children: [
+                              const Text(
+                                'Account',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: 1.1,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                         // ignore: prefer_const_constructors
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Container(
-                              width: 120,
-                              height: 40,
-                              padding: const EdgeInsets.all(10),
-                              margin: const EdgeInsets.only(top: 10, left: 5),
-                              decoration: const BoxDecoration(
-                                // color: Colors.amber,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(15)),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.blueGrey,
-                                    blurStyle: BlurStyle.outer,
-                                    blurRadius: 5,
-                                  )
-                                ],
+                        Container(
+                          height: 50,
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 10,
+                            horizontal: 14,
+                          ),
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 5, vertical: 7),
+                          decoration: const BoxDecoration(
+                            // color: Colors.amber,
+                            borderRadius: BorderRadius.all(Radius.circular(15)),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.blueGrey,
+                                blurStyle: BlurStyle.outer,
+                                blurRadius: 5,
+                              )
+                            ],
+                          ),
+                          child: Row(
+                            // ignore: prefer_const_literals_to_create_immutables
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: const [
+                              Text(
+                                'Total in Accounts',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  letterSpacing: 1.5,
+                                  wordSpacing: 2.0,
+                                  color: Colors.blueGrey,
+                                ),
                               ),
-                              child: const Text(
-                                'Cash',
-                                style: TextStyle(fontSize: 18),
+                              Text(
+                                '\$ 75,000',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
-                            ),
-                            Container(
-                              width: 120,
-                              height: 40,
-                              padding: const EdgeInsets.all(10),
-                              margin: const EdgeInsets.only(top: 10, right: 5),
-                              decoration: const BoxDecoration(
-                                // color: Colors.amber,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(15)),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.blueGrey,
-                                    blurStyle: BlurStyle.outer,
-                                    blurRadius: 5,
-                                  )
-                                ],
-                              ),
-                              child: const Text(
-                                'Deposit',
-                                style: TextStyle(fontSize: 18),
-                              ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                         Container(
                           height: 270,
@@ -106,58 +129,92 @@ class _CashTabState extends State<CashTab> {
                               )
                             ],
                           ),
+                          child: ListView(
+                            children: [
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: DataTable(
+                                  showBottomBorder: true,
+                                  // ignore: prefer_const_literals_to_create_immutables
+                                  columns: [
+                                    const DataColumn(label: Text('Date')),
+                                    const DataColumn(label: Text('Bank')),
+                                    const DataColumn(
+                                      label: Text('Amount'),
+                                      numeric: true,
+                                    ),
+                                  ],
+                                  rows: _accountsRow(),
+                                ),
+                              )
+                            ],
+                          ),
                         ),
                         const SizedBox(
                           height: 20,
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Container(
-                              width: 120,
-                              height: 40,
-                              padding: const EdgeInsets.all(10),
-                              margin: EdgeInsets.only(left: 5),
-                              decoration: const BoxDecoration(
-                                // color: Colors.greenAccent,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(15)),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.blueGrey,
-                                    blurStyle: BlurStyle.outer,
-                                    blurRadius: 5,
-                                  )
-                                ],
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 5),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            // ignore: prefer_const_literals_to_create_immutables
+                            children: [
+                              const Text(
+                                'Cash',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: 1.1,
+                                ),
                               ),
-                              child: const Text(
-                                'Account',
-                                style: TextStyle(fontSize: 18),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          height: 50,
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 10,
+                            horizontal: 14,
+                          ),
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 5,
+                            vertical: 7,
+                          ),
+                          decoration: const BoxDecoration(
+                            // color: Colors.greenAccent,
+                            borderRadius: BorderRadius.all(Radius.circular(15)),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.blueGrey,
+                                blurStyle: BlurStyle.outer,
+                                blurRadius: 5,
+                              )
+                            ],
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            // ignore: prefer_const_literals_to_create_immutables
+                            children: [
+                              const Text(
+                                'Total in Cash',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  letterSpacing: 1.5,
+                                  wordSpacing: 2.0,
+                                  color: Colors.blueGrey,
+                                ),
                               ),
-                            ),
-                            Container(
-                              width: 120,
-                              height: 40,
-                              padding: const EdgeInsets.all(10),
-                              margin: EdgeInsets.only(right: 5),
-                              decoration: const BoxDecoration(
-                                // color: Colors.greenAccent,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(15)),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.blueGrey,
-                                    blurStyle: BlurStyle.outer,
-                                    blurRadius: 5,
-                                  )
-                                ],
+                              const Text(
+                                '\$ 5000',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
-                              child: const Text(
-                                'Deposit',
-                                style: TextStyle(fontSize: 18),
-                              ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                         Container(
                           height: 270,
@@ -174,6 +231,26 @@ class _CashTabState extends State<CashTab> {
                               )
                             ],
                           ),
+                          child: ListView(
+                            children: [
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: DataTable(
+                                  showBottomBorder: true,
+                                  // ignore: prefer_const_literals_to_create_immutables
+                                  columns: [
+                                    const DataColumn(label: Text('Date')),
+                                    const DataColumn(label: Text('Item Name')),
+                                    const DataColumn(
+                                      label: Text('Amount'),
+                                      numeric: true,
+                                    ),
+                                  ],
+                                  rows: _cashRows(),
+                                ),
+                              )
+                            ],
+                          ),
                         )
                       ],
                     ),
@@ -185,5 +262,57 @@ class _CashTabState extends State<CashTab> {
         ),
       ),
     );
+  }
+
+  List<DataRow> _accountsRow() {
+    return bankAccounts
+        .map((e) => DataRow(
+              onLongPress: (() {
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text('Account'),
+                        backgroundColor: Colors.black54,
+                        content: SizedBox(
+                          height: 400,
+                          child: Column(),
+                        ),
+                      );
+                    });
+              }),
+              cells: [
+                DataCell(Text(e.accountCreatedDate)),
+                DataCell(Text(e.bankName)),
+                DataCell(Text(e.amount.toString())),
+              ],
+            ))
+        .toList();
+  }
+
+  List<DataRow> _cashRows() {
+    return cashSales
+        .map((e) => DataRow(
+              onLongPress: (() {
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text('Cash'),
+                        backgroundColor: Colors.black54,
+                        content: SizedBox(
+                          height: 400,
+                          child: Column(),
+                        ),
+                      );
+                    });
+              }),
+              cells: [
+                DataCell(Text(e.soldDate)),
+                DataCell(Text(e.itemId.toString())),
+                DataCell(Text(e.salesRevenu.toString())),
+              ],
+            ))
+        .toList();
   }
 }
