@@ -1,4 +1,6 @@
 // ignore: file_names
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -7,8 +9,9 @@ import 'package:intl/intl.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import '../models/expenses.dart';
 
+// ignore: must_be_immutable
 class ExpenseBarChart extends StatelessWidget {
-  ExpenseBarChart(this.selectedYear);
+  ExpenseBarChart(this.selectedYear, {super.key});
   final String selectedYear;
   static const fixedExpColor = Colors.red;
   static const variableExpColor = Colors.blue;
@@ -38,7 +41,6 @@ class ExpenseBarChart extends StatelessWidget {
     );
   }
 
-  Color expensePrimaryColor = const Color.fromARGB(255, 255, 20, 110);
   Widget bottomTitles(double value, TitleMeta meta) {
     const style = TextStyle(
         color: Color.fromARGB(255, 187, 187, 187),
@@ -441,160 +443,186 @@ class _ExpensesTabState extends State<ExpensesTab> {
           Column(
             children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Container(
-                    margin: const EdgeInsets.only(bottom: 7, top: 12),
-                    padding: const EdgeInsets.symmetric(horizontal: 7),
-                    decoration: const BoxDecoration(
-                      color: Colors.black26,
-                      // color: Colors.purple,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(14),
-                        bottomLeft: Radius.circular(14),
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Color.fromARGB(255, 255, 20, 110),
-                          blurStyle: BlurStyle.outer,
-                          blurRadius: 4,
-                        )
-                      ],
-                    ),
-                    child: DropdownButton(
-                      value: selectedYear,
-                      onChanged: (String? newValue) {
-                        if (mounted) {
-                          setState(() {
-                            selectedYear = newValue!;
-                          });
-                        }
-                      },
-                      items: const [
-                        DropdownMenuItem(
-                          value: '2022',
-                          child: Text('2022'),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Row(
+                      // ignore: prefer_const_constructors
+                      children: const [
+                        Text(
+                          'Year',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
-                        DropdownMenuItem(
-                          value: '2023',
-                          child: Text('2023'),
-                        ),
-                        DropdownMenuItem(
-                          value: '2024',
-                          child: Text('2024'),
-                        ),
-                        DropdownMenuItem(
-                          value: '2025',
-                          child: Text('2025'),
-                        ),
-                        DropdownMenuItem(
-                          value: '2026',
-                          child: Text('2026'),
-                        ),
-                        DropdownMenuItem(
-                          value: '2027',
-                          child: Text('2027'),
-                        ),
-                        DropdownMenuItem(
-                          value: '2028',
-                          child: Text('2028'),
-                        ),
-                        DropdownMenuItem(
-                          value: '2029',
-                          child: Text('2029'),
-                        ),
-                        DropdownMenuItem(
-                          value: '2030',
-                          child: Text('2030'),
+                        Text(
+                          ' / Month',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ],
                     ),
                   ),
-                  Container(
-                    margin:
-                        const EdgeInsets.only(top: 12, bottom: 7, right: 10),
-                    padding: const EdgeInsets.symmetric(horizontal: 7),
-                    decoration: const BoxDecoration(
-                      color: Colors.black26,
-                      // color: Colors.purple,
-                      borderRadius: BorderRadius.only(
-                        topRight: Radius.circular(14),
-                        bottomRight: Radius.circular(14),
+                  Row(
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 7, top: 12),
+                        padding: const EdgeInsets.symmetric(horizontal: 7),
+                        decoration: const BoxDecoration(
+                          color: Colors.black26,
+                          // color: Colors.purple,
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(14),
+                            bottomLeft: Radius.circular(14),
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color.fromARGB(255, 255, 20, 110),
+                              blurStyle: BlurStyle.outer,
+                              blurRadius: 4,
+                            )
+                          ],
+                        ),
+                        child: DropdownButton(
+                          value: selectedYear,
+                          onChanged: (String? newValue) {
+                            if (mounted) {
+                              setState(() {
+                                selectedYear = newValue!;
+                              });
+                            }
+                          },
+                          items: const [
+                            DropdownMenuItem(
+                              value: '2022',
+                              child: Text('2022'),
+                            ),
+                            DropdownMenuItem(
+                              value: '2023',
+                              child: Text('2023'),
+                            ),
+                            DropdownMenuItem(
+                              value: '2024',
+                              child: Text('2024'),
+                            ),
+                            DropdownMenuItem(
+                              value: '2025',
+                              child: Text('2025'),
+                            ),
+                            DropdownMenuItem(
+                              value: '2026',
+                              child: Text('2026'),
+                            ),
+                            DropdownMenuItem(
+                              value: '2027',
+                              child: Text('2027'),
+                            ),
+                            DropdownMenuItem(
+                              value: '2028',
+                              child: Text('2028'),
+                            ),
+                            DropdownMenuItem(
+                              value: '2029',
+                              child: Text('2029'),
+                            ),
+                            DropdownMenuItem(
+                              value: '2030',
+                              child: Text('2030'),
+                            ),
+                          ],
+                        ),
                       ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Color.fromARGB(255, 255, 20, 110),
-                          blurStyle: BlurStyle.outer,
-                          blurRadius: 4,
-                        )
-                      ],
-                      // border: Border(
-                      //   top: BorderSide(
-                      //     color: Colors.redAccent,
-                      //     width: 1.1,
-                      //   ),
-                      // ),
-                    ),
-                    child: DropdownButton(
-                      value: selectedMonth,
-                      onChanged: (String? newValue) {
-                        if (mounted) {
-                          setState(() {
-                            selectedMonth = newValue!;
-                          });
-                        }
-                      },
-                      items: const [
-                        DropdownMenuItem(
-                          value: '01',
-                          child: Text('Jan'),
+                      Container(
+                        margin: const EdgeInsets.only(
+                            top: 12, bottom: 7, right: 10),
+                        padding: const EdgeInsets.symmetric(horizontal: 7),
+                        decoration: const BoxDecoration(
+                          color: Colors.black26,
+                          // color: Colors.purple,
+                          borderRadius: BorderRadius.only(
+                            topRight: Radius.circular(14),
+                            bottomRight: Radius.circular(14),
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color.fromARGB(255, 255, 20, 110),
+                              blurStyle: BlurStyle.outer,
+                              blurRadius: 4,
+                            )
+                          ],
+                          // border: Border(
+                          //   top: BorderSide(
+                          //     color: Colors.redAccent,
+                          //     width: 1.1,
+                          //   ),
+                          // ),
                         ),
-                        DropdownMenuItem(
-                          value: '02',
-                          child: Text('Feb'),
+                        child: DropdownButton(
+                          value: selectedMonth,
+                          onChanged: (String? newValue) {
+                            if (mounted) {
+                              setState(() {
+                                selectedMonth = newValue!;
+                              });
+                            }
+                          },
+                          items: const [
+                            DropdownMenuItem(
+                              value: '01',
+                              child: Text('Jan'),
+                            ),
+                            DropdownMenuItem(
+                              value: '02',
+                              child: Text('Feb'),
+                            ),
+                            DropdownMenuItem(
+                              value: '03',
+                              child: Text('Mar'),
+                            ),
+                            DropdownMenuItem(
+                              value: '04',
+                              child: Text('Apr'),
+                            ),
+                            DropdownMenuItem(
+                              value: '05',
+                              child: Text('May'),
+                            ),
+                            DropdownMenuItem(
+                              value: '06',
+                              child: Text('Jun'),
+                            ),
+                            DropdownMenuItem(
+                              value: '07',
+                              child: Text('Jul'),
+                            ),
+                            DropdownMenuItem(
+                              value: '08',
+                              child: Text('Aug'),
+                            ),
+                            DropdownMenuItem(
+                              value: '09',
+                              child: Text('Sep'),
+                            ),
+                            DropdownMenuItem(
+                              value: '10',
+                              child: Text('Oct'),
+                            ),
+                            DropdownMenuItem(
+                              value: '11',
+                              child: Text('Nov'),
+                            ),
+                            DropdownMenuItem(
+                              value: '12',
+                              child: Text('Dec'),
+                            ),
+                          ],
                         ),
-                        DropdownMenuItem(
-                          value: '03',
-                          child: Text('Mar'),
-                        ),
-                        DropdownMenuItem(
-                          value: '04',
-                          child: Text('Apr'),
-                        ),
-                        DropdownMenuItem(
-                          value: '05',
-                          child: Text('May'),
-                        ),
-                        DropdownMenuItem(
-                          value: '06',
-                          child: Text('Jun'),
-                        ),
-                        DropdownMenuItem(
-                          value: '07',
-                          child: Text('Jul'),
-                        ),
-                        DropdownMenuItem(
-                          value: '08',
-                          child: Text('Aug'),
-                        ),
-                        DropdownMenuItem(
-                          value: '09',
-                          child: Text('Sep'),
-                        ),
-                        DropdownMenuItem(
-                          value: '10',
-                          child: Text('Oct'),
-                        ),
-                        DropdownMenuItem(
-                          value: '11',
-                          child: Text('Nov'),
-                        ),
-                        DropdownMenuItem(
-                          value: '12',
-                          child: Text('Dec'),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -820,7 +848,16 @@ class _ExpensesTabState extends State<ExpensesTab> {
                     margin: const EdgeInsets.symmetric(vertical: 10),
                     width: 185,
                     decoration: const BoxDecoration(
-                      color: Colors.deepPurple,
+                      // color: Colors.deepPurple,
+                      color: Colors.black26,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color.fromARGB(255, 255, 20, 110),
+                          blurStyle: BlurStyle.outer,
+                          blurRadius: 4,
+                        )
+                      ],
+
                       borderRadius: BorderRadius.all(Radius.circular(15)),
                     ),
                     child: SfCircularChart(
@@ -850,7 +887,15 @@ class _ExpensesTabState extends State<ExpensesTab> {
                     width: 185,
                     margin: const EdgeInsets.symmetric(vertical: 10),
                     decoration: const BoxDecoration(
-                      color: Colors.deepOrange,
+                      // color: Colors.deepOrange,
+                      color: Colors.black26,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color.fromARGB(255, 255, 20, 110),
+                          blurStyle: BlurStyle.outer,
+                          blurRadius: 4,
+                        )
+                      ],
                       borderRadius: BorderRadius.all(Radius.circular(15)),
                     ),
                     child: SfCircularChart(

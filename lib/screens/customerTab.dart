@@ -10,6 +10,7 @@ class CustomerTab extends StatefulWidget {
 }
 
 class _CustomerTabState extends State<CustomerTab> {
+  String customLen = customers.length.toString();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -84,8 +85,8 @@ class _CustomerTabState extends State<CustomerTab> {
                   Container(
                     margin: const EdgeInsets.symmetric(vertical: 10),
                     padding: const EdgeInsets.symmetric(
-                        vertical: 23, horizontal: 30),
-                    height: 100,
+                        vertical: 18, horizontal: 30),
+                    height: 80,
                     // ignore: prefer_const_constructors
                     decoration: BoxDecoration(
                       // ignore: prefer_const_literals_to_create_immutables
@@ -105,49 +106,151 @@ class _CustomerTabState extends State<CustomerTab> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        const Text(
+                          'Total Customers',
+                          // ignore: prefer_const_constructors
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                        Text(
+                          customLen,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        )
+                        // Container(
+                        //   width: 43,
+                        //   height: 43,
+                        //   decoration: const BoxDecoration(
+                        //     color: Color.fromARGB(255, 235, 164, 45),
+                        //     borderRadius: BorderRadius.all(
+                        //       Radius.circular(10),
+                        //     ),
+                        //   ),
+                        //   child: IconButton(
+                        //     onPressed: () {},
+                        //     icon: const Icon(
+                        //       Icons.keyboard_arrow_right,
+                        //       size: 28,
+                        //     ),
+                        //   ),
+                        // )
+                      ],
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Container(
+                        width: 160,
+                        height: 140,
+                        margin: const EdgeInsets.symmetric(vertical: 20),
+                        padding: const EdgeInsets.all(15),
+                        decoration: const BoxDecoration(
+                          color: Colors.black12,
+                          // color: Color.fromARGB(50, 203, 145, 0),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color.fromARGB(255, 234, 164, 45),
+                              blurStyle: BlurStyle.outer,
+                              blurRadius: 5,
+                            )
+                          ],
+
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(10),
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          // ignore: prefer_const_literals_to_create_immutables
                           children: [
                             const Text(
-                              'Total Clients',
+                              '58',
                               style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18,
+                                fontSize: 22,
+                                fontWeight: FontWeight.w700,
                               ),
                             ),
-                            Text(
-                              customers.length.toString(),
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w800,
+                            const Text(
+                              'Total Views',
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.w700),
+                            ),
+                            const Text(
+                              'Today',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 2,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        width: 160,
+                        height: 140,
+                        margin: const EdgeInsets.symmetric(vertical: 20),
+                        padding: const EdgeInsets.all(15),
+                        decoration: const BoxDecoration(
+                          color: Colors.black12,
+                          // color: Color.fromARGB(50, 203, 145, 0),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color.fromARGB(255, 234, 164, 45),
+                              blurStyle: BlurStyle.outer,
+                              blurRadius: 5,
+                            )
+                          ],
+
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(10),
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          // ignore: prefer_const_literals_to_create_immutables
+                          children: [
+                            const Text(
+                              '170',
+                              style: TextStyle(
                                 fontSize: 22,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            const Text(
+                              'New Customers',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            const Text(
+                              'This month',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 2,
+                                color: Colors.grey,
                               ),
                             )
                           ],
                         ),
-                        Container(
-                          width: 45,
-                          height: 45,
-                          decoration: const BoxDecoration(
-                            color: Color.fromARGB(255, 235, 164, 45),
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(10),
-                            ),
-                          ),
-                          child: IconButton(
-                            onPressed: () {},
-                            icon: const Icon(
-                              Icons.keyboard_arrow_right,
-                              size: 28,
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
+
                   Container(
                     margin: const EdgeInsets.only(top: 10),
                     padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                    height: 45,
+                    height: 52,
                     decoration: const BoxDecoration(
                       // color: Color.fromARGB(50, 203, 145, 0),
                       color: Colors.black12,
@@ -211,9 +314,9 @@ class _CustomerTabState extends State<CustomerTab> {
                     ),
                   ),
                   Container(
-                    padding:
-                        const EdgeInsets.only(left: 10, right: 3, bottom: 7),
-                    height: 365,
+                    padding: const EdgeInsets.only(
+                        left: 10, right: 3, bottom: 7, top: 5),
+                    height: 395,
                     decoration: const BoxDecoration(
                       color: Colors.black12,
                       // color: Colors.amber,
@@ -247,7 +350,7 @@ class _CustomerTabState extends State<CustomerTab> {
                             ),
                             Container(
                               width: 274,
-                              height: 75,
+                              height: 80,
                               decoration: const BoxDecoration(
                                 border: Border(
                                   bottom: BorderSide(
@@ -331,104 +434,6 @@ class _CustomerTabState extends State<CustomerTab> {
                       },
                     ),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Container(
-                        width: 160,
-                        height: 140,
-                        margin: const EdgeInsets.symmetric(vertical: 20),
-                        padding: const EdgeInsets.all(15),
-                        decoration: const BoxDecoration(
-                          color: Colors.black12,
-                          // color: Color.fromARGB(50, 203, 145, 0),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Color.fromARGB(255, 234, 164, 45),
-                              blurStyle: BlurStyle.outer,
-                              blurRadius: 5,
-                            )
-                          ],
-
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(10),
-                          ),
-                        ),
-                        child: const Text('Views'),
-                      ),
-                      Container(
-                        width: 160,
-                        height: 140,
-                        margin: const EdgeInsets.symmetric(vertical: 20),
-                        padding: const EdgeInsets.all(15),
-                        decoration: const BoxDecoration(
-                          color: Colors.black12,
-                          // color: Color.fromARGB(50, 203, 145, 0),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Color.fromARGB(255, 234, 164, 45),
-                              blurStyle: BlurStyle.outer,
-                              blurRadius: 5,
-                            )
-                          ],
-
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(10),
-                          ),
-                        ),
-                        child: Text('Active Clients'),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Container(
-                        width: 160,
-                        height: 140,
-                        margin: const EdgeInsets.symmetric(vertical: 20),
-                        padding: const EdgeInsets.all(15),
-                        decoration: const BoxDecoration(
-                          color: Colors.black12,
-                          // color: Color.fromARGB(50, 203, 145, 0),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Color.fromARGB(255, 234, 164, 45),
-                              blurStyle: BlurStyle.outer,
-                              blurRadius: 5,
-                            )
-                          ],
-
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(10),
-                          ),
-                        ),
-                        child: Text('New This Month'),
-                      ),
-                      Container(
-                        width: 160,
-                        height: 140,
-                        margin: const EdgeInsets.symmetric(vertical: 20),
-                        padding: const EdgeInsets.all(15),
-                        decoration: const BoxDecoration(
-                          color: Colors.black12,
-                          // color: Color.fromARGB(50, 203, 145, 0),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Color.fromARGB(255, 234, 164, 45),
-                              blurStyle: BlurStyle.outer,
-                              blurRadius: 5,
-                            )
-                          ],
-
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(10),
-                          ),
-                        ),
-                        child: Text('Top Clients'),
-                      ),
-                    ],
-                  )
                 ],
               ),
             ),
