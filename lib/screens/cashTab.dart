@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mystore/db/account.dart';
 
 import '../models/accounts.dart';
 import '../models/sales.dart';
@@ -264,8 +265,23 @@ class _CashTabState extends State<CashTab> {
     );
   }
 
+  @override
+  void initState() {
+    super.initState();
+    refreshAccounts();
+  }
+
+  Future refreshAccounts() async {
+    setState(() => isLoading = true);
+    this.accounts = await BankAccountDatabase.instance.readAllAccounts();
+    setState(() => isLoading = false);
+  }
+
+  late List<BankAccount> accounts;
+  bool isLoading = false;
+
   List<DataRow> _accountsRow() {
-    return bankAccounts
+    return accounts
         .map((e) => DataRow(
               onLongPress: (() {
                 showDialog(
@@ -282,7 +298,7 @@ class _CashTabState extends State<CashTab> {
                     });
               }),
               cells: [
-                DataCell(Text(e.accountCreatedDate)),
+                DataCell(Text(e.accountCreatedDate.toIso8601String())),
                 DataCell(Text(e.bankName)),
                 DataCell(Text(e.amount.toString())),
               ],
