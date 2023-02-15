@@ -1,6 +1,6 @@
 import 'dart:ffi';
 
-final String tableAccounts = 'accounts';
+const String tableAccounts = 'accounts';
 
 class AccountFields {
   static final List<String> values = [
@@ -11,11 +11,11 @@ class AccountFields {
     accountCreatedDate
   ];
 
-  static final String id = '_id';
-  static final String bankName = 'bankName';
-  static final String accountNumber = 'accountNumber';
-  static final String amount = 'amount';
-  static final String accountCreatedDate = 'accountCreatedDate';
+  static const String id = '_id';
+  static const String bankName = 'bankName';
+  static const String accountNumber = 'accountNumber';
+  static const String amount = 'amount';
+  static const String accountCreatedDate = 'accountCreatedDate';
 }
 
 class BankAccount {

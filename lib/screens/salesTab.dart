@@ -444,10 +444,10 @@ class _SalesTabState extends State<SalesTab> {
                                 value: '01',
                                 child: Text('Jan'),
                               ),
-                              DropdownMenuItem(
-                                value: '02',
-                                child: Text('Feb'),
-                              ),
+                              // DropdownMenuItem(
+                              //   value: '02',
+                              //   child: Text('Feb'),
+                              // ),
                               DropdownMenuItem(
                                 value: '03',
                                 child: Text('Mar'),

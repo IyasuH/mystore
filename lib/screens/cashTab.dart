@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mystore/db/account.dart';
+import 'package:mystore/db/storeDB.dart';
 
 import '../models/accounts.dart';
 import '../models/sales.dart';
@@ -265,23 +265,16 @@ class _CashTabState extends State<CashTab> {
     );
   }
 
-  @override
-  void initState() {
-    super.initState();
-    refreshAccounts();
+  final dbHelper = myStoreDatabaseHelper();
+  _query() async {
+    List<Map> accounts = await dbHelper.queryAllAccount();
+    return accounts;
   }
 
-  Future refreshAccounts() async {
-    setState(() => isLoading = true);
-    this.accounts = await BankAccountDatabase.instance.readAllAccounts();
-    setState(() => isLoading = false);
-  }
-
-  late List<BankAccount> accounts;
-  bool isLoading = false;
+  // two tables one for accounts and the othe for cash
 
   List<DataRow> _accountsRow() {
-    return accounts
+    return _query()
         .map((e) => DataRow(
               onLongPress: (() {
                 showDialog(
@@ -298,9 +291,9 @@ class _CashTabState extends State<CashTab> {
                     });
               }),
               cells: [
-                DataCell(Text(e.accountCreatedDate.toIso8601String())),
-                DataCell(Text(e.bankName)),
-                DataCell(Text(e.amount.toString())),
+                DataCell(Text(e['accountCreatedDate'].toIso8601String())),
+                DataCell(Text(e['bankName'])),
+                DataCell(Text(e['amount'].toString())),
               ],
             ))
         .toList();
