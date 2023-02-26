@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mystore/db/storeDB.dart';
 
@@ -12,6 +15,12 @@ class CashTab extends StatefulWidget {
 }
 
 class _CashTabState extends State<CashTab> {
+  @override
+  void initState() {
+    dbHelper.init();
+    super.initState();
+  }
+
   List cashSales = [];
   @override
   Widget build(BuildContext context) {
@@ -130,26 +139,42 @@ class _CashTabState extends State<CashTab> {
                               )
                             ],
                           ),
-                          child: ListView(
-                            children: [
-                              SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: DataTable(
-                                  showBottomBorder: true,
-                                  // ignore: prefer_const_literals_to_create_immutables
-                                  columns: [
-                                    const DataColumn(label: Text('Date')),
-                                    const DataColumn(label: Text('Bank')),
-                                    const DataColumn(
-                                      label: Text('Amount'),
-                                      numeric: true,
-                                    ),
-                                  ],
-                                  rows: _accountsRow(),
-                                ),
-                              )
-                            ],
-                          ),
+                          child: FutureBuilder(
+                              future: _query(),
+                              builder: (context, AsyncSnapshot snapshot) {
+                                if (snapshot.hasData) {
+                                  return ListView(
+                                    children: [
+                                      SingleChildScrollView(
+                                        scrollDirection: Axis.horizontal,
+                                        child: DataTable(
+                                          showBottomBorder: true,
+                                          // ignore: prefer_const_literals_to_create_immutables
+                                          columns: [
+                                            const DataColumn(
+                                                label: Text('Date')),
+                                            const DataColumn(
+                                                label: Text('Bank')),
+                                            const DataColumn(
+                                              label: Text('Amount'),
+                                              numeric: true,
+                                            ),
+                                          ],
+                                          rows: _accountsRow(snapshot.data),
+                                        ),
+                                      )
+                                    ],
+                                  );
+                                }
+                                // ignore: prefer_const_constructors
+                                return Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 110.0, horizontal: 7.0),
+                                  child: const CircularProgressIndicator(
+                                    color: Colors.amber,
+                                  ),
+                                );
+                              }),
                         ),
                         const SizedBox(
                           height: 20,
@@ -266,34 +291,122 @@ class _CashTabState extends State<CashTab> {
   }
 
   final dbHelper = myStoreDatabaseHelper();
+
   _query() async {
-    List<Map> accounts = await dbHelper.queryAllAccount();
+    print("accounts:");
+    List<Map> accounts = await dbHelper.queryAllAccount().timeout(
+        const Duration(milliseconds: 3000),
+        onTimeout: () => throw TimeoutException('can\'t load'));
+    print(accounts);
     return accounts;
   }
 
-  // two tables one for accounts and the othe for cash
-
-  List<DataRow> _accountsRow() {
-    return _query()
-        .map((e) => DataRow(
+  // two tables one for accounts and the other for cash
+  TextEditingController bankNameUpdate = TextEditingController();
+  TextEditingController bankAmountUpdate = TextEditingController();
+  TextEditingController bankAmountAccNumber = TextEditingController();
+  TextEditingController accountCreatedDate = TextEditingController();
+  List<DataRow> _accountsRow(List<Map<String, dynamic>> datas) {
+    return datas
+        .map((data) => DataRow(
               onLongPress: (() {
+                bankNameUpdate.text = data['bankName'];
+                bankAmountUpdate.text = data['amount'].toString();
+                bankAmountAccNumber.text = data['accountNumber'].toString();
+                accountCreatedDate.text = data['accountCreatedDate'];
                 showDialog(
                     context: context,
                     builder: (BuildContext context) {
                       return AlertDialog(
+                        scrollable: true,
                         title: const Text('Account'),
                         backgroundColor: Colors.black54,
-                        content: SizedBox(
-                          height: 400,
-                          child: Column(),
-                        ),
+                        content: Column(children: [
+                          // ignore: prefer_const_constructors
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text("Bank Name"),
+                              TextFormField(
+                                controller: bankNameUpdate,
+                              ),
+                              const SizedBox(
+                                height: 15,
+                              ),
+                              const Text("Amount"),
+                              TextFormField(
+                                controller: bankAmountUpdate,
+                              ),
+                              const SizedBox(
+                                height: 15,
+                              ),
+                              const Text("Account Number"),
+                              TextFormField(
+                                controller: bankAmountAccNumber,
+                              ),
+                              const SizedBox(
+                                height: 15,
+                              ),
+                              const Text("Account Created Date"),
+                              TextFormField(
+                                controller: accountCreatedDate,
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 13,
+                          ),
+
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                ElevatedButton(
+                                  onPressed: () {
+                                    dbHelper.updateAccount(
+                                        bankNameUpdate.text,
+                                        bankAmountAccNumber.text,
+                                        bankAmountUpdate.text,
+                                        accountCreatedDate.text,
+                                        data['_id']);
+                                    Navigator.of(context, rootNavigator: true)
+                                        .pop("dialog");
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          "Account Updated Successfully",
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: const Text("Update"),
+                                ),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    dbHelper.deleteAccount(data['_id']);
+                                    Navigator.of(context, rootNavigator: true)
+                                        .pop("dialog");
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          "Account Deleted Successfully",
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.redAccent,
+                                  ),
+                                  child: const Text("Delete"),
+                                ),
+                              ])
+                        ]),
                       );
                     });
               }),
               cells: [
-                DataCell(Text(e['accountCreatedDate'].toIso8601String())),
-                DataCell(Text(e['bankName'])),
-                DataCell(Text(e['amount'].toString())),
+                DataCell(Text(data['accountCreatedDate'])),
+                DataCell(Text(data['bankName'])),
+                DataCell(Text(data['amount'].toString())),
               ],
             ))
         .toList();
