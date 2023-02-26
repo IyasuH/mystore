@@ -1,7 +1,10 @@
+// ignore: file_names
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:dotted_border/dotted_border.dart';
 // ignore: depend_on_referenced_packages
 import 'package:avatars/avatars.dart';
+import 'package:mystore/db/storeDB.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:intl/intl.dart';
 import '../models/clients.dart';
@@ -14,8 +17,21 @@ class AcoountTab extends StatefulWidget {
 }
 
 class _AcoountTabState extends State<AcoountTab> {
+  final bankDB = myStoreDatabaseHelper();
+
+  @override
+  void initState() {
+    bankDB.init();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+    TextEditingController bankNameCont = TextEditingController();
+    TextEditingController bankNumCont = TextEditingController();
+    TextEditingController bankAmountCont = TextEditingController();
+    DateFormat dateFormat = DateFormat("yyyy/MM/dd");
+    String bankCreatedateFCont = dateFormat.format(DateTime.now());
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(13, 24, 13, 10),
@@ -159,87 +175,126 @@ class _AcoountTabState extends State<AcoountTab> {
                             builder: (BuildContext context) {
                               // ignore: prefer_const_constructors
                               return AlertDialog(
-                                title: const Text('Add Account'),
-                                backgroundColor:
-                                    const Color.fromARGB(255, 60, 59, 59),
-                                content: SizedBox(
-                                  height: 270,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
+                                  backgroundColor: Colors.black54,
+                                  scrollable: true,
+                                  title: const Text('Add Account'),
+                                  // backgroundColor:
+                                  //     const Color.fromARGB(255, 60, 59, 59),
+                                  content: SizedBox(
+                                    height: 400,
+                                    child: Column(children: [
                                       Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            const Text('Expenses'),
-                                            TextFormField(
-                                              textCapitalization:
-                                                  TextCapitalization.sentences,
-                                              onChanged: ((value) {}),
-                                              decoration: const InputDecoration(
-                                                  hintText: 'Bank Name'),
-                                            )
-                                          ]),
-                                      const SizedBox(height: 10),
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          const Text('Bank'),
+                                          TextFormField(
+                                            controller: bankNameCont,
+                                            textCapitalization:
+                                                TextCapitalization.sentences,
+                                            onChanged: ((value) {}),
+                                            decoration: const InputDecoration(
+                                                hintText: 'Bank Name'),
+                                          )
+                                        ],
+                                      ),
+                                      const SizedBox(height: 5),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          const Text('Account Number'),
+                                          TextFormField(
+                                            controller: bankNumCont,
+                                            keyboardType: TextInputType.number,
+                                            decoration: const InputDecoration(
+                                                hintText: 'Account Number'),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 5),
                                       Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
                                           const Text('Amount'),
                                           TextFormField(
+                                            controller: bankAmountCont,
                                             keyboardType: TextInputType.number,
                                             decoration: const InputDecoration(
                                                 hintText: 'Current Amount'),
                                           ),
                                         ],
                                       ),
-                                      const SizedBox(height: 10),
+                                      const SizedBox(height: 5),
                                       Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
                                         children: [
-                                          const Text('Amount'),
-                                          TextFormField(
-                                            keyboardType: TextInputType.number,
-                                            decoration: const InputDecoration(
-                                                hintText: 'Current Amount'),
-                                          ),
-                                        ],
-                                      ),
-                                      TextButton(
-                                        child: Text(
-                                          DateFormat()
-                                              .add_yMd()
-                                              .format(DateTime.now()),
-                                          style: const TextStyle(fontSize: 16),
-                                        ),
-                                        onPressed: () {
-                                          DatePicker.showDatePicker(
-                                            context,
-                                            showTitleActions: true,
-                                            minTime: DateTime(2022, 1, 1),
-                                            maxTime: DateTime(2030, 12, 30),
-                                            theme: const DatePickerTheme(
-                                              headerColor: Colors.black,
-                                              backgroundColor: Colors.black,
-                                              itemStyle: TextStyle(
-                                                  color: Colors.white),
-                                              doneStyle: TextStyle(
-                                                  color: Colors.white),
-                                              cancelStyle: TextStyle(
-                                                  color: Colors.white),
+                                          const Text("Account Created At"),
+                                          TextButton(
+                                            child: Text(
+                                              DateFormat()
+                                                  .add_yMd()
+                                                  .format(DateTime.now()),
+                                              style:
+                                                  const TextStyle(fontSize: 16),
                                             ),
-                                            onConfirm: (date) {
-                                              print('confirm $date');
+                                            onPressed: () {
+                                              DatePicker.showDatePicker(
+                                                // currentTime: ,
+                                                context,
+                                                showTitleActions: true,
+                                                minTime: DateTime(2022, 1, 1),
+                                                maxTime: DateTime(2030, 12, 30),
+                                                theme: const DatePickerTheme(
+                                                  headerColor: Colors.black,
+                                                  backgroundColor: Colors.black,
+                                                  itemStyle: TextStyle(
+                                                      color: Colors.white),
+                                                  doneStyle: TextStyle(
+                                                      color: Colors.white),
+                                                  cancelStyle: TextStyle(
+                                                      color: Colors.white),
+                                                ),
+                                                onConfirm: (date) {
+                                                  bankCreatedateFCont =
+                                                      dateFormat.format(date);
+                                                  ;
+                                                  print('confirm $date');
+                                                },
+                                              );
                                             },
-                                          );
-                                        },
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              );
+                                          ),
+                                        ],
+                                      ),
+                                      ElevatedButton(
+                                          onPressed: () {
+                                            bankDB.insertAccount(
+                                              bankNameCont.text,
+                                              bankNumCont.text,
+                                              bankAmountCont.text,
+                                              bankCreatedateFCont,
+                                            );
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              const SnackBar(
+                                                content: Text(
+                                                  "New Account Added",
+                                                ),
+                                              ),
+                                            );
+                                            bankNameCont.text = "";
+                                            bankNumCont.text = "";
+                                            bankAmountCont.text = "";
+                                            bankCreatedateFCont = dateFormat
+                                                .format(DateTime.now());
+                                            Navigator.of(context,
+                                                    rootNavigator: true)
+                                                .pop("dialog");
+                                          },
+                                          child:
+                                              const Text("Save Account Data")),
+                                    ]),
+                                  ));
                             });
                       },
                       borderRadius: const BorderRadius.all(
