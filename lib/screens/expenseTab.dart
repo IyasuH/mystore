@@ -51,7 +51,7 @@ class ExpenseBarChart extends StatelessWidget {
       case 01:
         text = 'Jan';
         break;
-      case 02:
+      case 2:
         text = 'Feb';
         break;
       case 03:
@@ -128,7 +128,7 @@ class ExpenseBarChart extends StatelessWidget {
           element.fixed == true
               ? JanFixed += element.amount
               : JanVariable += element.amount;
-        } else if (element.date.substring(3, 5) == '02') {
+        } else if (element.date.substring(3, 4) == '2') {
           element.fixed == true
               ? FebFixed += element.amount
               : FebVariable += element.amount;
@@ -576,7 +576,7 @@ class _ExpensesTabState extends State<ExpensesTab> {
                               child: Text('Jan'),
                             ),
                             DropdownMenuItem(
-                              value: '02',
+                              value: '2',
                               child: Text('Feb'),
                             ),
                             DropdownMenuItem(
