@@ -13,7 +13,24 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  // bottom navigation bar buttons size
+  double bottNavButtH = 47;
+  double bottNavButtW = 47;
   int _currentTab = 0;
+  // ignore: prefer_const_constructors
+  // This decor is for the bottom navbar buttons
+  // trid to creat diffusing effect by varying color by some constant value throw gardient
+  Decoration bottNavButtDecor = const BoxDecoration(
+    gradient: RadialGradient(colors: [
+      Color.fromARGB(204, 89, 205, 54),
+      Color.fromARGB(153, 89, 205, 54),
+      Color.fromARGB(102, 89, 205, 54),
+      Color.fromARGB(51, 89, 205, 54),
+      Color.fromARGB(0, 89, 205, 54)
+    ]),
+    shape: BoxShape.circle,
+  );
+  // List of tabs
   final tabs = [
     const HomeTab(),
     const StockTab(),
@@ -28,10 +45,6 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: Container(
         margin: const EdgeInsets.all(7),
         decoration: const BoxDecoration(
-          // borderRadius: BorderRadius.only(
-          //   topLeft: Radius.circular(30),
-          //   topRight: Radius.circular(30),
-          // ),
           borderRadius: BorderRadius.all(Radius.circular(43)),
           boxShadow: [
             BoxShadow(
@@ -42,9 +55,8 @@ class _HomeScreenState extends State<HomeScreen> {
             )
           ],
         ),
+        // I used ClipRRect to creat round edge for the bottom nav bar container
         child: ClipRRect(
-          // borderRadius: const BorderRadius.only(
-          //     topLeft: Radius.circular(30), topRight: Radius.circular(30)),
           borderRadius: const BorderRadius.all(
             Radius.circular(43),
           ),
@@ -64,80 +76,40 @@ class _HomeScreenState extends State<HomeScreen> {
                 });
               }
             },
-            // ignore: prefer_const_literals_to_create_immutables
+            // List of bottom navigation bar buttons
             items: [
               BottomNavigationBarItem(
                   activeIcon: Container(
-                    height: 47,
-                    width: 47,
-                    // ignore: prefer_const_constructors
-                    decoration: BoxDecoration(
-                      gradient: const RadialGradient(colors: [
-                        Color.fromARGB(204, 89, 205, 54),
-                        Color.fromARGB(153, 89, 205, 54),
-                        Color.fromARGB(102, 89, 205, 54),
-                        Color.fromARGB(51, 89, 205, 54),
-                        Color.fromARGB(0, 89, 205, 54)
-                      ]),
-                      shape: BoxShape.circle,
-                    ),
+                    height: bottNavButtH,
+                    width: bottNavButtW,
+                    decoration: bottNavButtDecor,
                     child: const Icon(Icons.home_outlined),
                   ),
                   label: 'Home',
                   icon: const Icon(Icons.home_outlined)),
               BottomNavigationBarItem(
                   activeIcon: Container(
-                    height: 47,
-                    width: 47,
-                    // ignore: prefer_const_constructors
-                    decoration: BoxDecoration(
-                      gradient: const RadialGradient(colors: [
-                        Color.fromARGB(204, 89, 205, 54),
-                        Color.fromARGB(153, 89, 205, 54),
-                        Color.fromARGB(102, 89, 205, 54),
-                        Color.fromARGB(51, 89, 205, 54),
-                        Color.fromARGB(0, 89, 205, 54)
-                      ]),
-                      shape: BoxShape.circle,
-                    ),
+                    height: bottNavButtH,
+                    width: bottNavButtW,
+                    decoration: bottNavButtDecor,
                     child: const Icon(Icons.bar_chart_outlined),
                   ),
                   label: 'Stock',
                   icon: const Icon(Icons.bar_chart_outlined)),
               BottomNavigationBarItem(
                   activeIcon: Container(
-                    height: 47,
-                    width: 47,
-                    // ignore: prefer_const_constructors
-                    decoration: BoxDecoration(
-                      gradient: const RadialGradient(colors: [
-                        Color.fromARGB(204, 89, 205, 54),
-                        Color.fromARGB(153, 89, 205, 54),
-                        Color.fromARGB(102, 89, 205, 54),
-                        Color.fromARGB(51, 89, 205, 54),
-                        Color.fromARGB(0, 89, 205, 54)
-                      ]),
-                      shape: BoxShape.circle,
-                    ),
+                    height: bottNavButtH,
+                    width: bottNavButtW,
+                    decoration: bottNavButtDecor,
                     child: const Icon(Icons.account_balance_wallet_outlined),
                   ),
                   label: 'Cash',
                   icon: const Icon(Icons.account_balance_wallet_outlined)),
               BottomNavigationBarItem(
                   activeIcon: Container(
-                    height: 47,
-                    width: 47,
-                    // ignore: prefer_const_constructors
-                    decoration: BoxDecoration(
-                      gradient: const RadialGradient(colors: [
-                        Color.fromARGB(204, 89, 205, 54),
-                        Color.fromARGB(153, 89, 205, 54),
-                        Color.fromARGB(102, 89, 205, 54),
-                        Color.fromARGB(51, 89, 205, 54),
-                        Color.fromARGB(0, 89, 205, 54)
-                      ]),
-                      shape: BoxShape.circle,
-                    ),
+                    height: bottNavButtH,
+                    width: bottNavButtW,
+                    decoration: bottNavButtDecor,
                     child: const Icon(Icons.person_outline_outlined),
                   ),
                   label: 'Account',
