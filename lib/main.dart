@@ -17,6 +17,10 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       themeMode: ThemeMode.system,
       theme: ThemeData(
+        // Material 3 makes to look so much great but
+        // a lot of overrflows hppend
+        useMaterial3: true,
+
         brightness: Brightness.dark,
         primarySwatch: Colors.blue,
       ),
