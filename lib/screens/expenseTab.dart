@@ -1,12 +1,15 @@
 // ignore: file_names
 // ignore_for_file: non_constant_identifier_names
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:material_segmented_control/material_segmented_control.dart';
 import 'package:fl_chart/fl_chart.dart';
 // ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import '../db/storeDB.dart';
 import '../models/expenses.dart';
 
 // ignore: must_be_immutable
@@ -16,6 +19,8 @@ class ExpenseBarChart extends StatelessWidget {
   static const fixedExpColor = Colors.red;
   static const variableExpColor = Colors.blue;
   static const betweenSpace = 200;
+  // This is for the 2(fixed and variable costs ) vertical bars that shows for each month
+  //
   BarChartGroupData generateGroupData(
     int x,
     double fixe,
@@ -41,38 +46,41 @@ class ExpenseBarChart extends StatelessWidget {
     );
   }
 
+  // this is just to to put the month name based on the value
+  // for the bottom chart
   Widget bottomTitles(double value, TitleMeta meta) {
     const style = TextStyle(
-        color: Color.fromARGB(255, 187, 187, 187),
-        fontSize: 12,
-        fontWeight: FontWeight.w500);
+      color: Color.fromARGB(255, 187, 187, 187),
+      fontSize: 12,
+      fontWeight: FontWeight.w600,
+    );
     String text;
     switch (value.toInt()) {
-      case 01:
+      case 1:
         text = 'Jan';
         break;
       case 2:
         text = 'Feb';
         break;
-      case 03:
+      case 3:
         text = 'Mar';
         break;
-      case 04:
+      case 4:
         text = 'Apr';
         break;
-      case 05:
+      case 5:
         text = 'May';
         break;
-      case 06:
+      case 6:
         text = 'Jun';
         break;
-      case 07:
+      case 7:
         text = 'Jul';
         break;
-      case 08:
+      case 8:
         text = 'Aug';
         break;
-      case 09:
+      case 9:
         text = 'Sep';
         break;
       case 10:
@@ -87,12 +95,15 @@ class ExpenseBarChart extends StatelessWidget {
       default:
         text = '';
     }
+    // then return the names of the month
+    // that is being put at the bottom of the chart
     return SideTitleWidget(
       axisSide: meta.axisSide,
       child: Text(text, style: style),
     );
   }
 
+  // initiating double type variables for all months for fixed and variable
   double JanFixed = 0;
   double JanVariable = 0;
   double FebFixed = 0;
@@ -118,71 +129,73 @@ class ExpenseBarChart extends StatelessWidget {
   double DecFixed = 0;
   double DecVariable = 0;
 
+  // This function is first to check for selected month and
+  // call generateGroupData to return the 2(fixed and variable) column graph for all months
   List<BarChartGroupData> monthExpenses = [];
   // String year = '2022';
   @override
   Widget build(BuildContext context) {
     for (var element in expenses) {
-      if (element.date.substring(6, 10) == selectedYear) {
-        if (element.date.substring(3, 5) == '01') {
+      if (DateTime.parse(element.date).year == int.parse(selectedYear)) {
+        if (DateTime.parse(element.date).month == 1) {
           element.fixed == true
               ? JanFixed += element.amount
               : JanVariable += element.amount;
-        } else if (element.date.substring(3, 4) == '2') {
+        } else if (DateTime.parse(element.date).month == 2) {
           element.fixed == true
               ? FebFixed += element.amount
               : FebVariable += element.amount;
-        } else if (element.date.substring(3, 5) == '03') {
+        } else if (DateTime.parse(element.date).month == 3) {
           element.fixed == true
               ? MarFixed += element.amount
               : MarVariable += element.amount;
-        } else if (element.date.substring(3, 5) == '04') {
+        } else if (DateTime.parse(element.date).month == 4) {
           element.fixed == true
               ? AprFixed += element.amount
               : AprVariable += element.amount;
-        } else if (element.date.substring(3, 5) == '05') {
+        } else if (DateTime.parse(element.date).month == 5) {
           element.fixed == true
               ? MayFixed += element.amount
               : MayVariable += element.amount;
-        } else if (element.date.substring(3, 5) == '06') {
+        } else if (DateTime.parse(element.date).month == 6) {
           element.fixed == true
               ? JunFixed += element.amount
               : JunVariable += element.amount;
-        } else if (element.date.substring(3, 5) == '07') {
+        } else if (DateTime.parse(element.date).month == 7) {
           element.fixed == true
               ? JulFixed += element.amount
               : JulVariable += element.amount;
-        } else if (element.date.substring(3, 5) == '08') {
+        } else if (DateTime.parse(element.date).month == 8) {
           element.fixed == true
               ? AugFixed += element.amount
               : AugVariable += element.amount;
-        } else if (element.date.substring(3, 5) == '09') {
+        } else if (DateTime.parse(element.date).month == 9) {
           element.fixed == true
               ? SepFixed += element.amount
               : SepVariable += element.amount;
-        } else if (element.date.substring(3, 5) == '10') {
+        } else if (DateTime.parse(element.date).month == 10) {
           element.fixed == true
               ? OctFixed += element.amount
               : OctVariable += element.amount;
-        } else if (element.date.substring(3, 5) == '11') {
+        } else if (DateTime.parse(element.date).month == 11) {
           element.fixed == true
               ? NovFixed += element.amount
               : NovVariable += element.amount;
-        } else if (element.date.substring(3, 5) == '12') {
+        } else if (DateTime.parse(element.date).month == 12) {
           element.fixed == true
               ? DecFixed += element.amount
               : DecVariable += element.amount;
         }
         monthExpenses = [
-          generateGroupData(01, JanFixed, JanVariable),
-          generateGroupData(02, FebFixed, FebVariable),
-          generateGroupData(03, MarFixed, MarVariable),
-          generateGroupData(04, AprFixed, AprVariable),
-          generateGroupData(05, MayFixed, MayVariable),
-          generateGroupData(06, JunFixed, JunVariable),
-          generateGroupData(07, JulFixed, JulVariable),
-          generateGroupData(08, AugFixed, AugVariable),
-          generateGroupData(09, SepFixed, SepVariable),
+          generateGroupData(1, JanFixed, JanVariable),
+          generateGroupData(2, FebFixed, FebVariable),
+          generateGroupData(3, MarFixed, MarVariable),
+          generateGroupData(4, AprFixed, AprVariable),
+          generateGroupData(5, MayFixed, MayVariable),
+          generateGroupData(6, JunFixed, JunVariable),
+          generateGroupData(7, JulFixed, JulVariable),
+          generateGroupData(8, AugFixed, AugVariable),
+          generateGroupData(9, SepFixed, SepVariable),
           generateGroupData(10, OctFixed, OctVariable),
           generateGroupData(11, NovFixed, NovVariable),
           generateGroupData(12, DecFixed, DecVariable),
@@ -325,17 +338,36 @@ class _ExpensesTabState extends State<ExpensesTab> {
   int variableMonthlyExpense = 0;
   List<FixedVariableData> fixedExpenseData = [];
   List<FixedVariableData> variableExpenseData = [];
+
+  @override
+  void initState() {
+    dbHelper.init();
+    super.initState();
+  }
+
+  final dbHelper = myStoreDatabaseHelper();
+  _query() async {
+    List<Map> accounts = await dbHelper.queryAllExpenses();
+    return accounts;
+  }
+
   @override
   Widget build(BuildContext context) {
+    TextEditingController expensesNameCont = TextEditingController();
+    TextEditingController expenseAmountCont = TextEditingController();
+    DateFormat dateFormat = DateFormat("yyyy/MM/dd");
+    String expenseDateCont = dateFormat.format(DateTime.now());
+    int? _currentSelection = 0;
     fixedMonthlyExpense = 0;
     variableMonthlyExpense = 0;
     monthlyExpense = [];
     fixedExpenseData = [];
     variableExpenseData = [];
+    var expns = _query();
     for (var element in expenses) {
       // here also the year must be checked
-      if (element.date.substring(3, 5) == selectedMonth &&
-          element.date.substring(6, 10) == selectedYear) {
+      if (DateTime.parse(element.date).month == int.parse(selectedMonth) &&
+          DateTime.parse(element.date).year == int.parse(selectedYear)) {
         monthlyExpense.add(element);
       }
     }
@@ -348,6 +380,8 @@ class _ExpensesTabState extends State<ExpensesTab> {
         variableMonthlyExpense = (variableMonthlyExpense + ele.amount).toInt();
       }
     }
+    // ###################
+    // ###################
     // int fixedExpensesPercent = fixedMonthlyExpense.length;
     List<FixedVariableData> expensesType = [
       FixedVariableData(
@@ -374,35 +408,55 @@ class _ExpensesTabState extends State<ExpensesTab> {
                   // ignore: prefer_const_constructors
                   return AlertDialog(
                     title: const Text('Add Expense'),
-                    backgroundColor: Colors.black87,
+                    backgroundColor: Colors.black54,
                     content: SizedBox(
                       height: 400,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text('Expenses'),
-                                TextFormField(
-                                  textCapitalization:
-                                      TextCapitalization.sentences,
-                                  onChanged: ((value) {}),
-                                  decoration: const InputDecoration(
-                                      hintText: 'Expenses Name'),
-                                )
-                              ]),
+                          const Text('Expenses'),
+                          TextFormField(
+                            textCapitalization: TextCapitalization.sentences,
+                            controller: expensesNameCont,
+                            decoration: const InputDecoration(
+                                hintText: 'Expenses Name'),
+                          ),
                           const SizedBox(height: 10),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text('Amount'),
-                              TextFormField(
-                                keyboardType: TextInputType.number,
-                                decoration:
-                                    const InputDecoration(hintText: 'Amount'),
-                              ),
-                            ],
+                          const Text('Amount'),
+                          TextFormField(
+                            controller: expenseAmountCont,
+                            keyboardType: TextInputType.number,
+                            decoration:
+                                const InputDecoration(hintText: 'Amount'),
+                          ),
+                          const SizedBox(height: 10),
+                          const Text('Type'),
+                          const SizedBox(height: 10),
+                          CupertinoSlidingSegmentedControl(
+                            groupValue: _currentSelection,
+                            padding: const EdgeInsets.all(5),
+                            // backgroundColor: CupertinoColors.white,
+                            // thumbColor: Color.fromARGB(255, 255, 20, 110),
+                            thumbColor: Colors.redAccent,
+                            children: const {
+                              0: Text("Fixed"),
+                              1: Text("Variable"),
+                            },
+                            onValueChanged: (value) {
+                              setState(() {
+                                _currentSelection = value;
+                              });
+                            },
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          const Text('Expense Date'),
+                          const SizedBox(
+                            height: 10,
                           ),
                           TextButton(
                             child: Text(
@@ -423,10 +477,49 @@ class _ExpensesTabState extends State<ExpensesTab> {
                                   cancelStyle: TextStyle(color: Colors.white),
                                 ),
                                 onConfirm: (date) {
+                                  expenseDateCont = dateFormat.format(date);
                                   print('confirm $date');
                                 },
                               );
                             },
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ElevatedButton(
+                                  onPressed: () {
+                                    // dbHelper.insertExpenses(type, name, amount, date)
+                                    bool typeOfExpen = true;
+                                    if (_currentSelection == 1) {
+                                      typeOfExpen = false;
+                                    }
+                                    dbHelper.insertExpenses(
+                                      typeOfExpen,
+                                      expensesNameCont.text,
+                                      expenseAmountCont.text,
+                                      expenseDateCont,
+                                    );
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          "New Expese Added",
+                                        ),
+                                      ),
+                                    );
+
+                                    _currentSelection = 1;
+                                    expensesNameCont.text = "";
+                                    expenseAmountCont.text = "";
+                                    expenseDateCont =
+                                        dateFormat.format(DateTime.now());
+                                    Navigator.of(context, rootNavigator: true)
+                                        .pop("dialog");
+                                  },
+                                  child: const Text('Save New Expense'))
+                            ],
                           )
                         ],
                       ),
@@ -487,6 +580,7 @@ class _ExpensesTabState extends State<ExpensesTab> {
                             )
                           ],
                         ),
+                        // This is year drop down from 2022-2030
                         child: DropdownButton(
                           value: selectedYear,
                           onChanged: (String? newValue) {
@@ -561,6 +655,7 @@ class _ExpensesTabState extends State<ExpensesTab> {
                           //   ),
                           // ),
                         ),
+                        // this is for month drop downs
                         child: DropdownButton(
                           value: selectedMonth,
                           onChanged: (String? newValue) {
@@ -572,7 +667,7 @@ class _ExpensesTabState extends State<ExpensesTab> {
                           },
                           items: const [
                             DropdownMenuItem(
-                              value: '01',
+                              value: '1',
                               child: Text('Jan'),
                             ),
                             DropdownMenuItem(
@@ -580,31 +675,31 @@ class _ExpensesTabState extends State<ExpensesTab> {
                               child: Text('Feb'),
                             ),
                             DropdownMenuItem(
-                              value: '03',
+                              value: '3',
                               child: Text('Mar'),
                             ),
                             DropdownMenuItem(
-                              value: '04',
+                              value: '4',
                               child: Text('Apr'),
                             ),
                             DropdownMenuItem(
-                              value: '05',
+                              value: '5',
                               child: Text('May'),
                             ),
                             DropdownMenuItem(
-                              value: '06',
+                              value: '6',
                               child: Text('Jun'),
                             ),
                             DropdownMenuItem(
-                              value: '07',
+                              value: '7',
                               child: Text('Jul'),
                             ),
                             DropdownMenuItem(
-                              value: '08',
+                              value: '8',
                               child: Text('Aug'),
                             ),
                             DropdownMenuItem(
-                              value: '09',
+                              value: '9',
                               child: Text('Sep'),
                             ),
                             DropdownMenuItem(
@@ -931,6 +1026,7 @@ class _ExpensesTabState extends State<ExpensesTab> {
     );
   }
 
+  // And this is the table to list expenses for given month and year
   List<DataRow> _exepensesRows() {
     return monthlyExpense
         .map(
