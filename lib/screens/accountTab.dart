@@ -1,13 +1,12 @@
 // ignore: file_names
-import 'package:flutter/foundation.dart';
+// ignore_for_file: depend_on_referenced_packages
+
 import 'package:flutter/material.dart';
 import 'package:dotted_border/dotted_border.dart';
-// ignore: depend_on_referenced_packages
 import 'package:avatars/avatars.dart';
-import 'package:mystore/db/storeDB.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:intl/intl.dart';
-import '../models/clients.dart';
+import '../models/model.dart';
 
 class AcoountTab extends StatefulWidget {
   const AcoountTab({super.key});
@@ -17,21 +16,31 @@ class AcoountTab extends StatefulWidget {
 }
 
 class _AcoountTabState extends State<AcoountTab> {
-  final bankDB = myStoreDatabaseHelper();
+  List<Bank> bankTotList = [];
+  double totalInBalance = 0;
+  loadTotBank() async {
+    totalInBalance = 0;
+    bankTotList = await Bank().select().toList();
+    for (var ele in bankTotList) {
+      totalInBalance += ele.amount!;
+    }
+    setState(() {});
+  }
 
   @override
   void initState() {
-    bankDB.init();
+    loadTotBank();
     super.initState();
   }
 
+  final bankSQF = Bank();
   @override
   Widget build(BuildContext context) {
     TextEditingController bankNameCont = TextEditingController();
     TextEditingController bankNumCont = TextEditingController();
     TextEditingController bankAmountCont = TextEditingController();
     DateFormat dateFormat = DateFormat("yyyy/MM/dd");
-    String bankCreatedateFCont = dateFormat.format(DateTime.now());
+    DateTime bankCreatedateFCont = DateTime.now();
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(13, 24, 13, 10),
@@ -98,16 +107,18 @@ class _AcoountTabState extends State<AcoountTab> {
                         const Text(
                           'Total Balance',
                           style: TextStyle(
-                            fontSize: 15,
+                            fontSize: 16,
                             color: Colors.grey,
-                            fontWeight: FontWeight.w500,
+                            letterSpacing: 1.3,
+                            wordSpacing: 1.5,
+                            fontWeight: FontWeight.w400,
                           ),
                         ),
-                        const Text(
-                          'ETB 40,000',
-                          style: TextStyle(
+                        Text(
+                          '\$ $totalInBalance',
+                          style: const TextStyle(
                             fontSize: 24,
-                            fontWeight: FontWeight.w700,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ],
@@ -136,16 +147,18 @@ class _AcoountTabState extends State<AcoountTab> {
                         const Text(
                           'Total Accounts',
                           style: TextStyle(
-                            fontSize: 15,
+                            fontSize: 16,
                             color: Colors.grey,
-                            fontWeight: FontWeight.w500,
+                            letterSpacing: 1.3,
+                            wordSpacing: 1.5,
+                            fontWeight: FontWeight.w400,
                           ),
                         ),
-                        const Text(
-                          '10',
-                          style: TextStyle(
+                        Text(
+                          bankTotList.length.toString(),
+                          style: const TextStyle(
                             fontSize: 24,
-                            fontWeight: FontWeight.w700,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ],
@@ -175,126 +188,114 @@ class _AcoountTabState extends State<AcoountTab> {
                             builder: (BuildContext context) {
                               // ignore: prefer_const_constructors
                               return AlertDialog(
-                                  backgroundColor: Colors.black54,
-                                  scrollable: true,
-                                  title: const Text('Add Account'),
-                                  // backgroundColor:
-                                  //     const Color.fromARGB(255, 60, 59, 59),
-                                  content: SizedBox(
-                                    height: 400,
-                                    child: Column(children: [
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          const Text('Bank'),
-                                          TextFormField(
-                                            controller: bankNameCont,
-                                            textCapitalization:
-                                                TextCapitalization.sentences,
-                                            onChanged: ((value) {}),
-                                            decoration: const InputDecoration(
-                                                hintText: 'Bank Name'),
-                                          )
-                                        ],
-                                      ),
-                                      const SizedBox(height: 5),
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          const Text('Account Number'),
-                                          TextFormField(
-                                            controller: bankNumCont,
-                                            keyboardType: TextInputType.number,
-                                            decoration: const InputDecoration(
-                                                hintText: 'Account Number'),
+                                backgroundColor: Colors.black54,
+                                scrollable: true,
+                                title: const Text('Add Account'),
+                                // backgroundColor:
+                                //     const Color.fromARGB(255, 60, 59, 59),
+                                content: SizedBox(
+                                  height: 400,
+                                  child: Column(children: [
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const Text('Bank'),
+                                        const SizedBox(height: 5),
+                                        TextFormField(
+                                          controller: bankNameCont,
+                                          textCapitalization:
+                                              TextCapitalization.sentences,
+                                          onChanged: ((value) {}),
+                                          decoration: const InputDecoration(
+                                              hintText: 'Bank Name'),
+                                        ),
+                                        const SizedBox(height: 10),
+                                        const Text('Account Number'),
+                                        TextFormField(
+                                          controller: bankNumCont,
+                                          keyboardType: TextInputType.number,
+                                          decoration: const InputDecoration(
+                                              hintText: 'Account Number'),
+                                        ),
+                                        const SizedBox(height: 10),
+                                        const Text('Amount'),
+                                        TextFormField(
+                                          controller: bankAmountCont,
+                                          keyboardType: TextInputType.number,
+                                          decoration: const InputDecoration(
+                                              hintText: 'Current Amount'),
+                                        ),
+                                        const SizedBox(height: 10),
+                                        const Text("Account Created At"),
+                                        TextButton(
+                                          child: Text(
+                                            DateFormat()
+                                                .add_yMd()
+                                                .format(DateTime.now()),
+                                            style:
+                                                const TextStyle(fontSize: 16),
                                           ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 5),
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          const Text('Amount'),
-                                          TextFormField(
-                                            controller: bankAmountCont,
-                                            keyboardType: TextInputType.number,
-                                            decoration: const InputDecoration(
-                                                hintText: 'Current Amount'),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 5),
-                                      Column(
-                                        children: [
-                                          const Text("Account Created At"),
-                                          TextButton(
-                                            child: Text(
-                                              DateFormat()
-                                                  .add_yMd()
-                                                  .format(DateTime.now()),
-                                              style:
-                                                  const TextStyle(fontSize: 16),
-                                            ),
-                                            onPressed: () {
-                                              DatePicker.showDatePicker(
-                                                // currentTime: ,
-                                                context,
-                                                showTitleActions: true,
-                                                minTime: DateTime(2022, 1, 1),
-                                                maxTime: DateTime(2030, 12, 30),
-                                                theme: const DatePickerTheme(
-                                                  headerColor: Colors.black,
-                                                  backgroundColor: Colors.black,
-                                                  itemStyle: TextStyle(
-                                                      color: Colors.white),
-                                                  doneStyle: TextStyle(
-                                                      color: Colors.white),
-                                                  cancelStyle: TextStyle(
-                                                      color: Colors.white),
-                                                ),
-                                                onConfirm: (date) {
-                                                  bankCreatedateFCont =
-                                                      dateFormat.format(date);
-                                                  ;
-                                                  print('confirm $date');
-                                                },
-                                              );
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                      ElevatedButton(
                                           onPressed: () {
-                                            bankDB.insertAccount(
-                                              bankNameCont.text,
-                                              bankNumCont.text,
-                                              bankAmountCont.text,
-                                              bankCreatedateFCont,
-                                            );
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(
-                                              const SnackBar(
-                                                content: Text(
-                                                  "New Account Added",
-                                                ),
+                                            DatePicker.showDatePicker(
+                                              // currentTime: ,
+                                              context,
+                                              showTitleActions: true,
+                                              minTime: DateTime(2022, 1, 1),
+                                              maxTime: DateTime(2030, 12, 30),
+                                              theme: const DatePickerTheme(
+                                                headerColor: Colors.black,
+                                                backgroundColor: Colors.black,
+                                                itemStyle: TextStyle(
+                                                    color: Colors.white),
+                                                doneStyle: TextStyle(
+                                                    color: Colors.white),
+                                                cancelStyle: TextStyle(
+                                                    color: Colors.white),
                                               ),
+                                              onConfirm: (date) {
+                                                bankCreatedateFCont = date;
+                                                print('confirm $date');
+                                              },
                                             );
-                                            bankNameCont.text = "";
-                                            bankNumCont.text = "";
-                                            bankAmountCont.text = "";
-                                            bankCreatedateFCont = dateFormat
-                                                .format(DateTime.now());
-                                            Navigator.of(context,
-                                                    rootNavigator: true)
-                                                .pop("dialog");
                                           },
-                                          child:
-                                              const Text("Save Account Data")),
-                                    ]),
-                                  ));
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 20),
+                                    ElevatedButton(
+                                      onPressed: () async {
+                                        bankSQF.name = bankNameCont.text;
+                                        bankSQF.accountNumber =
+                                            bankNumCont.text;
+                                        bankSQF.amount =
+                                            double.parse(bankAmountCont.text);
+                                        bankSQF.accountDate =
+                                            bankCreatedateFCont;
+                                        await bankSQF.save();
+                                        loadTotBank();
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                              "New Expese Added",
+                                            ),
+                                          ),
+                                        );
+                                        bankNameCont.text = "";
+                                        bankNumCont.text = "";
+                                        bankAmountCont.text = "";
+                                        bankCreatedateFCont = DateTime.now();
+                                        // ignore: use_build_context_synchronously
+                                        Navigator.of(context,
+                                                rootNavigator: true)
+                                            .pop("dialog");
+                                      },
+                                      child: const Text("Save New Account"),
+                                    ),
+                                  ]),
+                                ),
+                              );
                             });
                       },
                       borderRadius: const BorderRadius.all(
@@ -322,7 +323,7 @@ class _AcoountTabState extends State<AcoountTab> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: Row(
                     // ignore: prefer_const_literals_to_create_immutables
                     children: [
@@ -330,8 +331,8 @@ class _AcoountTabState extends State<AcoountTab> {
                         'Bank Accounts',
                         style: TextStyle(
                           fontSize: 20,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 1.2,
+                          fontWeight: FontWeight.w400,
+                          letterSpacing: 1.4,
                           color: Colors.grey,
                         ),
                       ),
@@ -342,7 +343,7 @@ class _AcoountTabState extends State<AcoountTab> {
                   decoration: const BoxDecoration(
                       // color: Colors.amber,
                       ),
-                  height: 415,
+                  height: 410,
                   child: ClipRRect(
                     borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(20),
@@ -350,15 +351,15 @@ class _AcoountTabState extends State<AcoountTab> {
                     ),
                     child: ListView.builder(
                       // scrollDirection: Axis.horizontal,
-                      itemCount: customers.length,
+                      itemCount: bankTotList.length,
                       itemBuilder: (BuildContext context, int index) {
                         return Container(
                           margin: const EdgeInsets.symmetric(
                               vertical: 10, horizontal: 4.0),
-                          height: 190,
+                          height: 195,
                           // width: 314.8,
                           padding:
-                              const EdgeInsets.fromLTRB(15, 11.0, 15.0, 5.0),
+                              const EdgeInsets.fromLTRB(15, 6.0, 15.0, 5.0),
                           decoration: const BoxDecoration(
                             borderRadius: BorderRadius.all(
                               Radius.circular(20),
@@ -378,9 +379,9 @@ class _AcoountTabState extends State<AcoountTab> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
-                                  const Text(
-                                    'CBE',
-                                    style: TextStyle(
+                                  Text(
+                                    bankTotList[index].name!,
+                                    style: const TextStyle(
                                       fontWeight: FontWeight.w700,
                                       fontSize: 18,
                                     ),
@@ -397,9 +398,9 @@ class _AcoountTabState extends State<AcoountTab> {
                                 child: Row(
                                   // ignore: prefer_const_literals_to_create_immutables
                                   children: [
-                                    const Text(
-                                      '4567 1122 4595 7852',
-                                      style: TextStyle(
+                                    Text(
+                                      bankTotList[index].accountNumber!,
+                                      style: const TextStyle(
                                         fontSize: 22,
                                         letterSpacing: 1.6,
                                         wordSpacing: 2.5,
@@ -414,12 +415,13 @@ class _AcoountTabState extends State<AcoountTab> {
                                     const EdgeInsets.symmetric(vertical: 5.0),
                                 child: Row(
                                   // ignore: prefer_const_constructors
-                                  children: const [
+                                  children: [
                                     Text(
-                                      'ETB 5,000',
-                                      style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w800),
+                                      '\$ ${bankTotList[index].amount!}',
+                                      style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                          letterSpacing: 1.5),
                                     )
                                   ],
                                 ),
@@ -431,9 +433,11 @@ class _AcoountTabState extends State<AcoountTab> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  const Text(
-                                    'EYASU HAILEGEBRIEL',
-                                    style: TextStyle(
+                                  Text(
+                                    // bankTotList[index].accountDate.toString(),
+                                    DateFormat('yyyy-MM-dd').format(
+                                        bankTotList[index].accountDate!),
+                                    style: const TextStyle(
                                       letterSpacing: 2.0,
                                       wordSpacing: 4.0,
                                       fontWeight: FontWeight.w500,

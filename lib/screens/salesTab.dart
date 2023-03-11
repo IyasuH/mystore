@@ -1,19 +1,46 @@
 // ignore: file_names
-// ignore_for_file: non_constant_identifier_names
-
+// ignore_for_file: non_constant_identifier_names, use_build_context_synchronously
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 
-import '../models/sales.dart';
-import 'homeTab.dart';
+import '../models/model.dart';
+import '../models/yearMonthList.dart';
+// ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
 
-class SalesBarChart extends StatelessWidget {
-  SalesBarChart(this.selectedYear, {super.key});
-  final String selectedYear;
-  static const salesColor = Color.fromRGBO(0, 188, 212, 1);
-  // static const betweenSapce = 200;
+// ignore: must_be_immutable
+class SalesBarChart extends StatefulWidget {
+  String selectedYear;
+  SalesBarChart({super.key, required this.selectedYear});
+
+  @override
+  State<SalesBarChart> createState() => _SalesBarChartState();
+}
+
+class _SalesBarChartState extends State<SalesBarChart> {
+  Color salesColor = const Color.fromRGBO(0, 188, 212, 1);
+  int betweenSapce = 0;
+  List<Sale> saleSQFL = [];
+  List<Sale> saleYearly = [];
+  loadSaleData() async {
+    saleSQFL = await Sale().select().toList();
+    saleYearly = [];
+    for (var element in saleSQFL) {
+      if ((element.date!).year == int.parse(widget.selectedYear)) {
+        saleYearly.add(element);
+      }
+    }
+    setState(() {});
+    build(context);
+  }
+
+  @override
+  void initState() {
+    loadSaleData();
+    super.initState();
+  }
+
   BarChartGroupData generateGroupData(
     int x,
     double sales,
@@ -39,31 +66,31 @@ class SalesBarChart extends StatelessWidget {
         fontWeight: FontWeight.w500);
     String text;
     switch (value.toInt()) {
-      case 01:
+      case 1:
         text = 'Jan';
         break;
-      case 02:
+      case 2:
         text = 'Feb';
         break;
-      case 03:
+      case 3:
         text = 'Mar';
         break;
-      case 04:
+      case 4:
         text = 'Apr';
         break;
-      case 05:
+      case 5:
         text = 'May';
         break;
-      case 06:
+      case 6:
         text = 'Jun';
         break;
-      case 07:
+      case 7:
         text = 'Jul';
         break;
-      case 08:
+      case 8:
         text = 'Aug';
         break;
-      case 09:
+      case 9:
         text = 'Sep';
         break;
       case 10:
@@ -84,65 +111,66 @@ class SalesBarChart extends StatelessWidget {
     );
   }
 
-  double JanSales = 0;
-  double FebSales = 0;
-  double MarSales = 0;
-  double AprSales = 0;
-  double MaySales = 0;
-  double JunSales = 0;
-  double JulSales = 0;
-  double AugSales = 0;
-  double SepSales = 0;
-  double OctSales = 0;
-  double NovSales = 0;
-  double DecSales = 0;
+  double JanSales = 0,
+      FebSales = 0,
+      MarSales = 0,
+      AprSales = 0,
+      MaySales = 0,
+      JunSales = 0,
+      JulSales = 0,
+      AugSales = 0,
+      SepSales = 0,
+      OctSales = 0,
+      NovSales = 0,
+      DecSales = 0;
 
   List<BarChartGroupData> monthSales = [];
+
   @override
   Widget build(BuildContext context) {
-    for (var element in sales) {
-      if (element.soldDate.substring(6, 10) == selectedYear) {
-        if (element.soldDate.substring(3, 5) == '01') {
-          JanSales += element.salesRevenu;
-        } else if (element.soldDate.substring(3, 5) == '02') {
-          FebSales += element.salesRevenu;
-        } else if (element.soldDate.substring(3, 5) == '03') {
-          MarSales += element.salesRevenu;
-        } else if (element.soldDate.substring(3, 5) == '04') {
-          AprSales += element.salesRevenu;
-        } else if (element.soldDate.substring(3, 5) == '05') {
-          MaySales += element.salesRevenu;
-        } else if (element.soldDate.substring(3, 5) == '06') {
-          JunSales += element.salesRevenu;
-        } else if (element.soldDate.substring(3, 5) == '07') {
-          JulSales += element.salesRevenu;
-        } else if (element.soldDate.substring(3, 5) == '08') {
-          AugSales += element.salesRevenu;
-        } else if (element.soldDate.substring(3, 5) == '09') {
-          SepSales += element.salesRevenu;
-        } else if (element.soldDate.substring(3, 5) == '10') {
-          OctSales += element.salesRevenu;
-        } else if (element.soldDate.substring(3, 5) == '11') {
-          NovSales += element.salesRevenu;
-        } else if (element.soldDate.substring(3, 5) == '12') {
-          DecSales += element.salesRevenu;
-        }
-        monthSales = [
-          generateGroupData(01, JanSales),
-          generateGroupData(02, FebSales),
-          generateGroupData(03, MarSales),
-          generateGroupData(04, AprSales),
-          generateGroupData(05, MaySales),
-          generateGroupData(06, JunSales),
-          generateGroupData(07, JulSales),
-          generateGroupData(08, AugSales),
-          generateGroupData(09, SepSales),
-          generateGroupData(10, OctSales),
-          generateGroupData(11, NovSales),
-          generateGroupData(12, DecSales),
-        ];
+    for (var element in saleYearly) {
+      if ((element.date!).month == 1) {
+        JanSales += num.parse(element.revenue.toString());
+      } else if ((element.date!).month == 2) {
+        FebSales += num.parse(element.revenue.toString());
+      } else if ((element.date!).month == 3) {
+        MarSales += num.parse(element.revenue.toString());
+      } else if ((element.date!).month == 4) {
+        AprSales += num.parse(element.revenue.toString());
+      } else if ((element.date!).month == 5) {
+        MaySales += num.parse(element.revenue.toString());
+      } else if ((element.date!).month == 6) {
+        JunSales += num.parse(element.revenue.toString());
+      } else if ((element.date!).month == 7) {
+        JulSales += num.parse(element.revenue.toString());
+      } else if ((element.date!).month == 8) {
+        AugSales += num.parse(element.revenue.toString());
+      } else if ((element.date!).month == 9) {
+        SepSales += num.parse(element.revenue.toString());
+      } else if ((element.date!).month == 10) {
+        OctSales += num.parse(element.revenue.toString());
+      } else if ((element.date!).month == 11) {
+        NovSales += num.parse(element.revenue.toString());
+      } else if ((element.date!).month == 12) {
+        DecSales += num.parse(element.revenue.toString());
       }
+      // HERE at leats write for loop to avoid repetation
+      monthSales = [
+        generateGroupData(1, JanSales),
+        generateGroupData(2, FebSales),
+        generateGroupData(3, MarSales),
+        generateGroupData(4, AprSales),
+        generateGroupData(5, MaySales),
+        generateGroupData(6, JunSales),
+        generateGroupData(7, JulSales),
+        generateGroupData(8, AugSales),
+        generateGroupData(9, SepSales),
+        generateGroupData(10, OctSales),
+        generateGroupData(11, NovSales),
+        generateGroupData(12, DecSales),
+      ];
     }
+
     return Container(
       margin: const EdgeInsets.fromLTRB(7, 5, 7, 10),
       decoration: const BoxDecoration(
@@ -158,34 +186,57 @@ class SalesBarChart extends StatelessWidget {
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-        child: SizedBox(
-          height: 200,
-          child: BarChart(
-            BarChartData(
-              alignment: BarChartAlignment.spaceBetween,
-              titlesData: FlTitlesData(
-                leftTitles: AxisTitles(),
-                rightTitles: AxisTitles(),
-                topTitles: AxisTitles(),
-                bottomTitles: AxisTitles(
-                  sideTitles: SideTitles(
-                    showTitles: true,
-                    getTitlesWidget: bottomTitles,
-                    reservedSize: 20,
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            IconButton(
+                onPressed: () {
+                  JanSales = 0;
+                  FebSales = 0;
+                  MarSales = 0;
+                  AprSales = 0;
+                  MaySales = 0;
+                  JunSales = 0;
+                  JulSales = 0;
+                  AugSales = 0;
+                  SepSales = 0;
+                  OctSales = 0;
+                  NovSales = 0;
+                  DecSales = 0;
+                  loadSaleData();
+                },
+                icon: const Icon(Icons.candlestick_chart_outlined)),
+            SizedBox(
+              height: 205,
+              child: BarChart(
+                BarChartData(
+                  alignment: BarChartAlignment.spaceBetween,
+                  titlesData: FlTitlesData(
+                    leftTitles: AxisTitles(),
+                    rightTitles: AxisTitles(),
+                    topTitles: AxisTitles(),
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        getTitlesWidget: bottomTitles,
+                        reservedSize: 20,
+                      ),
+                    ),
                   ),
+                  barTouchData: BarTouchData(
+                    touchTooltipData: BarTouchTooltipData(
+                      tooltipBgColor: const Color.fromARGB(255, 40, 40, 40),
+                    ),
+                  ),
+                  borderData: FlBorderData(show: false),
+                  gridData: FlGridData(show: false),
+                  barGroups: monthSales,
                 ),
               ),
-              barTouchData: BarTouchData(
-                touchTooltipData: BarTouchTooltipData(
-                  tooltipBgColor: const Color.fromARGB(255, 40, 40, 40),
-                ),
-              ),
-              borderData: FlBorderData(show: false),
-              gridData: FlGridData(show: false),
-              barGroups: monthSales,
             ),
-          ),
+          ],
         ),
       ),
     );
@@ -200,26 +251,77 @@ class SalesTab extends StatefulWidget {
 }
 
 class _SalesTabState extends State<SalesTab> {
+  List<Sale> saleSQFL = [];
+  List<Sale> saleMonthly = [];
+  List<Item> itemSQFNAML = [];
+  List<Client> clientSQFNAML = [];
+  List<Bank> bankSQFNAML = [];
+  loadBankDataNAM() async {
+    bankSQFNAML = await Bank().select().toList();
+  }
+
+  loadClientDataNAM() async {
+    clientSQFNAML = await Client().select().toList();
+  }
+
+  loadItemDataNAM() async {
+    itemSQFNAML = await Item().select().toList();
+  }
+
+  double monthlySalesRevenu = 0;
+  loadSaleData() async {
+    saleSQFL = await Sale().select().toList();
+    saleMonthly = [];
+    monthlySalesRevenu = 0;
+    for (var element in saleSQFL) {
+      if ((element.date!).year == int.parse(selectedYear)) {
+        if ((element.date!).month == int.parse(selectedMonth)) {
+          monthlySalesRevenu += element.revenue!;
+          saleMonthly.add(element);
+        }
+      }
+    }
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    // dbHelper.init();
+    loadSaleData();
+    loadItemDataNAM();
+    loadClientDataNAM();
+    loadBankDataNAM();
+    super.initState();
+  }
+
+  // This for sake of sort
   bool _sortItemName = true;
   bool _sortQunantity = true;
   bool _sortAmount = true;
   bool _sortDate = true;
   bool _sortAsc = true;
   int _sortColumnIndex = 0;
+
+  // This for sake of adding new sales to select item, cleint and bank ID
+  // And I initailized all 1(so don't delete that)
+  // Write query when deleting to avoid deleting
+  //  query from DB and make the top one id here or...
+  int selectedItem = 1;
+  int selectedClient = 1;
+  int selectedBank = 1;
+
   String selectedMonth =
       (DateFormat().add_M().format(DateTime.now())).toString();
   String selectedYear =
       (DateFormat().add_y().format(DateTime.now())).toString();
-  List monthlySales = [];
+  // List monthlySales = [];
+  DateFormat dateFormat = DateFormat("yyyy-MM-dd");
   @override
   Widget build(BuildContext context) {
-    monthlySales = [];
-    for (var element in sales) {
-      if (element.soldDate.substring(3, 5) == selectedMonth &&
-          element.soldDate.substring(6, 10) == selectedYear) {
-        monthlySales.add(element);
-      }
-    }
+    TextEditingController quantityCont = TextEditingController();
+    DateTime itemSoldDateCont = DateTime.now();
+    TextEditingController salesRevenu = TextEditingController();
+    TextEditingController addInfoCont = TextEditingController();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Sales'),
@@ -230,38 +332,104 @@ class _SalesTabState extends State<SalesTab> {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: const Text('Add Sales'),
-                    backgroundColor: Colors.black87,
-                    content: SizedBox(
-                      height: 380,
-                      child: Column(
+                  return StatefulBuilder(
+                      builder: (BuildContext context, StateSetter setState) {
+                    return AlertDialog(
+                      scrollable: true,
+                      title: const Text('Add Sales(needs edit)'),
+                      backgroundColor: Colors.black54,
+                      content: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          TextFormField(
-                            keyboardAppearance: Brightness.dark,
-                            keyboardType: TextInputType.number,
-                            onChanged: ((value) {}),
-                            decoration:
-                                const InputDecoration(hintText: 'Item Id'),
+                          const Text('Item'),
+                          const SizedBox(height: 10),
+                          Container(
+                            decoration: const BoxDecoration(
+                              color: Colors.black26,
+                            ),
+                            child: DropdownButton(
+                              value: selectedItem,
+                              onChanged: (int? newValue) {
+                                if (mounted) {
+                                  setState(() {
+                                    selectedItem = newValue!;
+                                  });
+                                }
+                              },
+                              items: itemSQFNAML.map((data) {
+                                return DropdownMenuItem(
+                                    value: data.id,
+                                    child: Text(
+                                        '${data.name!}  ${data.quantity}  ${data.singlePrice}'));
+                              }).toList(),
+                            ),
                           ),
                           const SizedBox(height: 10),
-                          TextFormField(
-                            keyboardType: TextInputType.number,
-                            keyboardAppearance: Brightness.dark,
-                            decoration:
-                                const InputDecoration(hintText: 'Customer Id'),
+                          const Text('Client'),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                // width: 150,
+                                decoration: const BoxDecoration(
+                                  color: Colors.black26,
+                                ),
+                                child: DropdownButton(
+                                  value: selectedClient,
+                                  onChanged: (int? newValue) {
+                                    if (mounted) {
+                                      setState(() {
+                                        selectedClient = newValue!;
+                                      });
+                                    }
+                                  },
+                                  items: clientSQFNAML.map((data) {
+                                    return DropdownMenuItem(
+                                        value: data.id,
+                                        child: Text(
+                                            '${data.name!}  ${data.companyName}'));
+                                  }).toList(),
+                                ),
+                              ),
+                              ElevatedButton(
+                                child: const Text('New client'),
+                                onPressed: () {},
+                              )
+                            ],
                           ),
-                          TextFormField(
-                            keyboardType: TextInputType.number,
-                            decoration:
-                                const InputDecoration(hintText: 'Bank Id'),
+                          const SizedBox(height: 10),
+                          const Text('Bank'),
+                          Container(
+                            decoration: const BoxDecoration(
+                              color: Colors.black26,
+                            ),
+                            child: DropdownButton(
+                              value: selectedBank,
+                              onChanged: (int? newValue) {
+                                if (mounted) {
+                                  setState(() {
+                                    selectedBank = newValue!;
+                                  });
+                                }
+                              },
+                              items: bankSQFNAML.map((data) {
+                                return DropdownMenuItem(
+                                    value: data.id,
+                                    child: Text(
+                                        '${data.name!}  ${data.accountNumber}'));
+                              }).toList(),
+                            ),
                           ),
+                          const SizedBox(height: 10),
+                          const Text('Quantity'),
                           TextFormField(
+                            controller: quantityCont,
                             keyboardType: TextInputType.number,
                             decoration:
                                 const InputDecoration(hintText: 'Quantity'),
                           ),
+                          const SizedBox(height: 10),
+                          const Text('Sold Date'),
                           TextButton(
                             child: Text(
                               DateFormat().add_yMd().format(DateTime.now()),
@@ -281,25 +449,120 @@ class _SalesTabState extends State<SalesTab> {
                                   cancelStyle: TextStyle(color: Colors.white),
                                 ),
                                 onConfirm: (date) {
-                                  print('confirm $date');
+                                  print('date is $date');
+                                  itemSoldDateCont = date;
                                 },
                               );
                             },
                           ),
+                          const SizedBox(height: 10),
+                          const Text('Price'),
                           TextFormField(
+                            controller: salesRevenu,
                             keyboardType: TextInputType.number,
                             decoration: const InputDecoration(
                                 hintText: 'Sales Revenue'),
                           ),
+                          const SizedBox(height: 10),
+                          const Text('Additional Info'),
                           TextFormField(
+                            controller: addInfoCont,
                             keyboardType: TextInputType.multiline,
                             decoration:
                                 const InputDecoration(hintText: 'Add Info'),
                           ),
+                          const SizedBox(height: 15),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ElevatedButton(
+                                  onPressed: () async {
+                                    Sale saleSQF = Sale();
+                                    saleSQF.ItemId = selectedItem;
+                                    saleSQF.ClientId = selectedClient;
+                                    saleSQF.BankId = selectedBank;
+                                    saleSQF.quantity =
+                                        int.parse(quantityCont.text);
+                                    saleSQF.date = itemSoldDateCont;
+                                    saleSQF.revenue =
+                                        double.parse(salesRevenu.text);
+                                    saleSQF.info = addInfoCont.text;
+                                    await saleSQF.save();
+                                    // ITEM UPDATE
+                                    // item - quantity, purchaseFreq, totPurchase
+                                    var itemSold = await Item()
+                                        .select()
+                                        .id
+                                        .equals(selectedItem)
+                                        .toSingle();
+                                    await Item()
+                                        .select()
+                                        .id
+                                        .equals(selectedItem)
+                                        .update({
+                                      "quantity": itemSold!.quantity! -
+                                          int.parse(quantityCont.text),
+                                      "purchaseFreq": itemSold.purchaseFreq! +
+                                          int.parse(quantityCont.text),
+                                      "totPurchase": itemSold.totPurchase! +
+                                          double.parse(salesRevenu.text)
+                                    });
+                                    // CLIENT UPDATE
+                                    // client - purchaseFreq, totPurchase
+                                    var clientBuy = await Client()
+                                        .select()
+                                        .id
+                                        .equals(selectedClient)
+                                        .toSingle();
+                                    await Client()
+                                        .select()
+                                        .id
+                                        .equals(selectedClient)
+                                        .update({
+                                      "purchaseFreq": clientBuy!.purchaseFreq! +
+                                          int.parse(quantityCont.text),
+                                      "totPurchase": clientBuy.totPurchase! +
+                                          double.parse(salesRevenu.text),
+                                    });
+                                    // BANK UPDATE
+                                    // bank - Amount
+                                    var bankCredited = await Bank()
+                                        .select()
+                                        .id
+                                        .equals(selectedBank)
+                                        .toSingle();
+                                    await Bank()
+                                        .select()
+                                        .id
+                                        .equals(selectedBank)
+                                        .update({
+                                      "amount": bankCredited!.amount! +
+                                          double.parse(salesRevenu.text),
+                                    });
+                                    loadSaleData();
+                                    loadBankDataNAM();
+                                    loadClientDataNAM();
+                                    loadItemDataNAM();
+                                    // await Item().select().id.equals(selectedItem).update
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text("New Sales info added"),
+                                      ),
+                                    );
+                                    quantityCont.text = "";
+                                    itemSoldDateCont = DateTime.now();
+                                    salesRevenu.text = "";
+                                    addInfoCont.text = "";
+                                    Navigator.of(context, rootNavigator: true)
+                                        .pop("dialog");
+                                  },
+                                  child: const Text('Save Sales Data'))
+                            ],
+                          )
                         ],
                       ),
-                    ),
-                  );
+                    );
+                  });
                 },
               );
             },
@@ -360,49 +623,16 @@ class _SalesTabState extends State<SalesTab> {
                             value: selectedYear,
                             onChanged: (String? newValue) {
                               if (mounted) {
+                                loadSaleData();
                                 setState(() {
                                   selectedYear = newValue!;
                                 });
                               }
                             },
-                            items: const [
-                              DropdownMenuItem(
-                                value: '2022',
-                                child: Text('2022'),
-                              ),
-                              DropdownMenuItem(
-                                value: '2023',
-                                child: Text('2023'),
-                              ),
-                              DropdownMenuItem(
-                                value: '2024',
-                                child: Text('2024'),
-                              ),
-                              DropdownMenuItem(
-                                value: '2025',
-                                child: Text('2025'),
-                              ),
-                              DropdownMenuItem(
-                                value: '2026',
-                                child: Text('2026'),
-                              ),
-                              DropdownMenuItem(
-                                value: '2027',
-                                child: Text('2027'),
-                              ),
-                              DropdownMenuItem(
-                                value: '2028',
-                                child: Text('2028'),
-                              ),
-                              DropdownMenuItem(
-                                value: '2029',
-                                child: Text('2029'),
-                              ),
-                              DropdownMenuItem(
-                                value: '2030',
-                                child: Text('2030'),
-                              ),
-                            ],
+                            items: myYear.map((data) {
+                              return DropdownMenuItem(
+                                  value: data, child: Text(data));
+                            }).toList(),
                           ),
                         ),
                         Container(
@@ -423,72 +653,21 @@ class _SalesTabState extends State<SalesTab> {
                                 blurRadius: 4,
                               )
                             ],
-                            // border: Border(
-                            //   top: BorderSide(
-                            //     color: Colors.redAccent,
-                            //     width: 1.1,
-                            //   ),
-                            // ),
                           ),
                           child: DropdownButton(
                             value: selectedMonth,
                             onChanged: (String? newValue) {
+                              loadSaleData();
                               if (mounted) {
                                 setState(() {
                                   selectedMonth = newValue!;
                                 });
                               }
                             },
-                            items: const [
-                              DropdownMenuItem(
-                                value: '01',
-                                child: Text('Jan'),
-                              ),
-                              // DropdownMenuItem(
-                              //   value: '02',
-                              //   child: Text('Feb'),
-                              // ),
-                              DropdownMenuItem(
-                                value: '03',
-                                child: Text('Mar'),
-                              ),
-                              DropdownMenuItem(
-                                value: '04',
-                                child: Text('Apr'),
-                              ),
-                              DropdownMenuItem(
-                                value: '05',
-                                child: Text('May'),
-                              ),
-                              DropdownMenuItem(
-                                value: '06',
-                                child: Text('Jun'),
-                              ),
-                              DropdownMenuItem(
-                                value: '07',
-                                child: Text('Jul'),
-                              ),
-                              DropdownMenuItem(
-                                value: '08',
-                                child: Text('Aug'),
-                              ),
-                              DropdownMenuItem(
-                                value: '09',
-                                child: Text('Sep'),
-                              ),
-                              DropdownMenuItem(
-                                value: '10',
-                                child: Text('Oct'),
-                              ),
-                              DropdownMenuItem(
-                                value: '11',
-                                child: Text('Nov'),
-                              ),
-                              DropdownMenuItem(
-                                value: '12',
-                                child: Text('Dec'),
-                              ),
-                            ],
+                            items: myDefinefMonth.map((data) {
+                              return DropdownMenuItem(
+                                  value: data.numr, child: Text(data.accr));
+                            }).toList(),
                           ),
                         ),
                       ],
@@ -520,123 +699,149 @@ class _SalesTabState extends State<SalesTab> {
                         child: Text('Monthly Sales'),
                       ),
                       Container(
-                        decoration: const BoxDecoration(
-                          border: Border(
-                            top: BorderSide(
-                              color: Color.fromRGBO(0, 188, 212, 1),
-                              // width: 1.5,
+                          decoration: const BoxDecoration(
+                            border: Border(
+                              top: BorderSide(
+                                color: Color.fromRGBO(0, 188, 212, 1),
+                                // width: 1.5,
+                              ),
                             ),
                           ),
-                        ),
-                        height: 300,
-                        child: ListView(
-                          children: [
-                            SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: DataTable(
-                                // ignore: prefer_const_literals_to_create_immutables
-                                showBottomBorder: true,
-                                sortColumnIndex: _sortColumnIndex,
-                                sortAscending: _sortAsc,
-                                columns: [
-                                  const DataColumn(label: Text('Id')),
-                                  DataColumn(
-                                      label: Text('Item'),
-                                      onSort: ((columnIndex, sortAscending) {
+                          height: 300,
+                          child: ListView(
+                            children: [
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: DataTable(
+                                  // ignore: prefer_const_literals_to_create_immutables
+                                  showBottomBorder: true,
+                                  sortColumnIndex: _sortColumnIndex,
+                                  sortAscending: _sortAsc,
+                                  columns: [
+                                    const DataColumn(label: Text('Id')),
+                                    DataColumn(
+                                        label: Text('Item'),
+                                        onSort: ((columnIndex, sortAscending) {
+                                          if (mounted) {
+                                            setState(() {
+                                              if (columnIndex ==
+                                                  _sortColumnIndex) {
+                                                _sortAsc = _sortItemName =
+                                                    sortAscending;
+                                              } else {
+                                                _sortColumnIndex = columnIndex;
+                                                _sortAsc = _sortItemName;
+                                              }
+                                              saleMonthly.sort((a, b) => num
+                                                      .parse(
+                                                          a.ItemId.toString())
+                                                  .compareTo(num.parse(
+                                                      b.ItemId.toString())));
+                                              if (!_sortAsc) {
+                                                saleMonthly.sort((a, b) => num
+                                                        .parse(
+                                                            b.ItemId.toString())
+                                                    .compareTo(num.parse(
+                                                        a.ItemId.toString())));
+                                              }
+                                            });
+                                          }
+                                        })),
+                                    DataColumn(
+                                      label: const Text('Qunantity'),
+                                      numeric: true,
+                                      onSort: (columnIndex, sortAscending) {
+                                        if (mounted) {
+                                          setState(() {
+                                            if (columnIndex ==
+                                                _sortColumnIndex) {
+                                              _sortAsc = _sortQunantity =
+                                                  sortAscending;
+                                            } else {
+                                              _sortColumnIndex = columnIndex;
+                                              _sortAsc = _sortQunantity;
+                                            }
+                                            saleMonthly.sort((a, b) =>
+                                                num.parse(a.quantity.toString())
+                                                    .compareTo(num.parse(b
+                                                        .quantity
+                                                        .toString())));
+                                            if (!_sortAsc) {
+                                              saleMonthly.sort((a, b) => num
+                                                      .parse(
+                                                          b.quantity.toString())
+                                                  .compareTo(num.parse(
+                                                      a.quantity.toString())));
+                                            }
+                                          });
+                                        }
+                                      },
+                                    ),
+                                    DataColumn(
+                                      label: const Text('Amount'),
+                                      numeric: true,
+                                      onSort: (columnIndex, sortAscending) {
                                         if (mounted) {
                                           setState(() {
                                             if (columnIndex ==
                                                 _sortColumnIndex) {
                                               _sortAsc =
-                                                  _sortItemName = sortAscending;
+                                                  _sortAmount = sortAscending;
                                             } else {
                                               _sortColumnIndex = columnIndex;
-                                              _sortAsc = _sortItemName;
+                                              _sortAsc = _sortAmount;
                                             }
-                                            sales.sort((a, b) =>
-                                                a.itemId.compareTo(b.itemId));
+                                            saleMonthly.sort((a, b) =>
+                                                num.parse(a.revenue.toString())
+                                                    .compareTo(num.parse(
+                                                        b.revenue.toString())));
                                             if (!_sortAsc) {
-                                              sales.sort((a, b) =>
-                                                  b.itemId.compareTo(a.itemId));
+                                              saleMonthly.sort((a, b) => num
+                                                      .parse(
+                                                          b.revenue.toString())
+                                                  .compareTo(num.parse(
+                                                      a.revenue.toString())));
                                             }
                                           });
                                         }
-                                      })),
-                                  DataColumn(
-                                    label: const Text('Qunantity'),
-                                    numeric: true,
-                                    onSort: (columnIndex, sortAscending) {
-                                      if (mounted) {
-                                        setState(() {
-                                          if (columnIndex == _sortColumnIndex) {
-                                            _sortAsc =
-                                                _sortQunantity = sortAscending;
-                                          } else {
-                                            _sortColumnIndex = columnIndex;
-                                            _sortAsc = _sortQunantity;
-                                          }
-                                          sales.sort((a, b) => a.itemQuantity
-                                              .compareTo(b.itemQuantity));
-                                          if (!_sortAsc) {
-                                            sales.sort((a, b) => b.itemQuantity
-                                                .compareTo(a.itemQuantity));
-                                          }
-                                        });
-                                      }
-                                    },
-                                  ),
-                                  DataColumn(
-                                    label: const Text('Amount'),
-                                    numeric: true,
-                                    onSort: (columnIndex, sortAscending) {
-                                      if (mounted) {
-                                        setState(() {
-                                          if (columnIndex == _sortColumnIndex) {
-                                            _sortAsc =
-                                                _sortAmount = sortAscending;
-                                          } else {
-                                            _sortColumnIndex = columnIndex;
-                                            _sortAsc = _sortAmount;
-                                          }
-                                          sales.sort((a, b) => a.salesRevenu
-                                              .compareTo(b.salesRevenu));
-                                          if (!_sortAsc) {
-                                            sales.sort((a, b) => b.salesRevenu
-                                                .compareTo(a.salesRevenu));
-                                          }
-                                        });
-                                      }
-                                    },
-                                  ),
-                                  DataColumn(
-                                    label: const Text('Date'),
-                                    onSort: (columnIndex, sortAscending) {
-                                      if (mounted) {
-                                        setState(() {
-                                          if (columnIndex == _sortColumnIndex) {
-                                            _sortAsc =
-                                                _sortDate = sortAscending;
-                                          } else {
-                                            _sortColumnIndex = columnIndex;
-                                            _sortAsc = _sortDate;
-                                          }
-                                          sales.sort((a, b) =>
-                                              a.soldDate.compareTo(b.soldDate));
-                                          if (!_sortAsc) {
-                                            sales.sort((a, b) => b.soldDate
-                                                .compareTo(a.soldDate));
-                                          }
-                                        });
-                                      }
-                                    },
-                                  ),
-                                ],
-                                rows: _salesRow(),
+                                      },
+                                    ),
+                                    // date sort was causing error
+                                    DataColumn(
+                                      label: const Text('Date'),
+                                      onSort: (columnIndex, sortAscending) {
+                                        if (mounted) {
+                                          setState(() {
+                                            if (columnIndex ==
+                                                _sortColumnIndex) {
+                                              _sortAsc =
+                                                  _sortDate = sortAscending;
+                                            } else {
+                                              _sortColumnIndex = columnIndex;
+                                              _sortAsc = _sortDate;
+                                            }
+                                            saleMonthly.sort((a, b) =>
+                                                num.parse(a.date.toString())
+                                                    .compareTo(num.parse(
+                                                        b.date.toString())));
+                                            if (!_sortAsc) {
+                                              saleMonthly.sort(
+                                                (a, b) =>
+                                                    num.parse(b.date.toString())
+                                                        .compareTo(num.parse(
+                                                            a.date.toString())),
+                                              );
+                                            }
+                                          });
+                                        }
+                                      },
+                                    ),
+                                  ],
+                                  rows: _salesRow(),
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      )
+                            ],
+                          ))
                     ],
                   ),
                 ),
@@ -664,9 +869,9 @@ class _SalesTabState extends State<SalesTab> {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         // ignore: prefer_const_literals_to_create_immutables
                         children: [
-                          const Text(
-                            '\$ 5,000',
-                            style: TextStyle(
+                          Text(
+                            '\$ $monthlySalesRevenu',
+                            style: const TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.w700,
                             ),
@@ -710,9 +915,9 @@ class _SalesTabState extends State<SalesTab> {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         // ignore: prefer_const_literals_to_create_immutables
                         children: [
-                          const Text(
-                            '49',
-                            style: TextStyle(
+                          Text(
+                            saleMonthly.length.toString(),
+                            style: const TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.w700,
                             ),
@@ -737,7 +942,7 @@ class _SalesTabState extends State<SalesTab> {
                     )
                   ],
                 ),
-                SalesBarChart(selectedYear),
+                SalesBarChart(selectedYear: selectedYear),
               ],
             )
           ],
@@ -746,32 +951,255 @@ class _SalesTabState extends State<SalesTab> {
     );
   }
 
+  TextEditingController quantityUpdate = TextEditingController();
+  DateTime dateUpdate = DateTime.now();
+  TextEditingController revenueUpdate = TextEditingController();
+  TextEditingController addInfoUpdate = TextEditingController();
+
+  int updatedItem = 1;
+  int updatedClient = 1;
+  int updatedBank = 1;
   List<DataRow> _salesRow() {
-    return monthlySales
+    Future<Item?> itemName;
+    return saleMonthly
         .map(
-          (e) => DataRow(
+          (data) => DataRow(
             onLongPress: () {
+              updatedItem = data.ItemId!;
+              updatedClient = data.ClientId!;
+              updatedBank = data.BankId!;
+              quantityUpdate.text = data.quantity.toString();
+              dateUpdate = data.date!;
+              revenueUpdate.text = data.revenue.toString();
+              addInfoUpdate.text = data.info.toString();
+              // NO MORE UPDATE ON SALES
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
+                  return StatefulBuilder(
+                      builder: (BuildContext context, StateSetter setState) {
+                    return AlertDialog(
+                      scrollable: true,
+                      title: const Text('Sales'),
+                      backgroundColor: Colors.black54,
+                      content: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text("Item Id"),
+                          Container(
+                            decoration: const BoxDecoration(
+                              color: Colors.black26,
+                            ),
+                            child: DropdownButton(
+                              value: updatedItem,
+                              onChanged: (int? newValue) {
+                                if (mounted) {
+                                  setState(() {
+                                    updatedItem = newValue!;
+                                  });
+                                }
+                              },
+                              items: itemSQFNAML.map((data) {
+                                return DropdownMenuItem(
+                                    value: data.id, child: Text(data.name!));
+                              }).toList(),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 14,
+                          ),
+                          const Text("Client Id"),
+
+                          Container(
+                            decoration: const BoxDecoration(
+                              color: Colors.black26,
+                            ),
+                            child: DropdownButton(
+                              value: updatedClient,
+                              onChanged: (int? newValue) {
+                                if (mounted) {
+                                  setState(() {
+                                    updatedClient = newValue!;
+                                  });
+                                }
+                              },
+                              items: clientSQFNAML.map((data) {
+                                return DropdownMenuItem(
+                                    value: data.id, child: Text(data.name!));
+                              }).toList(),
+                            ),
+                          ),
+
+                          const SizedBox(
+                            height: 14,
+                          ),
+                          const Text("Bank Id"),
+                          Container(
+                            decoration: const BoxDecoration(
+                              color: Colors.black26,
+                            ),
+                            child: DropdownButton(
+                              value: updatedBank,
+                              onChanged: (int? newValue) {
+                                if (mounted) {
+                                  setState(() {
+                                    updatedBank = newValue!;
+                                  });
+                                }
+                              },
+                              items: bankSQFNAML.map((data) {
+                                return DropdownMenuItem(
+                                    value: data.id, child: Text(data.name!));
+                              }).toList(),
+                            ),
+                          ),
+
+                          const SizedBox(
+                            height: 14,
+                          ),
+                          const Text("Quantity"),
+                          TextFormField(
+                            controller: quantityUpdate,
+                          ),
+                          const SizedBox(
+                            height: 14,
+                          ),
+                          const Text("Date"),
+                          // ignore: prefer_const_constructors
+                          TextButton(
+                            child: Text(
+                              DateFormat().add_yMd().format(dateUpdate),
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                            onPressed: () {
+                              DatePicker.showDatePicker(
+                                context,
+                                showTitleActions: true,
+                                minTime: DateTime(2022, 1, 1),
+                                maxTime: DateTime(2030, 12, 30),
+                                theme: const DatePickerTheme(
+                                  headerColor: Colors.black,
+                                  backgroundColor: Colors.black,
+                                  itemStyle: TextStyle(color: Colors.white),
+                                  doneStyle: TextStyle(color: Colors.white),
+                                  cancelStyle: TextStyle(color: Colors.white),
+                                ),
+                                onConfirm: (date) {
+                                  dateUpdate = date;
+                                },
+                              );
+                            },
+                          ),
+                          const SizedBox(
+                            height: 14,
+                          ),
+                          const Text("Revenue"),
+                          TextFormField(
+                            controller: revenueUpdate,
+                          ),
+                          const SizedBox(
+                            height: 14,
+                          ),
+                          const Text("Add info"),
+                          TextFormField(
+                            controller: addInfoUpdate,
+                          ),
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              ElevatedButton(
+                                onPressed: () async {
+                                  // ITEM UPDATE
+                                  // + quantity, - purchaseFreq, - totPurchase
+                                  var itemUnsold = await Item()
+                                      .select()
+                                      .id
+                                      .equals(data.ItemId)
+                                      .toSingle();
+                                  await Item()
+                                      .select()
+                                      .id
+                                      .equals(data.ItemId)
+                                      .update({
+                                    "quantity":
+                                        itemUnsold!.quantity! + data.quantity!,
+                                    "purchaseFreq": itemUnsold.purchaseFreq! -
+                                        data.quantity!,
+                                    "totPurchase":
+                                        itemUnsold.totPurchase! - data.revenue!,
+                                  });
+                                  // CLIENT UPDATE
+                                  // - purchaseFreq, - totPurchase
+                                  var clientUnUBuy = await Client()
+                                      .select()
+                                      .id
+                                      .equals(data.ClientId)
+                                      .toSingle();
+                                  await Client()
+                                      .select()
+                                      .id
+                                      .equals(data.ClientId)
+                                      .update({
+                                    "purchaseFreq":
+                                        clientUnUBuy!.purchaseFreq! -
+                                            data.quantity!,
+                                    "totPurchase": clientUnUBuy.totPurchase! -
+                                        data.revenue!,
+                                  });
+                                  // BANK UPDATE
+                                  // - amount
+                                  var bankDebited = await Bank()
+                                      .select()
+                                      .id
+                                      .equals(data.BankId)
+                                      .toSingle();
+                                  await Bank()
+                                      .select()
+                                      .id
+                                      .equals(data.BankId)
+                                      .update({
+                                    "amount":
+                                        bankDebited!.amount! - data.revenue!,
+                                  });
+                                  await Sale()
+                                      .select()
+                                      .id
+                                      .equals(data.id)
+                                      .delete();
+                                  loadSaleData();
+                                  Navigator.of(context, rootNavigator: true)
+                                      .pop("dialog");
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        "Sale Deleted Successfully",
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: const Text("Delete",
+                                    style: TextStyle(color: Colors.redAccent)),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  });
                   // ignore: prefer_const_constructors
-                  return AlertDialog(
-                    title: const Text('Sales'),
-                    backgroundColor: Colors.black54,
-                    content: SizedBox(
-                      height: 400,
-                      child: Column(),
-                    ),
-                  );
                 },
               );
             },
             cells: [
-              DataCell(Text(e.salesId.toString())),
-              DataCell(Text(e.itemId.toString())),
-              DataCell(Text(e.itemQuantity.toString())),
-              DataCell(Text(e.salesRevenu.toString())),
-              DataCell(Text(e.soldDate))
+              DataCell(Text(data.id.toString())),
+              // DataCell(Text(await Item().select().id.equals(data.ItemId!).toSingle().name)),
+              DataCell(Text(data.ItemId.toString())),
+              DataCell(Text(data.quantity.toString())),
+              DataCell(Text(data.quantity.toString())),
+              DataCell(Text(DateFormat('yyyy-MM-dd').format(data.date!))),
             ],
           ),
         )

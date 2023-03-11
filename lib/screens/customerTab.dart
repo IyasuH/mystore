@@ -1,8 +1,8 @@
+// ignore_for_file: use_build_context_synchronously, depend_on_referenced_packages
+
 import 'package:flutter/material.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:intl/intl.dart';
-import '../db/storeDB.dart';
-import '../models/clients.dart';
+import 'package:mystore/models/model.dart';
 
 class CustomerTab extends StatefulWidget {
   const CustomerTab({super.key});
@@ -12,28 +12,55 @@ class CustomerTab extends StatefulWidget {
 }
 
 class _CustomerTabState extends State<CustomerTab> {
-  final bankDB = myStoreDatabaseHelper();
+  List<Client> clientSQFL = [];
+  List<Client> newClientMonthly = [];
+  DateTime today = DateTime.now();
+  loadClientData() async {
+    newClientMonthly = [];
+    clientSQFL = await Client().select().toList();
+    for (var ele in clientSQFL) {
+      if ((ele.createdAt!).year == today.year &&
+          (ele.createdAt!).month == today.month) {
+        newClientMonthly.add(ele);
+      }
+    }
+    setState(() {});
+  }
 
   @override
   void initState() {
-    bankDB.init();
+    loadClientData();
     super.initState();
   }
 
-  String customLen = customers.length.toString();
+  final clientSQF = Client();
   @override
   Widget build(BuildContext context) {
+    // TextField controllers for inserting new client
     TextEditingController customerNameCont = TextEditingController();
     TextEditingController companyNameCont = TextEditingController();
+    TextEditingController bankNameCont = TextEditingController();
+    TextEditingController bankAccountCont = TextEditingController();
     TextEditingController tinNumberCont = TextEditingController();
     TextEditingController cityCont = TextEditingController();
     TextEditingController phoneNumberCont = TextEditingController();
     DateFormat dateFormat = DateFormat("yyyy/MM/dd");
-    String accountCreatedAtCont = dateFormat.format(DateTime.now());
+
+    // TextField for updating clients info
+    TextEditingController clientNameUpdate = TextEditingController();
+    TextEditingController companyNameUpdate = TextEditingController();
+    TextEditingController bankNameUpdate = TextEditingController();
+    TextEditingController bankNumberUpdate = TextEditingController();
+    TextEditingController tinNumberUpdate = TextEditingController();
+    TextEditingController cityUpdate = TextEditingController();
+    TextEditingController phoneNumberUpdate = TextEditingController();
+    TextEditingController frequencyOfPurchUpdate = TextEditingController();
+    TextEditingController totalPurchUpdate = TextEditingController();
+
+    // String accountCreatedAtCont = dateFormat.format(DateTime.now());
     // TextEditingController accountCreatedAtCont = TextEditingController();
     TextEditingController frequencyOfPurchCont = TextEditingController();
     TextEditingController totalPurchCont = TextEditingController();
-    TextEditingController bankAccountCont = TextEditingController();
     return Scaffold(
       appBar: AppBar(title: const Text('Customers'), actions: [
         IconButton(
@@ -53,12 +80,11 @@ class _CustomerTabState extends State<CustomerTab> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Cutomer Name'),
+                          const Text('Name'),
                           TextFormField(
                             controller: customerNameCont,
                             textCapitalization: TextCapitalization.sentences,
-                            decoration:
-                                const InputDecoration(hintText: 'Cutomer Name'),
+                            decoration: const InputDecoration(hintText: 'Name'),
                           ),
                           const SizedBox(height: 5),
                           const Text('Company Name'),
@@ -67,6 +93,22 @@ class _CustomerTabState extends State<CustomerTab> {
                             textCapitalization: TextCapitalization.sentences,
                             decoration:
                                 const InputDecoration(hintText: 'Company Name'),
+                          ),
+                          const SizedBox(height: 5),
+                          const Text('Bank Name'),
+                          TextFormField(
+                            controller: bankNameCont,
+                            textCapitalization: TextCapitalization.sentences,
+                            decoration:
+                                const InputDecoration(hintText: 'Bank Name'),
+                          ),
+                          const SizedBox(height: 5),
+                          const Text('Bank Account'),
+                          TextFormField(
+                            controller: bankAccountCont,
+                            keyboardType: TextInputType.number,
+                            decoration:
+                                const InputDecoration(hintText: 'Bank Number'),
                           ),
                           const SizedBox(height: 5),
                           const Text('Tin Number'),
@@ -92,33 +134,6 @@ class _CustomerTabState extends State<CustomerTab> {
                                 const InputDecoration(hintText: 'Phone Number'),
                           ),
                           const SizedBox(height: 5),
-                          const Text('Account Created At'),
-                          TextButton(
-                            child: Text(
-                              DateFormat().add_yMd().format(DateTime.now()),
-                              style: const TextStyle(fontSize: 16),
-                            ),
-                            onPressed: () {
-                              DatePicker.showDatePicker(
-                                // currentTime: ,
-                                context,
-                                showTitleActions: true,
-                                minTime: DateTime(2022, 1, 1),
-                                maxTime: DateTime(2030, 12, 30),
-                                theme: const DatePickerTheme(
-                                  headerColor: Colors.black,
-                                  backgroundColor: Colors.black,
-                                  itemStyle: TextStyle(color: Colors.white),
-                                  doneStyle: TextStyle(color: Colors.white),
-                                  cancelStyle: TextStyle(color: Colors.white),
-                                ),
-                                onConfirm: (date) {
-                                  accountCreatedAtCont =
-                                      dateFormat.format(date);
-                                },
-                              );
-                            },
-                          ),
                           const SizedBox(height: 5),
                           const Text('Frequency Of Purchase'),
                           TextFormField(
@@ -135,14 +150,6 @@ class _CustomerTabState extends State<CustomerTab> {
                             decoration: const InputDecoration(
                                 hintText: 'Total Purchase'),
                           ),
-                          const SizedBox(height: 5),
-                          const Text('Bank Account'),
-                          TextFormField(
-                            controller: bankAccountCont,
-                            keyboardType: TextInputType.number,
-                            decoration:
-                                const InputDecoration(hintText: 'Bank Account'),
-                          ),
                         ],
                       ),
                       const SizedBox(
@@ -151,18 +158,21 @@ class _CustomerTabState extends State<CustomerTab> {
                       Row(
                         children: [
                           ElevatedButton(
-                            onPressed: () {
-                              bankDB.insertCustomer(
-                                customerNameCont.text,
-                                companyNameCont.text,
-                                tinNumberCont.text,
-                                cityCont.text,
-                                phoneNumberCont.text,
-                                accountCreatedAtCont,
-                                frequencyOfPurchCont.text,
-                                totalPurchCont.text,
-                                bankAccountCont.text,
-                              );
+                            onPressed: () async {
+                              Client clientSQF = Client();
+                              clientSQF.name = customerNameCont.text;
+                              clientSQF.companyName = companyNameCont.text;
+                              clientSQF.bankName = bankNameCont.text;
+                              clientSQF.bankNumber = bankAccountCont.text;
+                              clientSQF.tinNumber = tinNumberCont.text;
+                              clientSQF.city = cityCont.text;
+                              clientSQF.phoneN = phoneNumberCont.text;
+                              clientSQF.purchaseFreq =
+                                  int.parse(frequencyOfPurchCont.text);
+                              clientSQF.totPurchase =
+                                  double.parse(totalPurchCont.text);
+                              await clientSQF.save();
+                              loadClientData();
                               ScaffoldMessenger.of(context).showSnackBar(
                                 // ignore: prefer_const_constructors
                                 SnackBar(
@@ -174,8 +184,6 @@ class _CustomerTabState extends State<CustomerTab> {
                               tinNumberCont.text = "";
                               cityCont.text = "";
                               phoneNumberCont.text = "";
-                              accountCreatedAtCont =
-                                  dateFormat.format(DateTime.now());
                               frequencyOfPurchCont.text = "";
                               totalPurchCont.text = "";
                               bankAccountCont.text = "";
@@ -235,29 +243,12 @@ class _CustomerTabState extends State<CustomerTab> {
                           ),
                         ),
                         Text(
-                          customLen,
+                          clientSQFL.length.toString(),
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w700,
                           ),
                         )
-                        // Container(
-                        //   width: 43,
-                        //   height: 43,
-                        //   decoration: const BoxDecoration(
-                        //     color: Color.fromARGB(255, 235, 164, 45),
-                        //     borderRadius: BorderRadius.all(
-                        //       Radius.circular(10),
-                        //     ),
-                        //   ),
-                        //   child: IconButton(
-                        //     onPressed: () {},
-                        //     icon: const Icon(
-                        //       Icons.keyboard_arrow_right,
-                        //       size: 28,
-                        //     ),
-                        //   ),
-                        // )
                       ],
                     ),
                   ),
@@ -338,15 +329,15 @@ class _CustomerTabState extends State<CustomerTab> {
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           // ignore: prefer_const_literals_to_create_immutables
                           children: [
-                            const Text(
-                              '170',
-                              style: TextStyle(
+                            Text(
+                              newClientMonthly.length.toString(),
+                              style: const TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
                             const Text(
-                              'New Customers',
+                              'New Clients',
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w700,
@@ -392,7 +383,7 @@ class _CustomerTabState extends State<CustomerTab> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         const Text(
-                          'All Customers',
+                          'All Clients',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 18,
@@ -434,157 +425,297 @@ class _CustomerTabState extends State<CustomerTab> {
                     ),
                   ),
                   Container(
-                      padding: const EdgeInsets.only(
-                          left: 10, right: 3, bottom: 7, top: 5),
-                      height: 395,
-                      decoration: const BoxDecoration(
-                        color: Colors.black12,
-                        // color: Colors.amber,
-                        // boxShadow: [
-                        //   BoxShadow(
-                        //     color: Color.fromARGB(50, 203, 145, 0),
-                        //     blurStyle: BlurStyle.solid,
-                        //   )
-                        // ],
-                        boxShadow: [
-                          BoxShadow(
-                            color: Color.fromARGB(255, 234, 164, 45),
-                            blurStyle: BlurStyle.outer,
-                            blurRadius: 5,
-                          )
-                        ],
-
-                        borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(15),
-                          bottomRight: Radius.circular(15),
-                        ),
+                    padding: const EdgeInsets.only(
+                        left: 10, right: 3, bottom: 7, top: 5),
+                    height: 395,
+                    decoration: const BoxDecoration(
+                      color: Colors.black12,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color.fromARGB(255, 234, 164, 45),
+                          blurStyle: BlurStyle.outer,
+                          blurRadius: 5,
+                        )
+                      ],
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(15),
+                        bottomRight: Radius.circular(15),
                       ),
-                      child: FutureBuilder(
-                          future: _query(),
-                          builder: (context, AsyncSnapshot snapshot) {
-                            if (snapshot.hasData) {
-                              // datas = snapshot.data;
-                              return ListView.builder(
-                                itemCount: customers.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  return Row(
-                                    children: <Widget>[
-                                      const CircleAvatar(
-                                        radius: 30,
-                                        backgroundColor: Colors.blueGrey,
+                    ),
+                    child: ListView.builder(
+                      itemCount: clientSQFL.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return GestureDetector(
+                          onTap: () {
+                            clientNameUpdate.text = clientSQFL[index].name!;
+                            companyNameUpdate.text =
+                                clientSQFL[index].companyName!;
+                            bankNameUpdate.text = clientSQFL[index].bankName!;
+                            bankNumberUpdate.text =
+                                clientSQFL[index].bankNumber!;
+                            tinNumberUpdate.text = clientSQFL[index].tinNumber!;
+                            cityUpdate.text = clientSQFL[index].city!;
+                            phoneNumberUpdate.text = clientSQFL[index].phoneN!;
+                            frequencyOfPurchUpdate.text =
+                                clientSQFL[index].purchaseFreq.toString();
+                            totalPurchUpdate.text =
+                                clientSQFL[index].totPurchase.toString();
+                            showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    backgroundColor: Colors.black54,
+                                    scrollable: true,
+                                    title: const Text('Client Info'),
+                                    // ignore: prefer_const_constructors
+                                    content: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const Text("Id"),
+                                        Text(clientSQFL[index].id.toString()),
+                                        const SizedBox(
+                                          height: 15,
+                                        ),
+                                        const Text("Name"),
+                                        TextFormField(
+                                            controller: clientNameUpdate),
+                                        const SizedBox(
+                                          height: 15,
+                                        ),
+                                        const Text("Company Name"),
+                                        TextFormField(
+                                            controller: companyNameUpdate),
+                                        const SizedBox(
+                                          height: 15,
+                                        ),
+                                        const Text("BankName"),
+                                        TextFormField(
+                                          controller: bankNameUpdate,
+                                        ),
+                                        const SizedBox(
+                                          height: 15,
+                                        ),
+                                        const Text("Bank Number"),
+                                        TextFormField(
+                                          controller: bankNumberUpdate,
+                                          keyboardType: TextInputType.number,
+                                        ),
+                                        const SizedBox(
+                                          height: 15,
+                                        ),
+                                        const Text("Tin Number"),
+                                        TextFormField(
+                                          controller: tinNumberUpdate,
+                                          keyboardType: TextInputType.number,
+                                        ),
+                                        const SizedBox(
+                                          height: 15,
+                                        ),
+                                        const Text("City"),
+                                        TextFormField(
+                                          controller: cityUpdate,
+                                        ),
+                                        const SizedBox(
+                                          height: 15,
+                                        ),
+                                        const Text("Phone Number"),
+                                        TextFormField(
+                                          controller: phoneNumberUpdate,
+                                          keyboardType: TextInputType.number,
+                                        ),
+                                        const SizedBox(
+                                          height: 15,
+                                        ),
+                                        const Text("Purchase Frequency"),
+                                        TextFormField(
+                                          controller: frequencyOfPurchUpdate,
+                                          keyboardType: TextInputType.number,
+                                        ),
+                                        const SizedBox(
+                                          height: 15,
+                                        ),
+                                        const Text("Total Purchase"),
+                                        TextFormField(
+                                          controller: totalPurchUpdate,
+                                          keyboardType: TextInputType.number,
+                                        ),
+                                        const SizedBox(
+                                          height: 20,
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            ElevatedButton(
+                                                onPressed: () async {
+                                                  clientSQFL[index].name =
+                                                      clientNameUpdate.text;
+                                                  clientSQFL[index]
+                                                          .companyName =
+                                                      companyNameUpdate.text;
+                                                  clientSQFL[index].bankName =
+                                                      bankNameUpdate.text;
+                                                  clientSQFL[index].bankNumber =
+                                                      bankNumberUpdate.text;
+                                                  clientSQFL[index].tinNumber =
+                                                      tinNumberUpdate.text;
+                                                  clientSQFL[index].city =
+                                                      cityUpdate.text;
+                                                  clientSQFL[index].phoneN =
+                                                      phoneNumberUpdate.text;
+                                                  clientSQFL[index]
+                                                          .purchaseFreq =
+                                                      int.parse(
+                                                          frequencyOfPurchUpdate
+                                                              .text);
+                                                  clientSQFL[index]
+                                                          .totPurchase =
+                                                      double.parse(
+                                                          totalPurchUpdate
+                                                              .text);
+                                                  await clientSQFL[index]
+                                                      .save();
+                                                  loadClientData();
+                                                  Navigator.of(context,
+                                                          rootNavigator: true)
+                                                      .pop("dialog");
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(
+                                                    const SnackBar(
+                                                      content: Text(
+                                                        "Client Info Updated Successfully",
+                                                      ),
+                                                    ),
+                                                  );
+
+                                                  // clientSQFL[index]. = clientNameUpdate.text;
+                                                },
+                                                child: const Text("Update")),
+                                            ElevatedButton(
+                                              onPressed: () async {
+                                                await Client()
+                                                    .select()
+                                                    .id
+                                                    .equals(
+                                                        clientSQFL[index].id)
+                                                    .delete();
+                                                loadClientData();
+                                                Navigator.of(context,
+                                                        rootNavigator: true)
+                                                    .pop("dialog");
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  const SnackBar(
+                                                    content: Text(
+                                                        "Client Info deleted Successfully"),
+                                                  ),
+                                                );
+                                              },
+                                              child: const Text(
+                                                "Delete",
+                                                style: TextStyle(
+                                                    color: Colors.red),
+                                              ),
+                                            )
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                  );
+                                });
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: <Widget>[
+                              const CircleAvatar(
+                                radius: 30,
+                                backgroundColor: Colors.blueGrey,
+                              ),
+                              Container(
+                                width: 305,
+                                height: 80,
+                                decoration: const BoxDecoration(
+                                  border: Border(
+                                    bottom: BorderSide(
+                                      color: Color.fromARGB(255, 235, 164, 45),
+                                    ),
+                                  ),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 10.0, right: 2),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Text(
+                                            clientSQFL[index].name!,
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 17,
+                                            ),
+                                          ),
+                                          Text(
+                                            clientSQFL[index].companyName!,
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.w400,
+                                              letterSpacing: 1.05,
+                                            ),
+                                          )
+                                        ],
                                       ),
-                                      Container(
-                                        width: 274,
-                                        height: 80,
-                                        decoration: const BoxDecoration(
-                                          border: Border(
-                                            bottom: BorderSide(
+                                      Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 5, horizontal: 5),
+                                            decoration: const BoxDecoration(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(5)),
+                                                color: Color.fromARGB(
+                                                    50, 89, 225, 54)),
+                                            height: 27,
+                                            child: Text(
+                                              clientSQFL[index]
+                                                  .purchaseFreq
+                                                  .toString(),
+                                              style: const TextStyle(
+                                                color: Color.fromARGB(
+                                                    204, 89, 225, 54),
+                                              ),
+                                            ),
+                                          ),
+                                          Text(
+                                            'ETB ${clientSQFL[index].totPurchase}',
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.w600,
                                               color: Color.fromARGB(
                                                   255, 235, 164, 45),
                                             ),
-                                          ),
-                                        ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: 10.0, right: 2),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceEvenly,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: <Widget>[
-                                                  Text(
-                                                    customers[index]
-                                                        .customerName,
-                                                    style: const TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.w700,
-                                                      fontSize: 17,
-                                                    ),
-                                                  ),
-                                                  Text(
-                                                    customers[index]
-                                                        .companyName,
-                                                    style: const TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.w400,
-                                                      letterSpacing: 1.05,
-                                                    ),
-                                                  )
-                                                ],
-                                              ),
-                                              Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceEvenly,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.end,
-                                                children: [
-                                                  Container(
-                                                    padding: const EdgeInsets
-                                                            .symmetric(
-                                                        vertical: 5,
-                                                        horizontal: 5),
-                                                    decoration:
-                                                        const BoxDecoration(
-                                                            borderRadius:
-                                                                BorderRadius.all(
-                                                                    Radius
-                                                                        .circular(
-                                                                            5)),
-                                                            color:
-                                                                Color.fromARGB(
-                                                                    50,
-                                                                    89,
-                                                                    225,
-                                                                    54)),
-                                                    height: 27,
-                                                    child: Text(
-                                                      customers[index]
-                                                          .membership,
-                                                      style: const TextStyle(
-                                                        color: Color.fromARGB(
-                                                            204, 89, 225, 54),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  Text(
-                                                    'ETB ${customers[index].totalPurchase}',
-                                                    style: const TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      color: Color.fromARGB(
-                                                          255, 235, 164, 45),
-                                                    ),
-                                                  )
-                                                ],
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      IconButton(
-                                          onPressed: () {},
-                                          icon: const Icon(
-                                            Icons.more_vert,
-                                          ))
+                                          )
+                                        ],
+                                      )
                                     ],
-                                  );
-                                },
-                              );
-                            }
-                            return Container(
-                              // ignore: prefer_const_constructors
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 110.0, horizontal: 7.0),
-                              child: CircularProgressIndicator(),
-                            );
-                          })),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -592,10 +723,5 @@ class _CustomerTabState extends State<CustomerTab> {
         ),
       ),
     );
-  }
-
-  _query() async {
-    List<Map> customer = await bankDB.queryAllAccount();
-    return customer;
   }
 }

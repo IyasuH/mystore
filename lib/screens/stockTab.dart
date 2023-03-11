@@ -1,11 +1,9 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:mystore/models/stock.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
-import 'package:intl/intl.dart';
+// ignore_for_file: use_build_context_synchronously
 
-import '../db/storeDB.dart';
+import 'package:flutter/material.dart';
+import 'package:mystore/models/stock.dart';
+
+import '../models/model.dart';
 
 class StockTab extends StatefulWidget {
   const StockTab({super.key});
@@ -15,32 +13,66 @@ class StockTab extends StatefulWidget {
 }
 
 class _StockTabState extends State<StockTab> {
+  List<Item> itemSQFL = [];
+  List<Item> newItemMonthly = [];
+  // best selling item ever not limited by month or year
+  List<Item> bestSellItem = [];
+  double totalitemAmount = 0;
+  int totalitemNum = 0;
+  DateTime today = DateTime.now();
+  loadBestSell() async {
+    bestSellItem =
+        await Item().select().orderByDesc("totPurchase").top(3).toList();
+    setState(() {});
+  }
+
+  loadItemData() async {
+    totalitemAmount = 0;
+    totalitemNum = 0;
+    newItemMonthly = [];
+    itemSQFL = await Item().select().toList();
+    for (var ele in itemSQFL) {
+      totalitemAmount +=
+          (ele.quantity! * num.parse(ele.singlePrice.toString()));
+      totalitemNum += ele.quantity!;
+      if ((ele.createdAt!).year == today.year &&
+          (ele.createdAt!).month == today.month) {
+        newItemMonthly.add(ele);
+      }
+    }
+    setState(() {});
+  }
+
   bool _sortNameAsc = true;
   bool _sortQuantityAsc = true;
   bool _sortPriceAsc = true;
   bool _sortAsc = true;
   int _sortColumnIndex = 0;
-  final bankDB = myStoreDatabaseHelper();
+
   @override
   void initState() {
-    bankDB.init();
+    // bankDB.init();
+    loadBestSell();
+    loadItemData();
     super.initState();
   }
 
+  // final itemSQF = Item();
   @override
   Widget build(BuildContext context) {
     TextEditingController itemNameCont = TextEditingController();
     TextEditingController itemQuantityCont = TextEditingController();
     TextEditingController itemSSellingPriceCont = TextEditingController();
     TextEditingController itemBSellingPriceCont = TextEditingController();
-    DateFormat dateFormat = DateFormat("yyyy/MM/dd");
-    String itemUpdatedCont = dateFormat.format(DateTime.now());
+    TextEditingController itemPurchaseFreq = TextEditingController();
+    TextEditingController itemTotPurchase = TextEditingController();
 
+    // DateTime itemUpdatedCont = DateTime.now();
     return SafeArea(
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(13, 24, 13, 10),
+            padding: const EdgeInsets.fromLTRB(13, 23, 13, 9),
             // margin: EdgeInsets.symmetric(horizontal: 15),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -110,41 +142,31 @@ class _StockTabState extends State<StockTab> {
                                             hintText: 'Single Selling Price'),
                                       ),
                                       const SizedBox(height: 5),
-                                      const Text("Bulk Item Selling Price"),
+                                      const Text("Bulk Selling Price"),
                                       TextFormField(
                                         keyboardType: TextInputType.number,
                                         controller: itemBSellingPriceCont,
                                         decoration: const InputDecoration(
                                             hintText: 'Bulk Selling Price'),
                                       ),
-                                      // const SizedBox(height: 5),
-                                      // TextButton(
-                                      //     child: Text(
-                                      //       DateFormat()
-                                      //           .add_yMd()
-                                      //           .format(DateTime.now()),
-                                      //       style: const TextStyle(fontSize: 16),
-                                      //     ),
-                                      //     onPressed: () {
-                                      //       DatePicker.showDatePicker(context,
-                                      //           showTitleActions: true,
-                                      //           minTime: DateTime(2022, 1, 1),
-                                      //           maxTime: DateTime(2030, 12, 30),
-                                      //           // ignore: prefer_const_constructors
-                                      //           theme: DatePickerTheme(
-                                      //             headerColor: Colors.black,
-                                      //             backgroundColor: Colors.black,
-                                      //             // ignore: prefer_const_constructors
-                                      //             itemStyle: TextStyle(
-                                      //                 color: Colors.white),
-                                      //             doneStyle: const TextStyle(
-                                      //                 color: Colors.white),
-                                      //             // ignore: prefer_const_constructors
-                                      //             cancelStyle: TextStyle(
-                                      //                 color: Colors.white),
-                                      //           ),
-                                      //           onConfirm: (date) {});
-                                      //     })
+                                      const SizedBox(height: 10),
+                                      const Text("Purchase Frequency"),
+                                      TextFormField(
+                                        keyboardType: TextInputType.number,
+                                        controller: itemPurchaseFreq,
+                                        decoration: const InputDecoration(
+                                            hintText: 'Purchase Frequency'),
+                                      ),
+                                      const SizedBox(height: 10),
+                                      const Text("Total Frequency"),
+                                      TextFormField(
+                                        keyboardType: TextInputType.number,
+                                        controller: itemTotPurchase,
+                                        decoration: const InputDecoration(
+                                            hintText: 'Total Frequency'),
+                                      ),
+
+                                      // updateAt date value is set automatically by the day item inserted
                                     ],
                                   ),
                                   const SizedBox(
@@ -155,14 +177,24 @@ class _StockTabState extends State<StockTab> {
                                           MainAxisAlignment.center,
                                       children: [
                                         ElevatedButton(
-                                            onPressed: () {
-                                              bankDB.insertStock(
-                                                itemNameCont.text,
-                                                itemQuantityCont.text,
-                                                itemSSellingPriceCont.text,
-                                                itemBSellingPriceCont.text,
-                                                itemUpdatedCont,
-                                              );
+                                            onPressed: () async {
+                                              Item itemSQF = Item();
+                                              itemSQF.name = itemNameCont.text;
+                                              itemSQF.quantity = int.parse(
+                                                  itemQuantityCont.text);
+                                              itemSQF.singlePrice =
+                                                  double.parse(
+                                                      itemSSellingPriceCont
+                                                          .text);
+                                              itemSQF.bulkPrice = double.parse(
+                                                  itemBSellingPriceCont.text);
+                                              itemSQF.purchaseFreq = int.parse(
+                                                  itemPurchaseFreq.text);
+                                              itemSQF.totPurchase =
+                                                  double.parse(
+                                                      itemTotPurchase.text);
+                                              await itemSQF.save();
+                                              loadItemData();
                                               ScaffoldMessenger.of(context)
                                                   .showSnackBar(
                                                 // ignore: prefer_const_constructors
@@ -177,6 +209,7 @@ class _StockTabState extends State<StockTab> {
                                               itemQuantityCont.text = "";
                                               itemSSellingPriceCont.text = "";
                                               itemBSellingPriceCont.text = "";
+                                              // ignore: use_build_context_synchronously
                                               Navigator.of(context,
                                                       rootNavigator: true)
                                                   .pop("dialog");
@@ -236,14 +269,16 @@ class _StockTabState extends State<StockTab> {
                                       'Best Selling Items ',
                                       style: TextStyle(
                                         fontSize: 16,
-                                        fontWeight: FontWeight.w600,
+                                        // fontWeight: FontWeight.w600,
                                       ),
                                     ),
                                     Text(
                                       'Item Name',
                                       style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                        letterSpacing: 1.5,
+                                        color: Colors.grey,
                                       ),
                                     )
                                   ],
@@ -251,12 +286,66 @@ class _StockTabState extends State<StockTab> {
                                 const Text(
                                   'Revenue',
                                   style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
+                                    fontSize: 14,
+                                    letterSpacing: 1.5,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.grey,
                                   ),
                                 )
                               ],
                             ),
+                            const SizedBox(
+                              height: 7,
+                            ),
+                            SizedBox(
+                                height: 155,
+                                child: ListView.builder(
+                                  itemCount: bestSellItem.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return Container(
+                                      height: 60,
+                                      decoration: const BoxDecoration(
+                                        border: Border(
+                                          top: BorderSide(
+                                            width: 1.5,
+                                            color: Color.fromARGB(
+                                                255, 85, 97, 103),
+                                          ),
+                                        ),
+                                      ),
+                                      // )
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            bestSellItem[index].name!,
+                                            style: const TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            width: 100,
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Text(
+                                                    "x ${bestSellItem[index].purchaseFreq!.toString()}"),
+                                                Text(
+                                                  "\$ ${bestSellItem[index].totPurchase!.toString()}",
+                                                ),
+                                              ],
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                ))
                           ],
                         ),
                       )
@@ -296,13 +385,23 @@ class _StockTabState extends State<StockTab> {
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.center,
               // ignore: prefer_const_literals_to_create_immutables
               children: [
-                const Text(
-                  '954',
-                  style: TextStyle(
+                Text(
+                  totalitemNum.toString(),
+                  style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w700,
+                  ),
+                ),
+                Text(
+                  '$totalitemAmount \$',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    letterSpacing: 1.5,
+                    color: Colors.blueGrey,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
                 const Text(
@@ -347,9 +446,9 @@ class _StockTabState extends State<StockTab> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               // ignore: prefer_const_literals_to_create_immutables
               children: [
-                const Text(
-                  '56',
-                  style: TextStyle(
+                Text(
+                  newItemMonthly.length.toString(),
+                  style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w700,
                   ),
@@ -382,147 +481,131 @@ class _StockTabState extends State<StockTab> {
 
   itemsList() {
     return Container(
-      // margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-      height: 350,
-      decoration: const BoxDecoration(
-        // color: Colors.amber,
-        borderRadius: BorderRadius.all(Radius.circular(10)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.blueGrey,
-            blurStyle: BlurStyle.outer,
-            blurRadius: 7,
-          )
-        ],
-      ),
-      child: ClipRRect(
-          borderRadius: const BorderRadius.all(
-            Radius.circular(10),
-          ),
-          child: FutureBuilder(
-              future: _query(),
-              builder: (context, AsyncSnapshot snapshot) {
-                if (snapshot.hasData) {
-                  return ListView(
-                    children: <Widget>[
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: DataTable(
-                          showBottomBorder: true,
-                          sortColumnIndex: _sortColumnIndex,
-                          sortAscending: _sortAsc,
-                          // decoration: BoxDecoration(color: Colors.green),
-                          // dataRowColor: const [Colors.amber],
-                          // ignore: prefer_const_literals_to_create_immutables
-                          columns: [
-                            const DataColumn(
-                              label: Text('Id'),
-                            ),
-                            DataColumn(
-                              label: const Text('Item'),
-                              onSort: (columnIndex, sortAscending) {
-                                if (mounted) {
-                                  setState(() {
-                                    if (columnIndex == _sortColumnIndex) {
-                                      _sortAsc = _sortNameAsc = sortAscending;
-                                    } else {
-                                      _sortColumnIndex = columnIndex;
-                                      _sortAsc = _sortNameAsc;
-                                    }
-                                    stocks.sort((a, b) =>
-                                        a.itemName.compareTo(b.itemName));
-                                    if (!_sortAsc) {
-                                      stocks.sort((a, b) =>
-                                          b.itemName.compareTo(a.itemName));
-                                    }
-                                  });
-                                }
-                              },
-                            ),
-                            DataColumn(
-                              label: const Text('Quantity'),
-                              numeric: true,
-                              onSort: (columnIndex, sortAscending) {
-                                if (mounted) {
-                                  setState(() {
-                                    if (columnIndex == _sortColumnIndex) {
-                                      _sortAsc =
-                                          _sortQuantityAsc = sortAscending;
-                                    } else {
-                                      _sortColumnIndex = columnIndex;
-                                      _sortAsc = _sortQuantityAsc;
-                                    }
-                                    stocks.sort((a, b) => a.itemQuantity
-                                        .compareTo(b.itemQuantity));
-                                    if (!_sortAsc) {
-                                      stocks.sort((a, b) => b.itemQuantity
-                                          .compareTo(a.itemQuantity));
-                                    }
-                                  });
-                                } else
-                                  return;
-                              },
-                            ),
-                            DataColumn(
-                              label: const Text('Price'),
-                              numeric: true,
-                              onSort: (columnIndex, sortAscending) {
-                                if (mounted) {
-                                  setState(() {
-                                    if (columnIndex == _sortColumnIndex) {
-                                      _sortAsc = _sortPriceAsc = sortAscending;
-                                    } else {
-                                      _sortColumnIndex = columnIndex;
-                                      _sortAsc = _sortPriceAsc;
-                                    }
-                                    stocks.sort((a, b) =>
-                                        a.singlePrice.compareTo(b.singlePrice));
-                                    if (!_sortAsc) {
-                                      stocks.sort((a, b) => b.singlePrice
-                                          .compareTo(a.singlePrice));
-                                    }
-                                  });
-                                }
-                              },
-                            ),
-                            const DataColumn(
-                              label: Text('Total'),
-                              numeric: true,
-                            ),
-                          ],
-                          rows: _stockRows(snapshot.data),
-                        ),
+        // margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+        height: 350,
+        decoration: const BoxDecoration(
+          // color: Colors.amber,
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.blueGrey,
+              blurStyle: BlurStyle.outer,
+              blurRadius: 7,
+            )
+          ],
+        ),
+        child: ClipRRect(
+            borderRadius: const BorderRadius.all(
+              Radius.circular(10),
+            ),
+            child: ListView(
+              children: <Widget>[
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: DataTable(
+                    showBottomBorder: true,
+                    sortColumnIndex: _sortColumnIndex,
+                    sortAscending: _sortAsc,
+                    columns: [
+                      const DataColumn(
+                        label: Text('Id'),
+                      ),
+                      DataColumn(
+                        label: const Text('Item'),
+                        onSort: (columnIndex, sortAscending) {
+                          if (mounted) {
+                            setState(() {
+                              if (columnIndex == _sortColumnIndex) {
+                                _sortAsc = _sortNameAsc = sortAscending;
+                              } else {
+                                _sortColumnIndex = columnIndex;
+                                _sortAsc = _sortNameAsc;
+                              }
+                              stocks.sort(
+                                  (a, b) => a.itemName.compareTo(b.itemName));
+                              if (!_sortAsc) {
+                                stocks.sort(
+                                    (a, b) => b.itemName.compareTo(a.itemName));
+                              }
+                            });
+                          }
+                        },
+                      ),
+                      DataColumn(
+                        label: const Text('Quantity'),
+                        numeric: true,
+                        onSort: (columnIndex, sortAscending) {
+                          if (mounted) {
+                            setState(() {
+                              if (columnIndex == _sortColumnIndex) {
+                                _sortAsc = _sortQuantityAsc = sortAscending;
+                              } else {
+                                _sortColumnIndex = columnIndex;
+                                _sortAsc = _sortQuantityAsc;
+                              }
+                              stocks.sort((a, b) =>
+                                  a.itemQuantity.compareTo(b.itemQuantity));
+                              if (!_sortAsc) {
+                                stocks.sort((a, b) =>
+                                    b.itemQuantity.compareTo(a.itemQuantity));
+                              }
+                            });
+                          } else {
+                            return;
+                          }
+                        },
+                      ),
+                      DataColumn(
+                        label: const Text('Price'),
+                        numeric: true,
+                        onSort: (columnIndex, sortAscending) {
+                          if (mounted) {
+                            setState(() {
+                              if (columnIndex == _sortColumnIndex) {
+                                _sortAsc = _sortPriceAsc = sortAscending;
+                              } else {
+                                _sortColumnIndex = columnIndex;
+                                _sortAsc = _sortPriceAsc;
+                              }
+                              stocks.sort((a, b) =>
+                                  a.singlePrice.compareTo(b.singlePrice));
+                              if (!_sortAsc) {
+                                stocks.sort((a, b) =>
+                                    b.singlePrice.compareTo(a.singlePrice));
+                              }
+                            });
+                          }
+                        },
+                      ),
+                      const DataColumn(
+                        label: Text('Total'),
+                        numeric: true,
                       ),
                     ],
-                  );
-                }
-                return const CircularProgressIndicator();
-              })),
-    );
-  }
-
-  _query() async {
-    List<Map> stocks = await bankDB.queryAllStcok();
-    print(stocks);
-    return stocks;
+                    rows: _stockRows(),
+                  ),
+                ),
+              ],
+            )));
   }
 
   TextEditingController itemNameUpdate = TextEditingController();
   TextEditingController itemQuantityUpdate = TextEditingController();
   TextEditingController itemSinglePriceUpdate = TextEditingController();
   TextEditingController itemBulkPriceUpdat = TextEditingController();
+  TextEditingController itemPurchaseFreqUpdate = TextEditingController();
+  TextEditingController itemTotPurchaseUpdate = TextEditingController();
 
-  List<DataRow> _stockRows(List<Map<String, dynamic>> datas) {
-    DateFormat dateFormat = DateFormat("yyyy/MM/dd");
-    String itemUpdatedCont = dateFormat.format(DateTime.now());
-    return datas
+  List<DataRow> _stockRows() {
+    return itemSQFL
         .map((data) => DataRow(
                 onLongPress: (() {
-                  itemNameUpdate.text = data['itemName'];
-                  itemQuantityUpdate.text = data['itemQuantity'].toString();
-                  itemSinglePriceUpdate.text =
-                      data['sellingPriceSingle'].toString();
-                  itemBulkPriceUpdat.text = data['sellingPriceBulk'].toString();
+                  itemNameUpdate.text = data.name.toString();
+                  itemQuantityUpdate.text = data.quantity.toString();
+                  itemSinglePriceUpdate.text = data.singlePrice.toString();
+                  itemBulkPriceUpdat.text = data.bulkPrice.toString();
+                  itemPurchaseFreqUpdate.text = data.purchaseFreq.toString();
+                  itemTotPurchaseUpdate.text = data.totPurchase.toString();
                   showDialog(
                       context: context,
                       builder: (BuildContext context) {
@@ -543,7 +626,6 @@ class _StockTabState extends State<StockTab> {
                                   const SizedBox(
                                     height: 20,
                                   ),
-//
                                   const Text("Quantity"),
                                   TextFormField(
                                     controller: itemQuantityUpdate,
@@ -551,7 +633,6 @@ class _StockTabState extends State<StockTab> {
                                   const SizedBox(
                                     height: 20,
                                   ),
-//
                                   const Text("Single Price"),
                                   TextFormField(
                                     controller: itemSinglePriceUpdate,
@@ -559,10 +640,17 @@ class _StockTabState extends State<StockTab> {
                                   const SizedBox(
                                     height: 20,
                                   ),
-//
                                   const Text("Bulk Price"),
                                   TextFormField(
                                     controller: itemBulkPriceUpdat,
+                                  ),
+                                  const Text("Purchase Frequency"),
+                                  TextFormField(
+                                    controller: itemPurchaseFreqUpdate,
+                                  ),
+                                  const Text("Total purchase"),
+                                  TextFormField(
+                                    controller: itemTotPurchaseUpdate,
                                   ),
                                 ],
                               ),
@@ -574,14 +662,17 @@ class _StockTabState extends State<StockTab> {
                                       MainAxisAlignment.spaceEvenly,
                                   children: [
                                     ElevatedButton(
-                                      onPressed: () {
-                                        bankDB.updateStock(
-                                            itemNameUpdate.text,
-                                            itemQuantityUpdate.text,
-                                            itemSinglePriceUpdate.text,
-                                            itemBulkPriceUpdat.text,
-                                            itemUpdatedCont,
-                                            data['_itemId']);
+                                      onPressed: () async {
+                                        data.name = itemNameUpdate.text;
+                                        data.quantity =
+                                            int.parse(itemQuantityUpdate.text);
+                                        data.singlePrice = double.parse(
+                                            itemSinglePriceUpdate.text);
+                                        data.bulkPrice = double.parse(
+                                            itemBulkPriceUpdat.text);
+                                        data.updatedAt = DateTime.now();
+                                        await data.save();
+                                        loadItemData();
                                         Navigator.of(context,
                                                 rootNavigator: true)
                                             .pop("dialog");
@@ -596,9 +687,15 @@ class _StockTabState extends State<StockTab> {
                                       },
                                       child: const Text("Update"),
                                     ),
+                                    // # on This and another delete function some apply kind of comfirmation
                                     ElevatedButton(
-                                      onPressed: () {
-                                        bankDB.deleteStock(data['_itemId']);
+                                      onPressed: () async {
+                                        await Item()
+                                            .select()
+                                            .id
+                                            .equals(data.id)
+                                            .delete();
+                                        loadItemData();
                                         Navigator.of(context,
                                                 rootNavigator: true)
                                             .pop("dialog");
@@ -611,10 +708,10 @@ class _StockTabState extends State<StockTab> {
                                           ),
                                         );
                                       },
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.redAccent,
-                                      ),
-                                      child: const Text("Delete"),
+                                      style: ElevatedButton.styleFrom(),
+                                      child: const Text("Delete",
+                                          style: TextStyle(
+                                              color: Colors.redAccent)),
                                     ),
                                   ])
                             ],
@@ -623,18 +720,16 @@ class _StockTabState extends State<StockTab> {
                       });
                 }),
                 cells: [
-                  DataCell(Text(data['_itemId'].toString())),
-                  DataCell(Text(data['itemName'])),
-                  DataCell(Text(data['itemQuantity'].toString())),
-                  DataCell(Text(data['sellingPriceSingle'].toString())),
-                  DataCell(Text(
-                      (data['itemQuantity'] * data['sellingPriceSingle'])
-                          .toString())),
-                  // DataCell(Text(e.itemId.toString())),
-                  // DataCell(Text(e.itemName)),
-                  // DataCell(Text(e.itemQuantity.toString())),
-                  // DataCell(Text(e.singlePrice.toString())),
-                  // DataCell(Text((e.itemQuantity * e.singlePrice).toString())),
+                  DataCell(Text(data.id.toString())),
+                  DataCell(Text(data.name.toString())),
+                  DataCell(Text(data.quantity.toString())),
+                  DataCell(Text(data.singlePrice.toString())),
+                  DataCell(
+                    Text(
+                      (data.quantity! * num.parse(data.singlePrice.toString()))
+                          .toString(),
+                    ),
+                  ),
                 ]))
         .toList();
   }

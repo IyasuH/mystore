@@ -1,11 +1,9 @@
-import 'dart:async';
+// ignore_for_file: use_build_context_synchronously, depend_on_referenced_packages
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:mystore/db/storeDB.dart';
-
-import '../models/accounts.dart';
-import '../models/sales.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:intl/intl.dart';
+import '../models/model.dart';
 
 class CashTab extends StatefulWidget {
   const CashTab({super.key});
@@ -15,25 +13,42 @@ class CashTab extends StatefulWidget {
 }
 
 class _CashTabState extends State<CashTab> {
+  List<Bank> bankSQF = [];
+  List<Sale> cashSales = [];
+  double totalInlCash = 0;
+  double totalInAcc = 0;
+  loadCashSalesData() async {
+    totalInlCash = 0;
+    cashSales = await Sale().select().BankId.equals(1).toList();
+    for (var ele in cashSales) {
+      totalInlCash += ele.revenue!;
+    }
+    setState(() {});
+  }
+
+  loadBankData() async {
+    // here I make the query greater than because
+    // id 1 is for cash
+    totalInAcc = 0;
+    bankSQF = await Bank().select().id.greaterThan(1).toList();
+    for (var ele in bankSQF) {
+      totalInAcc += ele.amount!;
+    }
+    setState(() {});
+  }
+
   @override
   void initState() {
-    dbHelper.init();
+    loadCashSalesData();
+    loadBankData();
     super.initState();
   }
 
-  List cashSales = [];
   @override
   Widget build(BuildContext context) {
-    cashSales = [];
-    for (var element in sales) {
-      // here assuming that bankId 1 is for cash
-      if (element.bankId == 1) {
-        cashSales.add(element);
-      }
-    }
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(13, 24, 13, 10),
+        padding: const EdgeInsets.fromLTRB(13, 23, 13, 8.5),
         child: Column(
           children: [
             Padding(
@@ -51,8 +66,7 @@ class _CashTabState extends State<CashTab> {
               ),
             ),
             SizedBox(
-              height: 658,
-              // padding: EdgeInsets.only(top: 10),
+              height: 650,
               child: ClipRRect(
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(20),
@@ -103,10 +117,11 @@ class _CashTabState extends State<CashTab> {
                           child: Row(
                             // ignore: prefer_const_literals_to_create_immutables
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: const [
+                            children: [
+                              // ignore: prefer_const_constructors
                               Text(
                                 'Total in Accounts',
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
                                   letterSpacing: 1.5,
@@ -115,8 +130,8 @@ class _CashTabState extends State<CashTab> {
                                 ),
                               ),
                               Text(
-                                '\$ 75,000',
-                                style: TextStyle(
+                                '\$ $totalInAcc',
+                                style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w700,
                                 ),
@@ -139,49 +154,36 @@ class _CashTabState extends State<CashTab> {
                               )
                             ],
                           ),
-                          child: FutureBuilder(
-                              future: _query(),
-                              builder: (context, AsyncSnapshot snapshot) {
-                                if (snapshot.hasData) {
-                                  return ListView(
-                                    children: [
-                                      SingleChildScrollView(
-                                        scrollDirection: Axis.horizontal,
-                                        child: DataTable(
-                                          showBottomBorder: true,
-                                          // ignore: prefer_const_literals_to_create_immutables
-                                          columns: [
-                                            const DataColumn(
-                                                label: Text('Date')),
-                                            const DataColumn(
-                                                label: Text('Bank')),
-                                            const DataColumn(
-                                              label: Text('Amount'),
-                                              numeric: true,
-                                            ),
-                                          ],
-                                          rows: _accountsRow(snapshot.data),
-                                        ),
-                                      )
-                                    ],
-                                  );
-                                }
-                                // ignore: prefer_const_constructors
-                                return Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 110.0, horizontal: 7.0),
-                                  child: const CircularProgressIndicator(
-                                    color: Colors.amber,
-                                  ),
-                                );
-                              }),
+                          child: ListView(
+                            children: [
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: DataTable(
+                                  showBottomBorder: true,
+                                  // ignore: prefer_const_literals_to_create_immutables
+                                  columns: [
+                                    const DataColumn(label: Text('Bank')),
+                                    const DataColumn(
+                                      label: Text('Amount'),
+                                      numeric: true,
+                                    ),
+                                    const DataColumn(
+                                        label: Text('Account No.')),
+                                    const DataColumn(
+                                        label: Text('Created Day')),
+                                  ],
+                                  rows: _accountsRow(),
+                                ),
+                              )
+                            ],
+                          ),
                         ),
                         const SizedBox(
-                          height: 20,
+                          height: 15,
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(
-                              vertical: 10, horizontal: 5),
+                              vertical: 7, horizontal: 5),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             // ignore: prefer_const_literals_to_create_immutables
@@ -232,9 +234,9 @@ class _CashTabState extends State<CashTab> {
                                   color: Colors.blueGrey,
                                 ),
                               ),
-                              const Text(
-                                '\$ 5000',
-                                style: TextStyle(
+                              Text(
+                                '\$ $totalInlCash',
+                                style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w700,
                                 ),
@@ -290,30 +292,20 @@ class _CashTabState extends State<CashTab> {
     );
   }
 
-  final dbHelper = myStoreDatabaseHelper();
-
-  _query() async {
-    print("accounts:");
-    List<Map> accounts = await dbHelper.queryAllAccount().timeout(
-        const Duration(milliseconds: 3000),
-        onTimeout: () => throw TimeoutException('can\'t load'));
-    print(accounts);
-    return accounts;
-  }
-
   // two tables one for accounts and the other for cash
   TextEditingController bankNameUpdate = TextEditingController();
   TextEditingController bankAmountUpdate = TextEditingController();
-  TextEditingController bankAmountAccNumber = TextEditingController();
-  TextEditingController accountCreatedDate = TextEditingController();
-  List<DataRow> _accountsRow(List<Map<String, dynamic>> datas) {
-    return datas
+  TextEditingController bankAmountAccNumberUp = TextEditingController();
+  DateTime accountCreatedDateUp = DateTime.now();
+
+  List<DataRow> _accountsRow() {
+    return bankSQF
         .map((data) => DataRow(
               onLongPress: (() {
-                bankNameUpdate.text = data['bankName'];
-                bankAmountUpdate.text = data['amount'].toString();
-                bankAmountAccNumber.text = data['accountNumber'].toString();
-                accountCreatedDate.text = data['accountCreatedDate'];
+                bankNameUpdate.text = data.name.toString();
+                bankAmountUpdate.text = data.amount.toString();
+                bankAmountAccNumberUp.text = data.accountNumber.toString();
+                accountCreatedDateUp = data.accountDate!;
                 showDialog(
                     context: context,
                     builder: (BuildContext context) {
@@ -326,6 +318,15 @@ class _CashTabState extends State<CashTab> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              const Text("Bank Id"),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Text(data.id.toString(),
+                                  style: const TextStyle(color: Colors.blue)),
+                              const SizedBox(
+                                height: 15,
+                              ),
                               const Text("Bank Name"),
                               TextFormField(
                                 controller: bankNameUpdate,
@@ -342,15 +343,35 @@ class _CashTabState extends State<CashTab> {
                               ),
                               const Text("Account Number"),
                               TextFormField(
-                                controller: bankAmountAccNumber,
+                                controller: bankAmountAccNumberUp,
                               ),
                               const SizedBox(
                                 height: 15,
                               ),
                               const Text("Account Created Date"),
-                              TextFormField(
-                                controller: accountCreatedDate,
-                              ),
+                              TextButton(
+                                onPressed: () {
+                                  DatePicker.showDatePicker(context,
+                                      showTitleActions: true,
+                                      minTime: DateTime(2022, 1, 1),
+                                      maxTime: DateTime(2030, 12, 30),
+                                      theme: const DatePickerTheme(
+                                        headerColor: Colors.black,
+                                        backgroundColor: Colors.black,
+                                        itemStyle:
+                                            TextStyle(color: Colors.white),
+                                        doneStyle:
+                                            TextStyle(color: Colors.white),
+                                        cancelStyle:
+                                            TextStyle(color: Colors.white),
+                                      ), onConfirm: (date) {
+                                    accountCreatedDateUp = date;
+                                  });
+                                },
+                                child: Text(DateFormat()
+                                    .add_yMd()
+                                    .format(accountCreatedDateUp)),
+                              )
                             ],
                           ),
                           const SizedBox(
@@ -361,13 +382,16 @@ class _CashTabState extends State<CashTab> {
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 ElevatedButton(
-                                  onPressed: () {
-                                    dbHelper.updateAccount(
-                                        bankNameUpdate.text,
-                                        bankAmountAccNumber.text,
-                                        bankAmountUpdate.text,
-                                        accountCreatedDate.text,
-                                        data['_id']);
+                                  onPressed: () async {
+                                    data.name = bankNameUpdate.text;
+                                    data.amount =
+                                        double.parse(bankAmountUpdate.text);
+                                    data.accountNumber =
+                                        bankAmountAccNumberUp.text;
+                                    data.accountDate = accountCreatedDateUp;
+                                    data.updatedAt = DateTime.now();
+                                    await data.save();
+                                    loadBankData();
                                     Navigator.of(context, rootNavigator: true)
                                         .pop("dialog");
                                     ScaffoldMessenger.of(context).showSnackBar(
@@ -381,8 +405,14 @@ class _CashTabState extends State<CashTab> {
                                   child: const Text("Update"),
                                 ),
                                 ElevatedButton(
-                                  onPressed: () {
-                                    dbHelper.deleteAccount(data['_id']);
+                                  onPressed: () async {
+                                    // delete using ID
+                                    await Bank()
+                                        .select()
+                                        .id
+                                        .equals(data.id)
+                                        .delete();
+                                    loadBankData();
                                     Navigator.of(context, rootNavigator: true)
                                         .pop("dialog");
                                     ScaffoldMessenger.of(context).showSnackBar(
@@ -393,10 +423,10 @@ class _CashTabState extends State<CashTab> {
                                       ),
                                     );
                                   },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.redAccent,
-                                  ),
-                                  child: const Text("Delete"),
+                                  child: const Text("Delete",
+                                      style: TextStyle(
+                                        color: Colors.redAccent,
+                                      )),
                                 ),
                               ])
                         ]),
@@ -404,9 +434,12 @@ class _CashTabState extends State<CashTab> {
                     });
               }),
               cells: [
-                DataCell(Text(data['accountCreatedDate'])),
-                DataCell(Text(data['bankName'])),
-                DataCell(Text(data['amount'].toString())),
+                DataCell(Text(data.name.toString())),
+                DataCell(Text(data.amount.toString())),
+                DataCell(Text(data.accountNumber.toString())),
+                // DataCell(Text(data.accountDate.toString())),
+                DataCell(
+                    Text(DateFormat('yyyy-MM-dd').format(data.accountDate!))),
               ],
             ))
         .toList();
@@ -414,25 +447,68 @@ class _CashTabState extends State<CashTab> {
 
   List<DataRow> _cashRows() {
     return cashSales
-        .map((e) => DataRow(
-              onLongPress: (() {
+        .map((data) => DataRow(
+              onLongPress: (() async {
+                var itemSelecetd =
+                    await Item().select().id.equals(data.ItemId).toSingle();
+                var clientSelected =
+                    await Client().select().id.equals(data.ClientId).toSingle();
+                TextStyle topicStyle = const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                    wordSpacing: 1.4,
+                    color: Colors.grey);
+                TextStyle infoStyle =
+                    const TextStyle(fontSize: 15, color: Colors.blueGrey);
                 showDialog(
                     context: context,
                     builder: (BuildContext context) {
                       return AlertDialog(
-                        title: const Text('Cash'),
-                        backgroundColor: Colors.black54,
-                        content: SizedBox(
-                          height: 400,
-                          child: Column(),
-                        ),
-                      );
+                          scrollable: true,
+                          title: const Text('Cash'),
+                          backgroundColor: Colors.black54,
+                          content: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("Item Name", style: topicStyle),
+                              Text(itemSelecetd!.name!, style: infoStyle),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Text("Clinet Name", style: topicStyle),
+                              Text(clientSelected!.name!, style: infoStyle),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Text("Quantity", style: topicStyle),
+                              Text(data.quantity.toString(), style: infoStyle),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Text("Date", style: topicStyle),
+                              Text(DateFormat('yyyy-MM-dd').format(data.date!),
+                                  style: infoStyle),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Text("Revenue", style: topicStyle),
+                              Text(data.revenue.toString(), style: infoStyle),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Text("Add Info", style: topicStyle),
+                              Text(data.info!, style: infoStyle),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                            ],
+                          ));
                     });
               }),
               cells: [
-                DataCell(Text(e.soldDate)),
-                DataCell(Text(e.itemId.toString())),
-                DataCell(Text(e.salesRevenu.toString())),
+                DataCell(Text(DateFormat('yyyy-MM-dd').format(data.date!))),
+                DataCell(Text(data.ItemId.toString())),
+                DataCell(Text(data.revenue.toString())),
               ],
             ))
         .toList();
