@@ -18,9 +18,9 @@ class MyApp extends StatelessWidget {
       themeMode: ThemeMode.system,
       theme: ThemeData(
         // Material 3 makes to look so much great but
-        // a lot of overrflows hppend
+        // a lot of overrflows happend
         useMaterial3: true,
-
+        // one thing for sure is that I have to readjust the color for light theme also
         brightness: Brightness.dark,
         primarySwatch: Colors.blue,
       ),
