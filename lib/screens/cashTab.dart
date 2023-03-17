@@ -15,8 +15,15 @@ class CashTab extends StatefulWidget {
 class _CashTabState extends State<CashTab> {
   List<Bank> bankSQF = [];
   List<Sale> cashSales = [];
+  List<Bank> bankTTM = [];
   double totalInlCash = 0;
   double totalInAcc = 0;
+  int selectedBank = 1;
+  int cashAccId = 1;
+  loadBankDataTTM() async {
+    bankTTM = await Bank().select().toList();
+  }
+
   loadCashSalesData() async {
     totalInlCash = 0;
     cashSales = await Sale().select().BankId.equals(1).toList();
@@ -39,6 +46,7 @@ class _CashTabState extends State<CashTab> {
 
   @override
   void initState() {
+    loadBankDataTTM();
     loadCashSalesData();
     loadBankData();
     super.initState();
@@ -453,6 +461,8 @@ class _CashTabState extends State<CashTab> {
                     await Item().select().id.equals(data.ItemId).toSingle();
                 var clientSelected =
                     await Client().select().id.equals(data.ClientId).toSingle();
+                var cashId =
+                    await Bank().select().id.equals(data.BankId).toSingle();
                 TextStyle topicStyle = const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w500,
@@ -463,46 +473,124 @@ class _CashTabState extends State<CashTab> {
                 showDialog(
                     context: context,
                     builder: (BuildContext context) {
-                      return AlertDialog(
-                          scrollable: true,
-                          title: const Text('Cash'),
-                          backgroundColor: Colors.black54,
-                          content: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text("Item Name", style: topicStyle),
-                              Text(itemSelecetd!.name!, style: infoStyle),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Text("Clinet Name", style: topicStyle),
-                              Text(clientSelected!.name!, style: infoStyle),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Text("Quantity", style: topicStyle),
-                              Text(data.quantity.toString(), style: infoStyle),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Text("Date", style: topicStyle),
-                              Text(DateFormat('yyyy-MM-dd').format(data.date!),
-                                  style: infoStyle),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Text("Revenue", style: topicStyle),
-                              Text(data.revenue.toString(), style: infoStyle),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Text("Add Info", style: topicStyle),
-                              Text(data.info!, style: infoStyle),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                            ],
-                          ));
+                      return StatefulBuilder(builder:
+                          (BuildContext context, StateSetter setState) {
+                        return AlertDialog(
+                            scrollable: true,
+                            title: const Text('Cash'),
+                            backgroundColor: Colors.black54,
+                            content: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text("Item Name", style: topicStyle),
+                                Text(itemSelecetd!.name!, style: infoStyle),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Text("Clinet Name", style: topicStyle),
+                                Text(clientSelected!.name!, style: infoStyle),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Text("Quantity", style: topicStyle),
+                                Text(data.quantity.toString(),
+                                    style: infoStyle),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Text("Date", style: topicStyle),
+                                Text(
+                                    DateFormat('yyyy-MM-dd').format(data.date!),
+                                    style: infoStyle),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Text("Revenue", style: topicStyle),
+                                Text(data.revenue.toString(), style: infoStyle),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Text("Add Info", style: topicStyle),
+                                Text(data.info!, style: infoStyle),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Row(
+                                  children: [
+                                    Container(
+                                        decoration: const BoxDecoration(
+                                            color: Colors.black26),
+                                        child: DropdownButton(
+                                          value: selectedBank,
+                                          onChanged: (int? newValue) {
+                                            if (mounted) {
+                                              setState(() {
+                                                selectedBank = newValue!;
+                                              });
+                                            }
+                                          },
+                                          items: bankTTM.map((data) {
+                                            return DropdownMenuItem(
+                                                value: data.id,
+                                                child: Text(data.name!));
+                                          }).toList(),
+                                        )),
+                                    ElevatedButton(
+                                      onPressed: () async {
+                                        // This method to update sales to bankId and
+                                        // and to update Bank amount
+                                        // (decrease from cash and increase to the other bank)
+                                        var bankDeposit = await Bank()
+                                            .select()
+                                            .id
+                                            .equals(selectedBank)
+                                            .toSingle();
+                                        // increase the deposit amount
+                                        await Bank()
+                                            .select()
+                                            .id
+                                            .equals(selectedBank)
+                                            .update({
+                                          "amount": bankDeposit!.amount! +
+                                              data.revenue!
+                                        });
+
+                                        var cashAcc = await Bank()
+                                            .select()
+                                            .id
+                                            .equals(cashAccId)
+                                            .toSingle();
+                                        // decrease the cash amunt
+                                        await Bank()
+                                            .select()
+                                            .id
+                                            .equals(cashAccId)
+                                            .update({
+                                          "amount":
+                                              cashAcc!.amount! - data.revenue!
+                                        });
+                                        data.BankId = selectedBank;
+                                        await data.save();
+                                        loadCashSalesData();
+                                        loadBankData();
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          const SnackBar(
+                                            content:
+                                                Text("Sales Revenue deposited"),
+                                          ),
+                                        );
+                                        Navigator.of(context,
+                                                rootNavigator: true)
+                                            .pop("dialog");
+                                      },
+                                      child: const Text('Deposit to cash'),
+                                    ),
+                                  ],
+                                )
+                              ],
+                            ));
+                      });
                     });
               }),
               cells: [
