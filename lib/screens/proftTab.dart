@@ -2,67 +2,50 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
-class ChartSampleData {
-  ChartSampleData({this.x, this.y});
-  final dynamic x;
-  final dynamic y;
+class ChartData {
+  ChartData(this.x, this.y);
+  final int x;
+  final double y;
 }
 
-class MonthlyProfitColumn extends StatefulWidget {
-  const MonthlyProfitColumn({super.key});
+class profitColumChart extends StatefulWidget {
+  const profitColumChart({super.key});
 
   @override
-  State<MonthlyProfitColumn> createState() => _MonthlyProfitColumnState();
+  State<profitColumChart> createState() => _profitColumChartState();
 }
 
-class _MonthlyProfitColumnState extends State<MonthlyProfitColumn> {
+class _profitColumChartState extends State<profitColumChart> {
   @override
   Widget build(BuildContext context) {
-    return Container();
-  }
-
-  SfCartesianChart _monthlyProfitColumnChart() {
-    return SfCartesianChart(
-      plotAreaBorderWidth: 0,
-      title: ChartTitle(text: ''),
-      primaryXAxis: CategoryAxis(
-          labelStyle: TextStyle(color: Colors.white),
-          axisLine: AxisLine(width: 0),
-          labelPosition: ChartDataLabelPosition.inside,
-          majorTickLines: MajorTickLines(width: 0),
-          majorGridLines: MajorGridLines(width: 0)),
-      primaryYAxis: NumericAxis(isVisible: false, minimum: 0, maximum: 9000),
-      series: _getRoundedColumnSeries(),
-      // tooltipBehavior: ,
-    );
-  }
-
-  List<ColumnSeries<ChartSampleData, String>> _getRoundedColumnSeries() {
-    return <ColumnSeries<ChartSampleData, String>>[
-      ColumnSeries<ChartSampleData, String>(
-        width: 0.9,
-        // ignore: prefer_const_constructors
-        dataLabelSettings: DataLabelSettings(
-            isVisible: true, labelAlignment: ChartDataLabelAlignment.top),
-        dataSource: <ChartSampleData>[
-          ChartSampleData(x: 'Jan', y: 1000),
-          ChartSampleData(x: 'Feb', y: 1000),
-          ChartSampleData(x: 'Mar', y: 1000),
-          ChartSampleData(x: 'Apr', y: 1000),
-          ChartSampleData(x: 'May', y: 1000),
-          ChartSampleData(x: 'Jun', y: 1000),
-          ChartSampleData(x: 'Jul', y: 1000),
-          ChartSampleData(x: 'Aug', y: 1000),
-          ChartSampleData(x: 'Sep', y: 1000),
-          ChartSampleData(x: 'Oct', y: 1000),
-          ChartSampleData(x: 'Nov', y: 1000),
-          ChartSampleData(x: 'Dec', y: 1000),
-        ],
-        borderRadius: BorderRadius.circular(10),
-        xValueMapper: (ChartSampleData sales, _) => sales.x as String,
-        yValueMapper: (ChartSampleData sales, _) => sales.y,
-      )
+    // The data source will be dependent on the touched and also  its number
+    final List<ChartData> profitData = [
+      ChartData(1, 100),
+      ChartData(2, 87),
+      ChartData(3, 65),
+      ChartData(4, 98),
+      ChartData(5, 81),
+      ChartData(6, 120),
+      ChartData(7, 90),
     ];
+    return Scaffold(
+      body: Center(
+          child: Container(
+        child: SfCartesianChart(series: <ChartSeries<ChartData, int>>[
+          ColumnSeries(
+            isVisibleInLegend: true,
+            isVisible: true,
+            // isTrackVisible: true,
+            dataSource: profitData,
+            xValueMapper: (ChartData data, _) => data.x,
+            yValueMapper: (ChartData data, _) => data.y,
+            borderRadius: const BorderRadius.all(Radius.circular(10)),
+            // width: 0.9,
+            // spacing: 0.3,
+          ),
+        ]),
+      )),
+    );
   }
 }
 
@@ -74,6 +57,60 @@ class ProfitTab extends StatefulWidget {
 }
 
 class _ProfitTabState extends State<ProfitTab> {
+  // Color profitPrimaryColor = const Color.fromRGBO(255, 38, 255, 0);
+  Color profitPrimaryColor = Colors.blueAccent;
+
+  // Color profitSecondaryColor = const Color.fromRGBO(30, 19, 224, 0);
+  Color profitSecondaryColor = Colors.blue;
+  Color thirtyPerCentColor = Colors.grey;
+  int _selectedIndex = 0;
+  // ignore: non_constant_identifier_names
+  final List<String> _profitTimely = ["D", "W", "M", "Y"];
+  Widget _buildTimelyChoose(int index) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedIndex = index;
+        });
+      },
+      child: Container(
+        height: 55.0,
+        width: 55.0,
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: _selectedIndex == index ? Colors.green : Colors.white10,
+            width: 2.0,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: _selectedIndex == index
+                  ? const Color.fromARGB(255, 1, 203, 105)
+                  : Colors.black26,
+              // spreadRadius: 1.5,
+              blurRadius: 5,
+              blurStyle: BlurStyle.outer,
+            )
+          ],
+          borderRadius: BorderRadius.circular(19),
+        ),
+        child: Center(
+          child: Text(
+            _profitTimely[index],
+            // textAlign: TextAlign.center,
+            style: TextStyle(
+                fontSize: 22,
+                color: _selectedIndex == index
+                    ? const Color.fromARGB(255, 1, 203, 105)
+                    : Colors.white,
+                fontWeight: _selectedIndex == index
+                    ? FontWeight.w500
+                    : FontWeight.w300),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -82,7 +119,163 @@ class _ProfitTabState extends State<ProfitTab> {
       ),
       body: SafeArea(
         child: ListView(
-          children: const [MonthlyProfitColumn()],
+          children: [
+            const SizedBox(
+              height: 20.0,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: _profitTimely
+                    .asMap()
+                    .entries
+                    .map(
+                      (MapEntry map) => _buildTimelyChoose(map.key),
+                    )
+                    .toList(),
+              ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            const SizedBox(height: 350, child: profitColumChart()),
+            Row(children: [
+              Column(
+                children: [
+                  Container(
+                    height: 190,
+                    width: 185,
+                    padding: const EdgeInsets.all(10),
+                    margin: const EdgeInsets.only(
+                        top: 14, bottom: 7, right: 7, left: 14),
+                    decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.green,
+                          width: 2.0,
+                        ),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Color.fromARGB(255, 1, 203, 105),
+                            blurStyle: BlurStyle.outer,
+                            blurRadius: 7,
+                          )
+                        ],
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(20)),
+                        color: Colors.black45),
+                    // ignore: prefer_const_literals_to_create_immutables
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: const [
+                        Text('Total Profit'),
+                        Text('Today'),
+                        Text('\$400'),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    height: 240,
+                    width: 185,
+                    padding: const EdgeInsets.all(10),
+                    margin: const EdgeInsets.only(
+                        top: 7, bottom: 14, right: 7, left: 14),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.green,
+                        width: 2.0,
+                      ),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Color.fromARGB(255, 1, 203, 105),
+                          blurStyle: BlurStyle.outer,
+                          blurRadius: 7,
+                        )
+                      ],
+                      borderRadius: const BorderRadius.all(Radius.circular(20)),
+                      color: Colors.black45,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: const [
+                        Text('Total Profit'),
+                        Text('Today'),
+                        Text('\$400'),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+              Column(
+                children: [
+                  Container(
+                    height: 240,
+                    width: 185,
+                    padding: const EdgeInsets.all(10),
+                    margin: const EdgeInsets.only(
+                        top: 14, bottom: 7, right: 13, left: 7),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.redAccent,
+                        width: 2.0,
+                      ),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Color.fromARGB(255, 255, 42, 42),
+                          blurStyle: BlurStyle.outer,
+                          blurRadius: 7,
+                        )
+                      ],
+                      borderRadius: const BorderRadius.all(Radius.circular(20)),
+                      color: Colors.black45,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: const [
+                        Text('Total Profit'),
+                        Text('Today'),
+                        Text('\$400'),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    height: 190,
+                    width: 185,
+                    padding: const EdgeInsets.all(10),
+                    margin: const EdgeInsets.only(
+                        top: 7, bottom: 14, right: 13, left: 7),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.green,
+                        width: 2.0,
+                      ),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Color.fromARGB(255, 1, 203, 105),
+                          blurStyle: BlurStyle.outer,
+                          blurRadius: 7,
+                        )
+                      ],
+                      borderRadius: const BorderRadius.all(Radius.circular(20)),
+                      color: Colors.black45,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: const [
+                        Text('Total Profit'),
+                        Text('Today'),
+                        Text('\$400'),
+                      ],
+                    ),
+                  )
+                ],
+              )
+            ])
+          ],
         ),
       ),
     );

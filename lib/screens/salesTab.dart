@@ -1,12 +1,18 @@
 // ignore: file_names
-// ignore_for_file: non_constant_identifier_names, use_build_context_synchronously
+// ignore_for_file: non_constant_identifier_names, use_build_context_synchronously, depend_on_referenced_packages, unnecessary_brace_in_string_interps
+import 'dart:io';
+
+import 'package:excel/excel.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../models/model.dart';
 import '../models/yearMonthList.dart';
-// ignore: depend_on_referenced_packages
+// since there is some kind of conflict with context i imported as Path
+import 'package:path/path.dart' as Path;
 import 'package:intl/intl.dart';
 
 // ignore: must_be_immutable
@@ -32,7 +38,6 @@ class _SalesBarChartState extends State<SalesBarChart> {
       }
     }
     setState(() {});
-    build(context);
   }
 
   @override
@@ -210,31 +215,35 @@ class _SalesBarChartState extends State<SalesBarChart> {
                 icon: const Icon(Icons.candlestick_chart_outlined)),
             SizedBox(
               height: 205,
-              child: BarChart(
-                BarChartData(
-                  alignment: BarChartAlignment.spaceBetween,
-                  titlesData: FlTitlesData(
-                    leftTitles: AxisTitles(),
-                    rightTitles: AxisTitles(),
-                    topTitles: AxisTitles(),
-                    bottomTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        getTitlesWidget: bottomTitles,
-                        reservedSize: 20,
+              width: 800,
+              child: ListView(scrollDirection: Axis.horizontal, children: [
+                BarChart(
+                  BarChartData(
+                    alignment: BarChartAlignment.spaceBetween,
+                    backgroundColor: Colors.red,
+                    titlesData: FlTitlesData(
+                      leftTitles: AxisTitles(),
+                      rightTitles: AxisTitles(),
+                      topTitles: AxisTitles(),
+                      bottomTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          getTitlesWidget: bottomTitles,
+                          reservedSize: 20,
+                        ),
                       ),
                     ),
-                  ),
-                  barTouchData: BarTouchData(
-                    touchTooltipData: BarTouchTooltipData(
-                      tooltipBgColor: const Color.fromARGB(255, 40, 40, 40),
+                    barTouchData: BarTouchData(
+                      touchTooltipData: BarTouchTooltipData(
+                        tooltipBgColor: const Color.fromARGB(255, 40, 40, 40),
+                      ),
                     ),
+                    borderData: FlBorderData(show: false),
+                    gridData: FlGridData(show: false),
+                    barGroups: monthSales,
                   ),
-                  borderData: FlBorderData(show: false),
-                  gridData: FlGridData(show: false),
-                  barGroups: monthSales,
                 ),
-              ),
+              ]),
             ),
           ],
         ),
@@ -252,6 +261,7 @@ class SalesTab extends StatefulWidget {
 
 class _SalesTabState extends State<SalesTab> {
   List<Sale> saleSQFL = [];
+  List<List> monthSalesFXL = [];
   List<Sale> saleMonthly = [];
   List<Item> itemSQFNAML = [];
   List<Client> clientSQFNAML = [];
@@ -268,10 +278,108 @@ class _SalesTabState extends State<SalesTab> {
     itemSQFNAML = await Item().select().toList();
   }
 
+  List<String> salesTbleRows = [];
+  List<Map> salesItemMap = [];
+  String salesSheetName = "Sheet1"; // Expense
+  int salesColuNum = 7;
+  var salesSelectedExcel;
+
+  // This function is just to pick XL file from folder
+  pickFile() async {
+    FilePickerResult? result = await FilePicker.platform
+        .pickFiles(type: FileType.custom, allowedExtensions: ['xlsx']);
+    if (result != null) {
+      File xlFile = File(result.files.single.path!);
+      var bytes = xlFile.readAsBytesSync();
+      var excel = Excel.decodeBytes(bytes);
+      salesSelectedExcel = excel;
+      getList();
+    } else {
+      // snacbar here
+      print("No file selected");
+    }
+  }
+
+  // This funtion is to process the given file and convert it into Map type
+  getList() {
+    salesTbleRows.clear();
+    salesItemMap.clear();
+    if (salesSelectedExcel[salesSheetName].rows.length <= 1) {
+      // snackbar here
+      print("Row number is less than 1");
+    } else {
+      for (var i = 1; i < salesSelectedExcel[salesSheetName].rows.length; i++) {
+        for (var row in salesSelectedExcel[salesSheetName].rows[i]) {
+          salesTbleRows.add(row.value.toString());
+        }
+      }
+      for (var i = 0; i < salesTbleRows.length; i += salesColuNum) {
+        salesItemMap.add({
+          "ItemId": int.parse(salesTbleRows[i + 0]),
+          "ClientId": int.parse(salesTbleRows[i + 1]),
+          "BankId": int.parse(salesTbleRows[i + 2]),
+          "quantity": int.parse(salesTbleRows[i + 3]),
+          "date": DateTime.parse(salesTbleRows[i + 4]),
+          "revenue": double.parse(salesTbleRows[i + 5]),
+          "info": salesTbleRows[i + 6],
+        });
+      }
+      for (var ele in salesItemMap) {
+        saveSales(ele);
+      }
+    }
+    setState(() {});
+  }
+
+  // to save the loaded data to database
+  saveSales(ele) async {
+    // ITEM UPDATE
+    // item - quantity, purchaseFreq, totPurchase
+    var itemSold = await Item().select().id.equals(ele['ItemId']).toSingle();
+    await Item().select().id.equals(ele['ItemId']).update({
+      "quantity": itemSold!.quantity! - ele['quantity'],
+      "purchaseFreq": itemSold.purchaseFreq! + ele['quantity'],
+      "totPurchase": itemSold.totPurchase! + ele['revenue']
+    });
+    // CLIENT UPDATE
+    // client - purchaseFreq, totPurchase
+    var clientBuy =
+        await Client().select().id.equals(ele['ClientId']).toSingle();
+    await Client().select().id.equals(ele['ClientId']).update({
+      "purchaseFreq": clientBuy!.purchaseFreq! + ele['quantity'],
+      "totPurchase": clientBuy.totPurchase! + ele['revenue'],
+    });
+    // BANK UPDATE
+    // bank - Amount
+    var bankCredited =
+        await Bank().select().id.equals(ele['BankId']).toSingle();
+    await Bank()
+        .select()
+        .id
+        .equals(ele['BankId'])
+        .update({"amount": bankCredited!.amount! + ele['revenue']});
+    // SALE INSERT
+    // ALL
+    Sale salesSQFList = Sale();
+    salesSQFList.ItemId = ele['ItemId'];
+    salesSQFList.ClientId = ele['ClientId'];
+    salesSQFList.BankId = ele['BankId'];
+    salesSQFList.quantity = ele['quantity'];
+    salesSQFList.date = ele['date'];
+    salesSQFList.revenue = ele['revenue'];
+    salesSQFList.info = ele['info'];
+    await salesSQFList.save();
+    loadSaleData();
+    loadBankDataNAM();
+    loadClientDataNAM();
+    loadItemDataNAM();
+  }
+
   double monthlySalesRevenu = 0;
   loadSaleData() async {
     saleSQFL = await Sale().select().toList();
     saleMonthly = [];
+    monthSalesFXL = [];
     monthlySalesRevenu = 0;
     for (var element in saleSQFL) {
       if ((element.date!).year == int.parse(selectedYear)) {
@@ -280,6 +388,28 @@ class _SalesTabState extends State<SalesTab> {
           saleMonthly.add(element);
         }
       }
+    }
+    monthSalesFXL.add([
+      'SalesId',
+      'ItemId',
+      'ClientId',
+      'BankId',
+      'Quantity',
+      'Date',
+      'Revenue',
+      'AddInfo'
+    ]);
+    for (var ele in saleMonthly) {
+      monthSalesFXL.add([
+        ele.id,
+        ele.ItemId,
+        ele.ClientId,
+        ele.BankId,
+        ele.quantity,
+        DateFormat('yyy-MM-dd').format(ele.date!),
+        ele.revenue,
+        ele.info,
+      ]);
     }
     setState(() {});
   }
@@ -326,6 +456,34 @@ class _SalesTabState extends State<SalesTab> {
       appBar: AppBar(
         title: const Text('Sales'),
         actions: [
+          IconButton(
+            onPressed: () async {
+              var excel = Excel.createExcel();
+              var sheetMSales = excel['Sheet1'];
+              for (var ele in monthSalesFXL) {
+                sheetMSales.appendRow(ele);
+              }
+              String outPutFile =
+                  "/storage/emulated/0/Download/Sales_Month-${selectedMonth}_Year-$selectedYear.xlsx";
+              List<int>? fileBytes = excel.save();
+              var res = await Permission.storage.request();
+              if (res.isGranted) {
+                if (fileBytes != null) {
+                  File(Path.join(outPutFile))
+                    ..createSync(recursive: true)
+                    ..writeAsBytesSync(fileBytes);
+                  // here snackbar to tell the file name
+                  print("Saved");
+                }
+              }
+            },
+            icon: const Icon(Icons.file_upload_outlined),
+          ),
+          IconButton(
+              onPressed: () {
+                pickFile();
+              },
+              icon: const Icon(Icons.file_present)),
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: () {
@@ -477,17 +635,7 @@ class _SalesTabState extends State<SalesTab> {
                             children: [
                               ElevatedButton(
                                   onPressed: () async {
-                                    Sale saleSQF = Sale();
-                                    saleSQF.ItemId = selectedItem;
-                                    saleSQF.ClientId = selectedClient;
-                                    saleSQF.BankId = selectedBank;
-                                    saleSQF.quantity =
-                                        int.parse(quantityCont.text);
-                                    saleSQF.date = itemSoldDateCont;
-                                    saleSQF.revenue =
-                                        double.parse(salesRevenu.text);
-                                    saleSQF.info = addInfoCont.text;
-                                    await saleSQF.save();
+                                    // Before creating new row in Sales table first lets update parent tables
                                     // ITEM UPDATE
                                     // item - quantity, purchaseFreq, totPurchase
                                     var itemSold = await Item()
@@ -539,6 +687,20 @@ class _SalesTabState extends State<SalesTab> {
                                       "amount": bankCredited!.amount! +
                                           double.parse(salesRevenu.text),
                                     });
+                                    // then finaly lets save the new row
+                                    // SALE INSERT
+                                    // ALL
+                                    Sale saleSQF = Sale();
+                                    saleSQF.ItemId = selectedItem;
+                                    saleSQF.ClientId = selectedClient;
+                                    saleSQF.BankId = selectedBank;
+                                    saleSQF.quantity =
+                                        int.parse(quantityCont.text);
+                                    saleSQF.date = itemSoldDateCont;
+                                    saleSQF.revenue =
+                                        double.parse(salesRevenu.text);
+                                    saleSQF.info = addInfoCont.text;
+                                    await saleSQF.save();
                                     loadSaleData();
                                     loadBankDataNAM();
                                     loadClientDataNAM();
@@ -972,7 +1134,6 @@ class _SalesTabState extends State<SalesTab> {
               dateUpdate = data.date!;
               revenueUpdate.text = data.revenue.toString();
               addInfoUpdate.text = data.info.toString();
-              // NO MORE UPDATE ON SALES
               showDialog(
                 context: context,
                 builder: (BuildContext context) {

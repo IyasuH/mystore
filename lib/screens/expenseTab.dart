@@ -1,8 +1,14 @@
 // ignore: file_names
 // ignore_for_file: non_constant_identifier_names, use_build_context_synchronously
 
+import 'dart:io';
+
+import 'package:excel/excel.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart' as Path;
+import 'package:permission_handler/permission_handler.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:fl_chart/fl_chart.dart';
 // ignore: depend_on_referenced_packages
@@ -379,17 +385,35 @@ class _ExpensesTabState extends State<ExpensesTab> {
   bool _sortAsc = true;
   int _sortColumnIndex = 0;
   int fixedExpenses = 0;
+  List<List> monthExpenseFXL = [];
   List<Expense> expenseSQFL = [];
   List<Expense> expenseMonthly = [];
   loadExpenseData() async {
     expenseSQFL = await Expense().select().toList();
     expenseMonthly = [];
+    monthExpenseFXL = [];
     for (var element in expenseSQFL) {
       if ((element.date!).year == int.parse(selectedYear)) {
         if ((element.date!).month == int.parse(selectedMonth)) {
           expenseMonthly.add(element);
         }
       }
+    }
+    monthExpenseFXL.add([
+      'ExpenseId',
+      'ExpesseName',
+      'Amount',
+      'Type',
+      'Date',
+    ]);
+    for (var ele in expenseMonthly) {
+      monthExpenseFXL.add([
+        ele.id,
+        ele.name,
+        ele.amount,
+        ele.type,
+        DateFormat('yyy-MM-dd').format(ele.date!)
+      ]);
     }
     setState(() {});
   }
@@ -404,6 +428,71 @@ class _ExpensesTabState extends State<ExpensesTab> {
   int variableMonthlyExpense = 0;
   List<FixedVariableData> fixedExpenseData = [];
   List<FixedVariableData> variableExpenseData = [];
+
+  List<String> expenseTbleRows = [];
+  List<Map> expenseItemMap = [];
+  String expenseSheetName = "Sheet1"; // Expense
+  int expenseColuNum = 4;
+  var expenseSelectedExcel;
+
+  // This function is just to pick XL file from folder
+  pickFile() async {
+    FilePickerResult? result = await FilePicker.platform
+        .pickFiles(type: FileType.custom, allowedExtensions: ['xlsx']);
+    if (result != null) {
+      File xlFile = File(result.files.single.path!);
+      var bytes = xlFile.readAsBytesSync();
+      var excel = Excel.decodeBytes(bytes);
+      expenseSelectedExcel = excel;
+      getList();
+    } else {
+      // snacbar here
+      print("No file selected");
+    }
+  }
+
+  // This funtion is to process the given file and convert it into Map type
+  getList() {
+    expenseTbleRows.clear();
+    expenseItemMap.clear();
+    if (expenseSelectedExcel[expenseSheetName].rows.length <= 1) {
+      // snackbar here
+      print("Row number is less than 1");
+    } else {
+      for (var i = 1;
+          i < expenseSelectedExcel[expenseSheetName].rows.length;
+          i++) {
+        for (var row in expenseSelectedExcel[expenseSheetName].rows[i]) {
+          expenseTbleRows.add(row.value.toString());
+        }
+      }
+      for (var i = 0; i < expenseTbleRows.length; i += expenseColuNum) {
+        expenseItemMap.add({
+          "name": expenseTbleRows[i + 0],
+          "amount": expenseTbleRows[i + 1],
+          "type": expenseTbleRows[i + 2],
+          "date": expenseTbleRows[i + 3],
+        });
+        print('date');
+        print(expenseTbleRows[i + 3]);
+      }
+      for (var ele in expenseItemMap) {
+        saveExpense(ele);
+      }
+    }
+    setState(() {});
+  }
+
+  // to save the loaded data to database
+  saveExpense(ele) async {
+    Expense expenseSQFList = Expense();
+    expenseSQFList.name = ele['name'];
+    expenseSQFList.amount = double.parse(ele['amount']);
+    expenseSQFList.type = ele['type'];
+    expenseSQFList.date = DateTime.parse(ele['date']);
+    await expenseSQFList.save();
+    loadExpenseData();
+  }
 
   @override
   void initState() {
@@ -457,6 +546,34 @@ class _ExpensesTabState extends State<ExpensesTab> {
       appBar: AppBar(
         title: const Text('Expenses'),
         actions: [
+          IconButton(
+            onPressed: () async {
+              var excel = Excel.createExcel();
+              var sheetMExpense = excel['Sheet1'];
+              for (var ele in monthExpenseFXL) {
+                sheetMExpense.appendRow(ele);
+              }
+              String outPutFile =
+                  "/storage/emulated/0/Download/Expense_Month-${selectedMonth}_Year-$selectedYear.xlsx";
+              List<int>? fileBytes = excel.save();
+              var res = await Permission.storage.request();
+              if (res.isGranted) {
+                if (fileBytes != null) {
+                  File(Path.join(outPutFile))
+                    ..createSync(recursive: true)
+                    ..writeAsBytesSync(fileBytes);
+                  // here snackbar to tell the file name
+                  print("Saved");
+                }
+              }
+            },
+            icon: const Icon(Icons.file_upload_outlined),
+          ),
+          IconButton(
+              onPressed: () {
+                pickFile();
+              },
+              icon: const Icon(Icons.file_present)),
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: () {

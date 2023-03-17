@@ -1,5 +1,9 @@
 // ignore_for_file: use_build_context_synchronously, depend_on_referenced_packages
 
+import 'dart:io';
+
+import 'package:excel/excel.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mystore/models/model.dart';
@@ -15,6 +19,81 @@ class _CustomerTabState extends State<CustomerTab> {
   List<Client> clientSQFL = [];
   List<Client> newClientMonthly = [];
   DateTime today = DateTime.now();
+  List<String> clientTbleRows = [];
+  List<Map> clientItemMap = [];
+  String clientSheetName = "Sheet1"; // Client
+  // every `Client` sheet should have the 6 column length
+  int clientColuNum = 9;
+
+  var clientSelectedExcel;
+  // This function is just to pick XL file from folder
+  pickFile() async {
+    FilePickerResult? result = await FilePicker.platform
+        .pickFiles(type: FileType.custom, allowedExtensions: ['xlsx']);
+    if (result != null) {
+      File xlFile = File(result.files.single.path!);
+      var bytes = xlFile.readAsBytesSync();
+      var excel = Excel.decodeBytes(bytes);
+      clientSelectedExcel = excel;
+      getList();
+    } else {
+      // snacbar here
+      print("No file selected");
+    }
+  }
+
+  // This funtion is to process the given file and convert it into Map type
+  getList() {
+    clientTbleRows.clear();
+    clientItemMap.clear();
+    if (clientSelectedExcel[clientSheetName].rows.length <= 1) {
+      // snacbar here
+      print("Row number is less than 1");
+    } else {
+      for (var i = 1;
+          i < clientSelectedExcel[clientSheetName].rows.length;
+          i++) {
+        for (var row in clientSelectedExcel[clientSheetName].rows[i]) {
+          clientTbleRows.add(row.value.toString());
+        }
+      }
+      for (var i = 0; i < clientTbleRows.length; i += clientColuNum) {
+        clientItemMap.add({
+          "name": clientTbleRows[i + 0],
+          "companyName": clientTbleRows[i + 1],
+          "bankName": clientTbleRows[i + 2],
+          "bankNumber": clientTbleRows[i + 3],
+          "tinNumber": clientTbleRows[i + 4],
+          "city": clientTbleRows[i + 5],
+          "phoneN": clientTbleRows[i + 6],
+          "purchaseFreq": clientTbleRows[i + 7],
+          "totPurchase": clientTbleRows[i + 8]
+        });
+      }
+      for (var ele in clientItemMap) {
+        saveClient(ele);
+      }
+    }
+    setState(() {});
+  }
+
+  // to save the loaded data to database
+  saveClient(ele) async {
+    Client clientSQFList = Client();
+    clientSQFList.name = ele['name'];
+    clientSQFList.companyName = ele['companyName'];
+    clientSQFList.bankName = ele['bankName'];
+    clientSQFList.bankNumber = ele['bankNumber'];
+    clientSQFList.tinNumber = ele['tinNumber'];
+    clientSQFList.city = ele['city'];
+    clientSQFList.phoneN = ele['phoneN'];
+    clientSQFList.purchaseFreq = int.parse(ele['purchaseFreq']);
+    clientSQFList.totPurchase = double.parse(ele['totPurchase']);
+    await clientSQFList.save();
+    // snacbar here to that tells data saved
+    loadClientData();
+  }
+
   loadClientData() async {
     newClientMonthly = [];
     clientSQFL = await Client().select().toList();
@@ -44,7 +123,6 @@ class _CustomerTabState extends State<CustomerTab> {
     TextEditingController tinNumberCont = TextEditingController();
     TextEditingController cityCont = TextEditingController();
     TextEditingController phoneNumberCont = TextEditingController();
-    DateFormat dateFormat = DateFormat("yyyy/MM/dd");
 
     // TextField for updating clients info
     TextEditingController clientNameUpdate = TextEditingController();
@@ -63,6 +141,11 @@ class _CustomerTabState extends State<CustomerTab> {
     TextEditingController totalPurchCont = TextEditingController();
     return Scaffold(
       appBar: AppBar(title: const Text('Customers'), actions: [
+        IconButton(
+            onPressed: () {
+              pickFile();
+            },
+            icon: Icon(Icons.file_present)),
         IconButton(
           icon: const Icon(Icons.add),
           onPressed: () {

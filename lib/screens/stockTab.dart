@@ -1,7 +1,11 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:io';
+
+import 'package:excel/excel.dart';
 import 'package:flutter/material.dart';
 import 'package:mystore/models/stock.dart';
+import 'package:file_picker/file_picker.dart';
 
 import '../models/model.dart';
 
@@ -20,6 +24,78 @@ class _StockTabState extends State<StockTab> {
   double totalitemAmount = 0;
   int totalitemNum = 0;
   DateTime today = DateTime.now();
+  List<String> stockTbleRows = [];
+  List<Map> stockItemMap = [];
+  String itemSheetName = "Sheet1"; // Item
+  // every `Item` sheet should have the 6 column length
+  int itemColuNum = 6;
+  var itemSelectedExcel;
+  // This function is just to pick XL file from folder
+  pickFile() async {
+    FilePickerResult? result = await FilePicker.platform
+        .pickFiles(type: FileType.custom, allowedExtensions: ['xlsx']);
+    if (result != null) {
+      File xlFile = File(result.files.single.path!);
+      PlatformFile detailFile = result.files.first;
+      var bytes = xlFile.readAsBytesSync();
+      var excel = Excel.decodeBytes(bytes);
+      itemSelectedExcel = excel;
+      getList();
+    } else {
+      // snacbar here
+      print("No file selected");
+    }
+  }
+
+  // This funtion is to process the given file and convert it into Map type
+  getList() {
+    stockTbleRows.clear();
+    stockItemMap.clear();
+    if (itemSelectedExcel[itemSheetName].rows.length <= 1) {
+      // so here return someMsg on screen
+      // snacbar here
+      print("Row number is less than 1");
+    } else {
+      for (var i = 1; i < itemSelectedExcel[itemSheetName].rows.length; i++) {
+        for (var row in itemSelectedExcel[itemSheetName].rows[i]) {
+          stockTbleRows.add(row.value.toString());
+        }
+      }
+      print("stock list");
+      print(stockTbleRows);
+      for (var i = 0; i < stockTbleRows.length; i += itemColuNum) {
+        stockItemMap.add({
+          "name": stockTbleRows[i + 0],
+          "quantity": stockTbleRows[i + 1],
+          "singlePrice": stockTbleRows[i + 2],
+          "bulkPrice": stockTbleRows[i + 3],
+          "purchaseFreq": stockTbleRows[i + 4],
+          "totPurchase": stockTbleRows[i + 5],
+        });
+      }
+      print("stock maps");
+      print(stockItemMap);
+      for (var ele in stockItemMap) {
+        saveItem(ele);
+      }
+    }
+    setState(() {});
+  }
+
+  // to save the loaded data to database
+  saveItem(ele) async {
+    Item itemSQFList = Item();
+    itemSQFList.name = ele['name'];
+    itemSQFList.quantity = int.parse(ele['quantity']);
+    itemSQFList.singlePrice = double.parse(ele['singlePrice']);
+    itemSQFList.bulkPrice = double.parse(ele['bulkPrice']);
+    itemSQFList.purchaseFreq = int.parse(ele['purchaseFreq']);
+    itemSQFList.totPurchase = double.parse(ele['totPurchase']);
+    await itemSQFList.save();
+    // snacbar here
+    loadItemData();
+  }
+
   loadBestSell() async {
     bestSellItem =
         await Item().select().orderByDesc("totPurchase").top(3).toList();
@@ -86,144 +162,181 @@ class _StockTabState extends State<StockTab> {
                 ),
                 // to add stocks custom add is manually but there will
                 // also be option to import form othre file in this popUp
-                Container(
-                  width: 45,
-                  height: 45,
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(12),
+                Row(
+                  children: [
+                    Container(
+                      width: 45,
+                      height: 45,
+                      decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(12),
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.blueGrey,
+                            blurStyle: BlurStyle.outer,
+                            blurRadius: 7,
+                          )
+                        ],
+                      ),
+                      child: IconButton(
+                        onPressed: () {
+                          pickFile();
+                        },
+                        icon: const Icon(Icons.file_present),
+                      ),
                     ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.blueGrey,
-                        blurStyle: BlurStyle.outer,
-                        blurRadius: 7,
-                      )
-                    ],
-                  ),
-                  child: IconButton(
-                    onPressed: () {
-                      showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              backgroundColor: Colors.black54,
-                              scrollable: true,
-                              title: const Text('Add Stock'),
-                              content: Column(
-                                children: [
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    // ignore: prefer_const_literals_to_create_immutables
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Container(
+                      width: 45,
+                      height: 45,
+                      decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(12),
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.blueGrey,
+                            blurStyle: BlurStyle.outer,
+                            blurRadius: 7,
+                          )
+                        ],
+                      ),
+                      child: IconButton(
+                        onPressed: () {
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  backgroundColor: Colors.black54,
+                                  scrollable: true,
+                                  title: const Text('Add Stock'),
+                                  content: Column(
                                     children: [
-                                      const Text("Item Name"),
-                                      TextFormField(
-                                        textCapitalization:
-                                            TextCapitalization.sentences,
-                                        controller: itemNameCont,
-                                        decoration: const InputDecoration(
-                                            hintText: 'Item Name'),
-                                      ),
-                                      const SizedBox(height: 5),
-                                      const Text("Item Quantity"),
-                                      TextFormField(
-                                        keyboardType: TextInputType.number,
-                                        controller: itemQuantityCont,
-                                        decoration: const InputDecoration(
-                                            hintText: 'Item Quantity'),
-                                      ),
-                                      const SizedBox(height: 5),
-                                      const Text("Single Item Selling Price"),
-                                      TextFormField(
-                                        keyboardType: TextInputType.number,
-                                        controller: itemSSellingPriceCont,
-                                        decoration: const InputDecoration(
-                                            hintText: 'Single Selling Price'),
-                                      ),
-                                      const SizedBox(height: 5),
-                                      const Text("Bulk Selling Price"),
-                                      TextFormField(
-                                        keyboardType: TextInputType.number,
-                                        controller: itemBSellingPriceCont,
-                                        decoration: const InputDecoration(
-                                            hintText: 'Bulk Selling Price'),
-                                      ),
-                                      const SizedBox(height: 10),
-                                      const Text("Purchase Frequency"),
-                                      TextFormField(
-                                        keyboardType: TextInputType.number,
-                                        controller: itemPurchaseFreq,
-                                        decoration: const InputDecoration(
-                                            hintText: 'Purchase Frequency'),
-                                      ),
-                                      const SizedBox(height: 10),
-                                      const Text("Total Frequency"),
-                                      TextFormField(
-                                        keyboardType: TextInputType.number,
-                                        controller: itemTotPurchase,
-                                        decoration: const InputDecoration(
-                                            hintText: 'Total Frequency'),
-                                      ),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        // ignore: prefer_const_literals_to_create_immutables
+                                        children: [
+                                          const Text("Item Name"),
+                                          TextFormField(
+                                            textCapitalization:
+                                                TextCapitalization.sentences,
+                                            controller: itemNameCont,
+                                            decoration: const InputDecoration(
+                                                hintText: 'Item Name'),
+                                          ),
+                                          const SizedBox(height: 5),
+                                          const Text("Item Quantity"),
+                                          TextFormField(
+                                            keyboardType: TextInputType.number,
+                                            controller: itemQuantityCont,
+                                            decoration: const InputDecoration(
+                                                hintText: 'Item Quantity'),
+                                          ),
+                                          const SizedBox(height: 5),
+                                          const Text(
+                                              "Single Item Selling Price"),
+                                          TextFormField(
+                                            keyboardType: TextInputType.number,
+                                            controller: itemSSellingPriceCont,
+                                            decoration: const InputDecoration(
+                                                hintText:
+                                                    'Single Selling Price'),
+                                          ),
+                                          const SizedBox(height: 5),
+                                          const Text("Bulk Selling Price"),
+                                          TextFormField(
+                                            keyboardType: TextInputType.number,
+                                            controller: itemBSellingPriceCont,
+                                            decoration: const InputDecoration(
+                                                hintText: 'Bulk Selling Price'),
+                                          ),
+                                          const SizedBox(height: 10),
+                                          const Text("Purchase Frequency"),
+                                          TextFormField(
+                                            keyboardType: TextInputType.number,
+                                            controller: itemPurchaseFreq,
+                                            decoration: const InputDecoration(
+                                                hintText: 'Purchase Frequency'),
+                                          ),
+                                          const SizedBox(height: 10),
+                                          const Text("Total Frequency"),
+                                          TextFormField(
+                                            keyboardType: TextInputType.number,
+                                            controller: itemTotPurchase,
+                                            decoration: const InputDecoration(
+                                                hintText: 'Total Frequency'),
+                                          ),
 
-                                      // updateAt date value is set automatically by the day item inserted
+                                          // updateAt date value is set automatically by the day item inserted
+                                        ],
+                                      ),
+                                      const SizedBox(
+                                        height: 12,
+                                      ),
+                                      Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            ElevatedButton(
+                                                onPressed: () async {
+                                                  Item itemSQF = Item();
+                                                  itemSQF.name =
+                                                      itemNameCont.text;
+                                                  itemSQF.quantity = int.parse(
+                                                      itemQuantityCont.text);
+                                                  itemSQF.singlePrice =
+                                                      double.parse(
+                                                          itemSSellingPriceCont
+                                                              .text);
+                                                  itemSQF.bulkPrice =
+                                                      double.parse(
+                                                          itemBSellingPriceCont
+                                                              .text);
+                                                  itemSQF.purchaseFreq =
+                                                      int.parse(itemPurchaseFreq
+                                                          .text);
+                                                  itemSQF.totPurchase =
+                                                      double.parse(
+                                                          itemTotPurchase.text);
+                                                  await itemSQF.save();
+                                                  loadItemData();
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(
+                                                    // ignore: prefer_const_constructors
+                                                    SnackBar(
+                                                      // ignore: prefer_const_constructors
+                                                      content: Text(
+                                                        "New Item Created",
+                                                      ),
+                                                    ),
+                                                  );
+                                                  itemNameCont.text = "";
+                                                  itemQuantityCont.text = "";
+                                                  itemSSellingPriceCont.text =
+                                                      "";
+                                                  itemBSellingPriceCont.text =
+                                                      "";
+                                                  // ignore: use_build_context_synchronously
+                                                  Navigator.of(context,
+                                                          rootNavigator: true)
+                                                      .pop("dialog");
+                                                },
+                                                child: const Text(
+                                                    "Create New Item"))
+                                          ])
                                     ],
                                   ),
-                                  const SizedBox(
-                                    height: 12,
-                                  ),
-                                  Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        ElevatedButton(
-                                            onPressed: () async {
-                                              Item itemSQF = Item();
-                                              itemSQF.name = itemNameCont.text;
-                                              itemSQF.quantity = int.parse(
-                                                  itemQuantityCont.text);
-                                              itemSQF.singlePrice =
-                                                  double.parse(
-                                                      itemSSellingPriceCont
-                                                          .text);
-                                              itemSQF.bulkPrice = double.parse(
-                                                  itemBSellingPriceCont.text);
-                                              itemSQF.purchaseFreq = int.parse(
-                                                  itemPurchaseFreq.text);
-                                              itemSQF.totPurchase =
-                                                  double.parse(
-                                                      itemTotPurchase.text);
-                                              await itemSQF.save();
-                                              loadItemData();
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(
-                                                // ignore: prefer_const_constructors
-                                                SnackBar(
-                                                  // ignore: prefer_const_constructors
-                                                  content: Text(
-                                                    "New Item Created",
-                                                  ),
-                                                ),
-                                              );
-                                              itemNameCont.text = "";
-                                              itemQuantityCont.text = "";
-                                              itemSSellingPriceCont.text = "";
-                                              itemBSellingPriceCont.text = "";
-                                              // ignore: use_build_context_synchronously
-                                              Navigator.of(context,
-                                                      rootNavigator: true)
-                                                  .pop("dialog");
-                                            },
-                                            child:
-                                                const Text("Create New Item"))
-                                      ])
-                                ],
-                              ),
-                            );
-                          });
-                    },
-                    icon: const Icon(Icons.add),
-                  ),
+                                );
+                              });
+                        },
+                        icon: const Icon(Icons.add),
+                      ),
+                    ),
+                  ],
                 )
               ],
             ),
