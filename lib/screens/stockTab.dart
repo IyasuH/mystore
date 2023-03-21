@@ -4,9 +4,8 @@ import 'dart:io';
 
 import 'package:excel/excel.dart';
 import 'package:flutter/material.dart';
-import 'package:mystore/models/stock.dart';
 import 'package:file_picker/file_picker.dart';
-
+import 'package:confirm_dialog/confirm_dialog.dart';
 import '../models/model.dart';
 
 class StockTab extends StatefulWidget {
@@ -133,6 +132,8 @@ class _StockTabState extends State<StockTab> {
     super.initState();
   }
 
+  String textFieldVliMdg = "Please enter some value";
+  final _formStockKey = GlobalKey<FormState>();
   // final itemSQF = Item();
   @override
   Widget build(BuildContext context) {
@@ -167,15 +168,17 @@ class _StockTabState extends State<StockTab> {
                     Container(
                       width: 45,
                       height: 45,
-                      decoration: const BoxDecoration(
-                        borderRadius: BorderRadius.all(
+                      decoration: BoxDecoration(
+                        color: Colors.black45,
+                        border: Border.all(color: Colors.blueGrey, width: 1.5),
+                        borderRadius: const BorderRadius.all(
                           Radius.circular(12),
                         ),
-                        boxShadow: [
+                        boxShadow: const [
                           BoxShadow(
                             color: Colors.blueGrey,
                             blurStyle: BlurStyle.outer,
-                            blurRadius: 7,
+                            blurRadius: 4,
                           )
                         ],
                       ),
@@ -192,15 +195,17 @@ class _StockTabState extends State<StockTab> {
                     Container(
                       width: 45,
                       height: 45,
-                      decoration: const BoxDecoration(
-                        borderRadius: BorderRadius.all(
+                      decoration: BoxDecoration(
+                        borderRadius: const BorderRadius.all(
                           Radius.circular(12),
                         ),
-                        boxShadow: [
+                        color: Colors.black45,
+                        border: Border.all(color: Colors.blueGrey, width: 1.5),
+                        boxShadow: const [
                           BoxShadow(
                             color: Colors.blueGrey,
                             blurStyle: BlurStyle.outer,
-                            blurRadius: 7,
+                            blurRadius: 4,
                           )
                         ],
                       ),
@@ -210,125 +215,191 @@ class _StockTabState extends State<StockTab> {
                               context: context,
                               builder: (BuildContext context) {
                                 return AlertDialog(
-                                  backgroundColor: Colors.black54,
+                                  backgroundColor: Colors.black87,
                                   scrollable: true,
                                   title: const Text('Add Stock'),
-                                  content: Column(
-                                    children: [
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        // ignore: prefer_const_literals_to_create_immutables
-                                        children: [
-                                          const Text("Item Name"),
-                                          TextFormField(
-                                            textCapitalization:
-                                                TextCapitalization.sentences,
-                                            controller: itemNameCont,
-                                            decoration: const InputDecoration(
-                                                hintText: 'Item Name'),
-                                          ),
-                                          const SizedBox(height: 5),
-                                          const Text("Item Quantity"),
-                                          TextFormField(
-                                            keyboardType: TextInputType.number,
-                                            controller: itemQuantityCont,
-                                            decoration: const InputDecoration(
-                                                hintText: 'Item Quantity'),
-                                          ),
-                                          const SizedBox(height: 5),
-                                          const Text(
-                                              "Single Item Selling Price"),
-                                          TextFormField(
-                                            keyboardType: TextInputType.number,
-                                            controller: itemSSellingPriceCont,
-                                            decoration: const InputDecoration(
-                                                hintText:
-                                                    'Single Selling Price'),
-                                          ),
-                                          const SizedBox(height: 5),
-                                          const Text("Bulk Selling Price"),
-                                          TextFormField(
-                                            keyboardType: TextInputType.number,
-                                            controller: itemBSellingPriceCont,
-                                            decoration: const InputDecoration(
-                                                hintText: 'Bulk Selling Price'),
-                                          ),
-                                          const SizedBox(height: 10),
-                                          const Text("Purchase Frequency"),
-                                          TextFormField(
-                                            keyboardType: TextInputType.number,
-                                            controller: itemPurchaseFreq,
-                                            decoration: const InputDecoration(
-                                                hintText: 'Purchase Frequency'),
-                                          ),
-                                          const SizedBox(height: 10),
-                                          const Text("Total Frequency"),
-                                          TextFormField(
-                                            keyboardType: TextInputType.number,
-                                            controller: itemTotPurchase,
-                                            decoration: const InputDecoration(
-                                                hintText: 'Total Frequency'),
-                                          ),
-
-                                          // updateAt date value is set automatically by the day item inserted
-                                        ],
-                                      ),
-                                      const SizedBox(
-                                        height: 12,
-                                      ),
-                                      Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
+                                  content: Form(
+                                    key: _formStockKey,
+                                    child: Column(
+                                      children: [
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          // ignore: prefer_const_literals_to_create_immutables
                                           children: [
-                                            ElevatedButton(
-                                                onPressed: () async {
-                                                  Item itemSQF = Item();
-                                                  itemSQF.name =
-                                                      itemNameCont.text;
-                                                  itemSQF.quantity = int.parse(
-                                                      itemQuantityCont.text);
-                                                  itemSQF.singlePrice =
-                                                      double.parse(
-                                                          itemSSellingPriceCont
-                                                              .text);
-                                                  itemSQF.bulkPrice =
-                                                      double.parse(
-                                                          itemBSellingPriceCont
-                                                              .text);
-                                                  itemSQF.purchaseFreq =
-                                                      int.parse(itemPurchaseFreq
-                                                          .text);
-                                                  itemSQF.totPurchase =
-                                                      double.parse(
-                                                          itemTotPurchase.text);
-                                                  await itemSQF.save();
-                                                  loadItemData();
-                                                  ScaffoldMessenger.of(context)
-                                                      .showSnackBar(
-                                                    // ignore: prefer_const_constructors
-                                                    SnackBar(
-                                                      // ignore: prefer_const_constructors
-                                                      content: Text(
-                                                        "New Item Created",
-                                                      ),
-                                                    ),
-                                                  );
-                                                  itemNameCont.text = "";
-                                                  itemQuantityCont.text = "";
-                                                  itemSSellingPriceCont.text =
-                                                      "";
-                                                  itemBSellingPriceCont.text =
-                                                      "";
-                                                  // ignore: use_build_context_synchronously
-                                                  Navigator.of(context,
-                                                          rootNavigator: true)
-                                                      .pop("dialog");
-                                                },
-                                                child: const Text(
-                                                    "Create New Item"))
-                                          ])
-                                    ],
+                                            const Text("Item Name"),
+                                            TextFormField(
+                                              textCapitalization:
+                                                  TextCapitalization.sentences,
+                                              controller: itemNameCont,
+                                              decoration: const InputDecoration(
+                                                  hintText: 'Item Name'),
+                                              // tried to automate the validation by the defining function
+                                              // and calling the same validation for all but did't works
+                                              validator: (value) {
+                                                if (value == null ||
+                                                    value.isEmpty) {
+                                                  return textFieldVliMdg;
+                                                }
+                                                return null;
+                                              },
+                                            ),
+                                            const SizedBox(height: 5),
+                                            const Text("Item Quantity"),
+                                            TextFormField(
+                                              keyboardType:
+                                                  TextInputType.number,
+                                              controller: itemQuantityCont,
+                                              decoration: const InputDecoration(
+                                                  hintText: 'Item Quantity'),
+                                              validator: (value) {
+                                                if (value == null ||
+                                                    value.isEmpty) {
+                                                  return textFieldVliMdg;
+                                                }
+                                                return null;
+                                              },
+                                            ),
+                                            const SizedBox(height: 5),
+                                            const Text(
+                                                "Single Item Selling Price"),
+                                            TextFormField(
+                                              keyboardType:
+                                                  TextInputType.number,
+                                              controller: itemSSellingPriceCont,
+                                              decoration: const InputDecoration(
+                                                  hintText:
+                                                      'Single Selling Price'),
+                                              validator: (value) {
+                                                if (value == null ||
+                                                    value.isEmpty) {
+                                                  return textFieldVliMdg;
+                                                }
+                                                return null;
+                                              },
+                                            ),
+                                            const SizedBox(height: 5),
+                                            const Text("Bulk Selling Price"),
+                                            TextFormField(
+                                              keyboardType:
+                                                  TextInputType.number,
+                                              controller: itemBSellingPriceCont,
+                                              decoration: const InputDecoration(
+                                                  hintText:
+                                                      'Bulk Selling Price'),
+                                              validator: (value) {
+                                                if (value == null ||
+                                                    value.isEmpty) {
+                                                  return textFieldVliMdg;
+                                                }
+                                                return null;
+                                              },
+                                            ),
+                                            const SizedBox(height: 10),
+                                            const Text("Purchase Frequency"),
+                                            TextFormField(
+                                              keyboardType:
+                                                  TextInputType.number,
+                                              controller: itemPurchaseFreq,
+                                              decoration: const InputDecoration(
+                                                  hintText:
+                                                      'Purchase Frequency'),
+                                              validator: (value) {
+                                                if (value == null ||
+                                                    value.isEmpty) {
+                                                  return textFieldVliMdg;
+                                                }
+                                                return null;
+                                              },
+                                            ),
+                                            const SizedBox(height: 10),
+                                            const Text("Total Frequency"),
+                                            TextFormField(
+                                              keyboardType:
+                                                  TextInputType.number,
+                                              controller: itemTotPurchase,
+                                              decoration: const InputDecoration(
+                                                  hintText: 'Total Frequency'),
+                                              validator: (value) {
+                                                if (value == null ||
+                                                    value.isEmpty) {
+                                                  return textFieldVliMdg;
+                                                }
+                                                return null;
+                                              },
+                                            ),
+
+                                            // updateAt date value is set automatically by the day item inserted
+                                          ],
+                                        ),
+                                        const SizedBox(
+                                          height: 12,
+                                        ),
+                                        Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              ElevatedButton(
+                                                  onPressed: () async {
+                                                    if (_formStockKey
+                                                        .currentState!
+                                                        .validate()) {
+                                                      Item itemSQF = Item();
+                                                      itemSQF.name =
+                                                          itemNameCont.text;
+                                                      itemSQF.quantity =
+                                                          int.parse(
+                                                              itemQuantityCont
+                                                                  .text);
+                                                      itemSQF.singlePrice =
+                                                          double.parse(
+                                                              itemSSellingPriceCont
+                                                                  .text);
+                                                      itemSQF.bulkPrice =
+                                                          double.parse(
+                                                              itemBSellingPriceCont
+                                                                  .text);
+                                                      itemSQF.purchaseFreq =
+                                                          int.parse(
+                                                              itemPurchaseFreq
+                                                                  .text);
+                                                      itemSQF.totPurchase =
+                                                          double.parse(
+                                                              itemTotPurchase
+                                                                  .text);
+                                                      await itemSQF.save();
+                                                      loadItemData();
+                                                      ScaffoldMessenger.of(
+                                                              context)
+                                                          .showSnackBar(
+                                                        // ignore: prefer_const_constructors
+                                                        SnackBar(
+                                                          // ignore: prefer_const_constructors
+                                                          content: Text(
+                                                            "New Item Created",
+                                                          ),
+                                                        ),
+                                                      );
+                                                      itemNameCont.text = "";
+                                                      itemQuantityCont.text =
+                                                          "";
+                                                      itemSSellingPriceCont
+                                                          .text = "";
+                                                      itemBSellingPriceCont
+                                                          .text = "";
+                                                      // ignore: use_build_context_synchronously
+                                                      Navigator.of(context,
+                                                              rootNavigator:
+                                                                  true)
+                                                          .pop("dialog");
+                                                    }
+                                                    ;
+                                                  },
+                                                  child: const Text(
+                                                      "Create New Item"))
+                                            ])
+                                      ],
+                                    ),
                                   ),
                                 );
                               });
@@ -342,7 +413,7 @@ class _StockTabState extends State<StockTab> {
             ),
           ),
           SizedBox(
-            height: 650,
+            height: 660,
             child: ClipRRect(
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(10),
@@ -358,14 +429,17 @@ class _StockTabState extends State<StockTab> {
                       totalStock_MonthlyChange_Row(),
                       Container(
                         height: 250,
-                        decoration: const BoxDecoration(
-                          // color: Colors.pink,
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                          boxShadow: [
+                        decoration: BoxDecoration(
+                          color: Colors.black45,
+                          border:
+                              Border.all(color: Colors.blueGrey, width: 1.5),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(20)),
+                          boxShadow: const [
                             BoxShadow(
                               color: Colors.blueGrey,
                               blurStyle: BlurStyle.outer,
-                              blurRadius: 7,
+                              blurRadius: 4,
                             )
                           ],
                         ),
@@ -483,16 +557,17 @@ class _StockTabState extends State<StockTab> {
           Container(
             height: 140,
             width: 160,
-            decoration: const BoxDecoration(
-              // color: Colors.blue,
-              boxShadow: [
+            decoration: BoxDecoration(
+              color: Colors.black45,
+              border: Border.all(color: Colors.blueGrey, width: 1.5),
+              boxShadow: const [
                 BoxShadow(
                   color: Colors.blueGrey,
                   blurStyle: BlurStyle.outer,
-                  blurRadius: 7,
+                  blurRadius: 4,
                 )
               ],
-              borderRadius: BorderRadius.all(Radius.circular(10)),
+              borderRadius: const BorderRadius.all(Radius.circular(20)),
             ),
             // margin: const EdgeInsets.all(10),
             padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -544,14 +619,15 @@ class _StockTabState extends State<StockTab> {
           Container(
             height: 140,
             width: 160,
-            decoration: const BoxDecoration(
-              // color: Colors.blue,
-              borderRadius: BorderRadius.all(Radius.circular(10)),
-              boxShadow: [
+            decoration: BoxDecoration(
+              color: Colors.black45,
+              border: Border.all(color: Colors.blueGrey, width: 1.5),
+              borderRadius: const BorderRadius.all(Radius.circular(20)),
+              boxShadow: const [
                 BoxShadow(
                   color: Colors.blueGrey,
                   blurStyle: BlurStyle.outer,
-                  blurRadius: 7,
+                  blurRadius: 4,
                 )
               ],
             ),
@@ -594,112 +670,113 @@ class _StockTabState extends State<StockTab> {
 
   itemsList() {
     return Container(
-        // margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-        height: 350,
-        decoration: const BoxDecoration(
-          // color: Colors.amber,
-          borderRadius: BorderRadius.all(Radius.circular(10)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.blueGrey,
-              blurStyle: BlurStyle.outer,
-              blurRadius: 7,
-            )
+      // margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+      height: 350,
+      decoration: BoxDecoration(
+        color: Colors.black45,
+        border: Border.all(color: Colors.blueGrey, width: 1.5),
+        borderRadius: const BorderRadius.all(Radius.circular(20)),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.blueGrey,
+            blurStyle: BlurStyle.outer,
+            blurRadius: 4,
+          )
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: const BorderRadius.all(
+          Radius.circular(10),
+        ),
+        child: ListView(
+          children: <Widget>[
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: DataTable(
+                showBottomBorder: true,
+                sortColumnIndex: _sortColumnIndex,
+                sortAscending: _sortAsc,
+                columns: [
+                  const DataColumn(
+                    label: Text('Id'),
+                  ),
+                  DataColumn(
+                    label: const Text('Item'),
+                    onSort: (columnIndex, sortAscending) {
+                      if (mounted) {
+                        setState(() {
+                          if (columnIndex == _sortColumnIndex) {
+                            _sortAsc = _sortNameAsc = sortAscending;
+                          } else {
+                            _sortColumnIndex = columnIndex;
+                            _sortAsc = _sortNameAsc;
+                          }
+                          itemSQFL.sort((a, b) => a.name!.compareTo(b.name!));
+                          if (!_sortAsc) {
+                            itemSQFL.sort((a, b) => b.name!.compareTo(a.name!));
+                          }
+                        });
+                      }
+                    },
+                  ),
+                  DataColumn(
+                    label: const Text('Quantity'),
+                    numeric: true,
+                    onSort: (columnIndex, sortAscending) {
+                      if (mounted) {
+                        setState(() {
+                          if (columnIndex == _sortColumnIndex) {
+                            _sortAsc = _sortQuantityAsc = sortAscending;
+                          } else {
+                            _sortColumnIndex = columnIndex;
+                            _sortAsc = _sortQuantityAsc;
+                          }
+                          itemSQFL.sort(
+                              (a, b) => a.quantity!.compareTo(b.quantity!));
+                          if (!_sortAsc) {
+                            itemSQFL.sort(
+                                (a, b) => b.quantity!.compareTo(a.quantity!));
+                          }
+                        });
+                      } else {
+                        return;
+                      }
+                    },
+                  ),
+                  DataColumn(
+                    label: const Text('Price'),
+                    numeric: true,
+                    onSort: (columnIndex, sortAscending) {
+                      if (mounted) {
+                        setState(() {
+                          if (columnIndex == _sortColumnIndex) {
+                            _sortAsc = _sortPriceAsc = sortAscending;
+                          } else {
+                            _sortColumnIndex = columnIndex;
+                            _sortAsc = _sortPriceAsc;
+                          }
+                          itemSQFL.sort((a, b) =>
+                              a.singlePrice!.compareTo(b.singlePrice!));
+                          if (!_sortAsc) {
+                            itemSQFL.sort((a, b) =>
+                                b.singlePrice!.compareTo(a.singlePrice!));
+                          }
+                        });
+                      }
+                    },
+                  ),
+                  const DataColumn(
+                    label: Text('Total'),
+                    numeric: true,
+                  ),
+                ],
+                rows: _stockRows(),
+              ),
+            ),
           ],
         ),
-        child: ClipRRect(
-            borderRadius: const BorderRadius.all(
-              Radius.circular(10),
-            ),
-            child: ListView(
-              children: <Widget>[
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: DataTable(
-                    showBottomBorder: true,
-                    sortColumnIndex: _sortColumnIndex,
-                    sortAscending: _sortAsc,
-                    columns: [
-                      const DataColumn(
-                        label: Text('Id'),
-                      ),
-                      DataColumn(
-                        label: const Text('Item'),
-                        onSort: (columnIndex, sortAscending) {
-                          if (mounted) {
-                            setState(() {
-                              if (columnIndex == _sortColumnIndex) {
-                                _sortAsc = _sortNameAsc = sortAscending;
-                              } else {
-                                _sortColumnIndex = columnIndex;
-                                _sortAsc = _sortNameAsc;
-                              }
-                              stocks.sort(
-                                  (a, b) => a.itemName.compareTo(b.itemName));
-                              if (!_sortAsc) {
-                                stocks.sort(
-                                    (a, b) => b.itemName.compareTo(a.itemName));
-                              }
-                            });
-                          }
-                        },
-                      ),
-                      DataColumn(
-                        label: const Text('Quantity'),
-                        numeric: true,
-                        onSort: (columnIndex, sortAscending) {
-                          if (mounted) {
-                            setState(() {
-                              if (columnIndex == _sortColumnIndex) {
-                                _sortAsc = _sortQuantityAsc = sortAscending;
-                              } else {
-                                _sortColumnIndex = columnIndex;
-                                _sortAsc = _sortQuantityAsc;
-                              }
-                              stocks.sort((a, b) =>
-                                  a.itemQuantity.compareTo(b.itemQuantity));
-                              if (!_sortAsc) {
-                                stocks.sort((a, b) =>
-                                    b.itemQuantity.compareTo(a.itemQuantity));
-                              }
-                            });
-                          } else {
-                            return;
-                          }
-                        },
-                      ),
-                      DataColumn(
-                        label: const Text('Price'),
-                        numeric: true,
-                        onSort: (columnIndex, sortAscending) {
-                          if (mounted) {
-                            setState(() {
-                              if (columnIndex == _sortColumnIndex) {
-                                _sortAsc = _sortPriceAsc = sortAscending;
-                              } else {
-                                _sortColumnIndex = columnIndex;
-                                _sortAsc = _sortPriceAsc;
-                              }
-                              stocks.sort((a, b) =>
-                                  a.singlePrice.compareTo(b.singlePrice));
-                              if (!_sortAsc) {
-                                stocks.sort((a, b) =>
-                                    b.singlePrice.compareTo(a.singlePrice));
-                              }
-                            });
-                          }
-                        },
-                      ),
-                      const DataColumn(
-                        label: Text('Total'),
-                        numeric: true,
-                      ),
-                    ],
-                    rows: _stockRows(),
-                  ),
-                ),
-              ],
-            )));
+      ),
+    );
   }
 
   TextEditingController itemNameUpdate = TextEditingController();
@@ -726,7 +803,7 @@ class _StockTabState extends State<StockTab> {
                         return AlertDialog(
                           scrollable: true,
                           title: const Text('Stock Edit'),
-                          backgroundColor: Colors.black54,
+                          backgroundColor: Colors.black87,
                           content: Column(
                             children: [
                               Column(
@@ -776,50 +853,70 @@ class _StockTabState extends State<StockTab> {
                                   children: [
                                     ElevatedButton(
                                       onPressed: () async {
-                                        data.name = itemNameUpdate.text;
-                                        data.quantity =
-                                            int.parse(itemQuantityUpdate.text);
-                                        data.singlePrice = double.parse(
-                                            itemSinglePriceUpdate.text);
-                                        data.bulkPrice = double.parse(
-                                            itemBulkPriceUpdat.text);
-                                        data.updatedAt = DateTime.now();
-                                        await data.save();
-                                        loadItemData();
-                                        Navigator.of(context,
-                                                rootNavigator: true)
-                                            .pop("dialog");
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          const SnackBar(
-                                            content: Text(
-                                              "Stock Updated Successfully",
+                                        if (await confirm(
+                                          context,
+                                          title: const Text('Confirm'),
+                                          content: const Text(
+                                              'You sure to update data?'),
+                                          textOK: const Text('Yes'),
+                                          textCancel: const Text('Nah'),
+                                        )) {
+                                          data.name = itemNameUpdate.text;
+                                          data.quantity = int.parse(
+                                              itemQuantityUpdate.text);
+                                          data.singlePrice = double.parse(
+                                              itemSinglePriceUpdate.text);
+                                          data.bulkPrice = double.parse(
+                                              itemBulkPriceUpdat.text);
+                                          data.updatedAt = DateTime.now();
+                                          await data.save();
+                                          loadItemData();
+                                          Navigator.of(context,
+                                                  rootNavigator: true)
+                                              .pop("dialog");
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                "Stock Updated Successfully",
+                                              ),
                                             ),
-                                          ),
-                                        );
+                                          );
+                                        }
                                       },
                                       child: const Text("Update"),
                                     ),
                                     // # on This and another delete function some apply kind of comfirmation
                                     ElevatedButton(
                                       onPressed: () async {
-                                        await Item()
-                                            .select()
-                                            .id
-                                            .equals(data.id)
-                                            .delete();
-                                        loadItemData();
-                                        Navigator.of(context,
-                                                rootNavigator: true)
-                                            .pop("dialog");
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          const SnackBar(
-                                            content: Text(
-                                              "Stock Deleted Successfully",
+                                        if (await confirm(context,
+                                            title: const Text('Confirm'),
+                                            content:
+                                                const Text('Are you sure!'),
+                                            textOK: const Text(
+                                              'Yes',
+                                              style: TextStyle(
+                                                  color: Colors.redAccent),
                                             ),
-                                          ),
-                                        );
+                                            textCancel: const Text('No'))) {
+                                          await Item()
+                                              .select()
+                                              .id
+                                              .equals(data.id)
+                                              .delete();
+                                          loadItemData();
+                                          Navigator.of(context,
+                                                  rootNavigator: true)
+                                              .pop("dialog");
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                "Stock Deleted Successfully",
+                                              ),
+                                            ),
+                                          );
+                                        }
                                       },
                                       style: ElevatedButton.styleFrom(),
                                       child: const Text("Delete",
