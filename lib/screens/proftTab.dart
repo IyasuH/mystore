@@ -1,6 +1,11 @@
 // ignore: file_names
 import 'package:flutter/material.dart';
+import 'package:mystore/Widgets/dailyProfit.dart';
+import 'package:mystore/Widgets/monthlyProfit.dart';
+import 'package:mystore/Widgets/yearlyProfit.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+
+import '../Widgets/weeklyProfit.dart';
 
 class ChartData {
   ChartData(this.x, this.y);
@@ -33,6 +38,8 @@ class _profitColumChartState extends State<profitColumChart> {
           child: Container(
         child: SfCartesianChart(series: <ChartSeries<ChartData, int>>[
           ColumnSeries(
+            enableTooltip: false,
+            color: Colors.green,
             isVisibleInLegend: true,
             isVisible: true,
             // isTrackVisible: true,
@@ -58,10 +65,10 @@ class ProfitTab extends StatefulWidget {
 
 class _ProfitTabState extends State<ProfitTab> {
   // Color profitPrimaryColor = const Color.fromRGBO(255, 38, 255, 0);
-  Color profitPrimaryColor = Colors.blueAccent;
+  // Color profitPrimaryColor = Colors.blueAccent;
 
   // Color profitSecondaryColor = const Color.fromRGBO(30, 19, 224, 0);
-  Color profitSecondaryColor = Colors.blue;
+  // Color profitSecondaryColor = Colors.blue;
   Color thirtyPerCentColor = Colors.grey;
   int _selectedIndex = 0;
   // ignore: non_constant_identifier_names
@@ -139,7 +146,16 @@ class _ProfitTabState extends State<ProfitTab> {
             const SizedBox(
               height: 10,
             ),
-            const SizedBox(height: 350, child: profitColumChart()),
+            // calling diferent graphs based on different timely choices
+            SizedBox(
+                height: 350,
+                child: _selectedIndex == 0
+                    ? DailyBarChart()
+                    : _selectedIndex == 1
+                        ? WeeklyBarChart()
+                        : _selectedIndex == 2
+                            ? MonthlyBarChart()
+                            : YearlyBarChart()),
             Row(children: [
               Column(
                 children: [
@@ -158,7 +174,7 @@ class _ProfitTabState extends State<ProfitTab> {
                           BoxShadow(
                             color: Color.fromARGB(255, 1, 203, 105),
                             blurStyle: BlurStyle.outer,
-                            blurRadius: 7,
+                            blurRadius: 5,
                           )
                         ],
                         borderRadius:
@@ -190,7 +206,7 @@ class _ProfitTabState extends State<ProfitTab> {
                         BoxShadow(
                           color: Color.fromARGB(255, 1, 203, 105),
                           blurStyle: BlurStyle.outer,
-                          blurRadius: 7,
+                          blurRadius: 5,
                         )
                       ],
                       borderRadius: const BorderRadius.all(Radius.circular(20)),
@@ -218,14 +234,14 @@ class _ProfitTabState extends State<ProfitTab> {
                         top: 14, bottom: 7, right: 13, left: 7),
                     decoration: BoxDecoration(
                       border: Border.all(
-                        color: Colors.redAccent,
+                        color: Colors.green,
                         width: 2.0,
                       ),
                       boxShadow: const [
                         BoxShadow(
-                          color: Color.fromARGB(255, 255, 42, 42),
+                          color: Color.fromARGB(255, 1, 203, 105),
                           blurStyle: BlurStyle.outer,
-                          blurRadius: 7,
+                          blurRadius: 5,
                         )
                       ],
                       borderRadius: const BorderRadius.all(Radius.circular(20)),
@@ -256,7 +272,7 @@ class _ProfitTabState extends State<ProfitTab> {
                         BoxShadow(
                           color: Color.fromARGB(255, 1, 203, 105),
                           blurStyle: BlurStyle.outer,
-                          blurRadius: 7,
+                          blurRadius: 5,
                         )
                       ],
                       borderRadius: const BorderRadius.all(Radius.circular(20)),

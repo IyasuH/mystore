@@ -3,10 +3,12 @@
 
 import 'dart:io';
 
+import 'package:confirm_dialog/confirm_dialog.dart';
 import 'package:excel/excel.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+// ignore: depend_on_referenced_packages, library_prefixes
 import 'package:path/path.dart' as Path;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -14,348 +16,11 @@ import 'package:fl_chart/fl_chart.dart';
 // ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import '../Widgets/yearlyExpense.dart';
 import '../models/model.dart';
 import '../models/yearMonthList.dart';
 
 // ignore: must_be_immutable
-class ExpenseBarCharts extends StatefulWidget {
-  String selectedYear;
-  ExpenseBarCharts({super.key, required this.selectedYear});
-
-  @override
-  State<ExpenseBarCharts> createState() => _ExpenseBarChartsState();
-}
-
-class _ExpenseBarChartsState extends State<ExpenseBarCharts> {
-  Color fixedExpColor = Colors.red;
-  Color variableExpColor = Colors.blue;
-  int betweenSpace = 0;
-  List<Expense> expenseSQFL = [];
-  List<Expense> expenseYearly = [];
-  loadExpenseData() async {
-    expenseSQFL = await Expense().select().toList();
-    print("reloading expenseSQFL");
-    expenseYearly = [];
-    for (var element in expenseSQFL) {
-      if ((element.date!).year == int.parse(widget.selectedYear)) {
-        expenseYearly.add(element);
-      }
-    }
-    print(expenseYearly);
-    setState(() {});
-    build(context);
-  }
-
-  @override
-  void initState() {
-    loadExpenseData();
-    super.initState();
-  }
-
-  BarChartGroupData generateGroupData(
-    int x,
-    double fixe,
-    double variabl,
-  ) {
-    return BarChartGroupData(
-      x: x,
-      groupVertically: true,
-      barRods: [
-        BarChartRodData(
-          fromY: 0,
-          toY: fixe,
-          color: fixedExpColor,
-          width: 10,
-        ),
-        BarChartRodData(
-          fromY: fixe + betweenSpace,
-          toY: fixe + betweenSpace + variabl,
-          color: variableExpColor,
-          width: 10,
-        ),
-      ],
-    );
-  }
-
-  Widget bottomTitles(double value, TitleMeta meta) {
-    const style = TextStyle(
-      color: Color.fromARGB(255, 187, 187, 187),
-      fontSize: 12,
-      fontWeight: FontWeight.w600,
-    );
-    String text;
-    switch (value.toInt()) {
-      case 1:
-        text = 'Jan';
-        break;
-      case 2:
-        text = 'Feb';
-        break;
-      case 3:
-        text = 'Mar';
-        break;
-      case 4:
-        text = 'Apr';
-        break;
-      case 5:
-        text = 'May';
-        break;
-      case 6:
-        text = 'Jun';
-        break;
-      case 7:
-        text = 'Jul';
-        break;
-      case 8:
-        text = 'Aug';
-        break;
-      case 9:
-        text = 'Sep';
-        break;
-      case 10:
-        text = 'Oct';
-        break;
-      case 11:
-        text = 'Nov';
-        break;
-      case 12:
-        text = 'Dec';
-        break;
-      default:
-        text = '';
-    }
-    // then return the names of the month
-    // that is being put at the bottom of the chart
-    return SideTitleWidget(
-      axisSide: meta.axisSide,
-      child: Text(text, style: style),
-    );
-  }
-
-  double JanFixed = 0,
-      JanVariable = 0,
-      FebFixed = 0,
-      FebVariable = 0,
-      MarFixed = 0,
-      MarVariable = 0,
-      AprFixed = 0,
-      AprVariable = 0,
-      MayFixed = 0,
-      MayVariable = 0,
-      JunFixed = 0,
-      JunVariable = 0,
-      JulFixed = 0,
-      JulVariable = 0,
-      AugFixed = 0,
-      AugVariable = 0,
-      SepFixed = 0,
-      SepVariable = 0,
-      OctFixed = 0,
-      OctVariable = 0,
-      NovFixed = 0,
-      NovVariable = 0,
-      DecFixed = 0,
-      DecVariable = 0;
-
-  // This function is first to check for selected month and
-  // call generateGroupData to return the 2(fixed and variable) column graph for all months
-  List<BarChartGroupData> monthExpenses = [];
-
-  @override
-  Widget build(BuildContext context) {
-    for (var element in expenseYearly) {
-      if ((element.date!).month == 1) {
-        element.type == "Fixed"
-            ? JanFixed += num.parse(element.amount.toString())
-            : JanVariable += num.parse(element.amount.toString());
-      } else if ((element.date!).month == 2) {
-        element.type == "Fixed"
-            ? FebFixed += num.parse(element.amount.toString())
-            : FebVariable += num.parse(element.amount.toString());
-      } else if ((element.date!).month == 3) {
-        element.type == "Fixed"
-            ? MarFixed += num.parse(element.amount.toString())
-            : MarVariable += num.parse(element.amount.toString());
-      } else if ((element.date!).month == 4) {
-        element.type == "Fixed"
-            ? AprFixed += num.parse(element.amount.toString())
-            : AprVariable += num.parse(element.amount.toString());
-      } else if ((element.date!).month == 5) {
-        element.type == "Fixed"
-            ? MayFixed += num.parse(element.amount.toString())
-            : MayVariable += num.parse(element.amount.toString());
-      } else if ((element.date!).month == 6) {
-        element.type == "Fixed"
-            ? JunFixed += num.parse(element.amount.toString())
-            : JunVariable += num.parse(element.amount.toString());
-      } else if ((element.date!).month == 7) {
-        element.type == "Fixed"
-            ? JulFixed += num.parse(element.amount.toString())
-            : JulVariable += num.parse(element.amount.toString());
-      } else if ((element.date!).month == 8) {
-        element.type == "Fixed"
-            ? AugFixed += num.parse(element.amount.toString())
-            : AugVariable += num.parse(element.amount.toString());
-      } else if ((element.date!).month == 9) {
-        element.type == "Fixed"
-            ? SepFixed += num.parse(element.amount.toString())
-            : SepVariable += num.parse(element.amount.toString());
-      } else if ((element.date!).month == 10) {
-        element.type == "Fixed"
-            ? OctFixed += num.parse(element.amount.toString())
-            : OctVariable += num.parse(element.amount.toString());
-      } else if ((element.date!).month == 11) {
-        element.type == "Fixed"
-            ? NovFixed += num.parse(element.amount.toString())
-            : NovVariable += num.parse(element.amount.toString());
-      } else if ((element.date!).month == 12) {
-        element.type == "Fixed"
-            ? DecFixed += num.parse(element.amount.toString())
-            : DecVariable += num.parse(element.amount.toString());
-      }
-      monthExpenses = [
-        generateGroupData(1, JanFixed, JanVariable),
-        generateGroupData(2, FebFixed, FebVariable),
-        generateGroupData(3, MarFixed, MarVariable),
-        generateGroupData(4, AprFixed, AprVariable),
-        generateGroupData(5, MayFixed, MayVariable),
-        generateGroupData(6, JunFixed, JunVariable),
-        generateGroupData(7, JulFixed, JulVariable),
-        generateGroupData(8, AugFixed, AugVariable),
-        generateGroupData(9, SepFixed, SepVariable),
-        generateGroupData(10, OctFixed, OctVariable),
-        generateGroupData(11, NovFixed, NovVariable),
-        generateGroupData(12, DecFixed, DecVariable),
-      ];
-      // }
-    }
-
-    return Container(
-      margin: const EdgeInsets.fromLTRB(7, 5, 7, 10),
-      decoration: const BoxDecoration(
-        color: Colors.black26,
-        // color: Colors.indigo,
-        borderRadius: BorderRadius.all(Radius.circular(15)),
-        boxShadow: [
-          BoxShadow(
-            color: Color.fromARGB(255, 255, 20, 110),
-            blurStyle: BlurStyle.outer,
-            blurRadius: 5,
-          )
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          // ignore: prefer_const_literals_to_create_immutables
-          children: [
-            const Text('Legend'),
-            const SizedBox(
-              height: 10,
-            ),
-            Row(
-              children: [
-                Container(
-                  width: 10,
-                  height: 10,
-                  // ignore: prefer_const_constructors
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: fixedExpColor,
-                  ),
-                ),
-                const SizedBox(
-                  width: 8,
-                ),
-                const Text('Fixed'),
-                const SizedBox(
-                  width: 10,
-                ),
-                Container(
-                  width: 10,
-                  height: 10,
-                  // ignore: prefer_const_constructors
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: variableExpColor,
-                  ),
-                ),
-                const SizedBox(
-                  width: 8,
-                ),
-                const Text('Variable'),
-                IconButton(
-                    onPressed: () {
-                      JanFixed = 0;
-                      JanVariable = 0;
-                      FebFixed = 0;
-                      FebVariable = 0;
-                      MarFixed = 0;
-                      MarVariable = 0;
-                      AprFixed = 0;
-                      AprVariable = 0;
-                      MayFixed = 0;
-                      MayVariable = 0;
-                      JunFixed = 0;
-                      JunVariable = 0;
-                      JulFixed = 0;
-                      JulVariable = 0;
-                      AugFixed = 0;
-                      AugVariable = 0;
-                      SepFixed = 0;
-                      SepVariable = 0;
-                      OctFixed = 0;
-                      OctVariable = 0;
-                      NovFixed = 0;
-                      NovVariable = 0;
-                      DecFixed = 0;
-                      DecVariable = 0;
-                      loadExpenseData();
-                    },
-                    icon: const Icon(Icons.candlestick_chart_outlined))
-              ],
-            ),
-            const SizedBox(
-              height: 12,
-            ),
-            // LegendWidget(),
-            Container(
-              height: 200,
-              child: BarChart(
-                BarChartData(
-                  alignment: BarChartAlignment.spaceBetween,
-                  titlesData: FlTitlesData(
-                    leftTitles: AxisTitles(),
-                    rightTitles: AxisTitles(),
-                    topTitles: AxisTitles(),
-                    bottomTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        getTitlesWidget: bottomTitles,
-                        reservedSize: 20,
-                      ),
-                    ),
-                  ),
-                  barTouchData: BarTouchData(
-                    touchTooltipData: BarTouchTooltipData(
-                      tooltipBgColor: const Color.fromARGB(255, 40, 40, 40),
-                    ),
-                  ),
-                  borderData: FlBorderData(show: false),
-                  gridData: FlGridData(show: false),
-                  barGroups: monthExpenses,
-                  // maxY: 10 + (betweenSpace * 3),
-                ),
-              ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 class ExpensesTab extends StatefulWidget {
   const ExpensesTab({
@@ -388,6 +53,9 @@ class _ExpensesTabState extends State<ExpensesTab> {
   List<List> monthExpenseFXL = [];
   List<Expense> expenseSQFL = [];
   List<Expense> expenseMonthly = [];
+  Color fixedExpColor = Color.fromARGB(255, 225, 129, 143);
+  Color variableExpColor = Color.fromARGB(255, 142, 159, 225);
+  Color expenseShadowColor = Color.fromARGB(255, 172, 55, 75);
   loadExpenseData() async {
     expenseSQFL = await Expense().select().toList();
     expenseMonthly = [];
@@ -501,6 +169,8 @@ class _ExpensesTabState extends State<ExpensesTab> {
     super.initState();
   }
 
+  String textFieldVlidMsg = "Please enter some value";
+  final _formExpenseKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     TextEditingController expensesNameCont = TextEditingController();
@@ -582,119 +252,147 @@ class _ExpensesTabState extends State<ExpensesTab> {
                 builder: (BuildContext context) {
                   // ignore: prefer_const_constructors
                   return AlertDialog(
+                    scrollable: true,
                     title: const Text('Add Expense'),
-                    backgroundColor: Colors.black54,
-                    content: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text('Expenses'),
-                        TextFormField(
-                          textCapitalization: TextCapitalization.sentences,
-                          controller: expensesNameCont,
-                          decoration:
-                              const InputDecoration(hintText: 'Expenses Name'),
-                        ),
-                        const SizedBox(height: 10),
-                        const Text('Amount'),
-                        TextFormField(
-                          controller: expenseAmountCont,
-                          keyboardType: TextInputType.number,
-                          decoration: const InputDecoration(hintText: 'Amount'),
-                        ),
-                        const SizedBox(height: 10),
-                        const Text('Type'),
-                        const SizedBox(height: 10),
-                        CupertinoSlidingSegmentedControl(
-                          groupValue: _currentSelection,
-                          padding: const EdgeInsets.all(5),
-                          // backgroundColor: CupertinoColors.white,
-                          // thumbColor: Color.fromARGB(255, 255, 20, 110),
-                          thumbColor: Colors.redAccent,
-                          children: const {
-                            0: Text("Fixed"),
-                            1: Text("Variable"),
-                          },
-                          onValueChanged: (value) {
-                            setState(() {
-                              _currentSelection = value;
-                            });
-                          },
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        const Text('Expense Date'),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        TextButton(
-                          child: Text(
-                            DateFormat().add_yMd().format(DateTime.now()),
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                          onPressed: () {
-                            DatePicker.showDatePicker(
-                              context,
-                              showTitleActions: true,
-                              minTime: DateTime(2022, 1, 1),
-                              maxTime: DateTime(2030, 12, 30),
-                              theme: const DatePickerTheme(
-                                headerColor: Colors.black,
-                                backgroundColor: Colors.black,
-                                itemStyle: TextStyle(color: Colors.white),
-                                doneStyle: TextStyle(color: Colors.white),
-                                cancelStyle: TextStyle(color: Colors.white),
-                              ),
-                              onConfirm: (date) {
-                                expenseDateCont = date;
-                                print('confirm $date');
-                              },
-                            );
-                          },
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            ElevatedButton(
-                                onPressed: () async {
-                                  // dbHelper.insertExpenses(type, name, amount, date)
-                                  String typeOfExpen = "Fixed";
-                                  if (_currentSelection == 1) {
-                                    typeOfExpen = "Variable";
+                    backgroundColor: Colors.black87,
+                    content: Form(
+                      key: _formExpenseKey,
+                      child: Column(
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text('Expenses'),
+                              TextFormField(
+                                textCapitalization:
+                                    TextCapitalization.sentences,
+                                controller: expensesNameCont,
+                                decoration: const InputDecoration(
+                                    hintText: 'Expenses Name'),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return textFieldVlidMsg;
                                   }
-                                  Expense expenseSQF = Expense();
-                                  expenseSQF.name = expensesNameCont.text;
-                                  expenseSQF.type = typeOfExpen;
-                                  expenseSQF.amount =
-                                      double.parse(expenseAmountCont.text);
-                                  expenseSQF.date = expenseDateCont;
-                                  await expenseSQF.save();
-                                  loadExpenseData();
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text(
-                                        "New Expese Added",
-                                      ),
-                                    ),
-                                  );
-
-                                  _currentSelection = 1;
-                                  expensesNameCont.text = "";
-                                  expenseAmountCont.text = "";
-                                  expenseDateCont = DateTime.now();
-                                  Navigator.of(context, rootNavigator: true)
-                                      .pop("dialog");
+                                  return null;
                                 },
-                                child: const Text('Save New Expense'))
-                          ],
-                        )
-                      ],
+                              ),
+                              const SizedBox(height: 10),
+                              const Text('Amount'),
+                              TextFormField(
+                                controller: expenseAmountCont,
+                                keyboardType: TextInputType.number,
+                                decoration:
+                                    const InputDecoration(hintText: 'Amount'),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return textFieldVlidMsg;
+                                  }
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(height: 10),
+                              const Text('Type'),
+                              const SizedBox(height: 10),
+                              CupertinoSlidingSegmentedControl(
+                                groupValue: _currentSelection,
+                                padding: const EdgeInsets.all(5),
+                                // backgroundColor: CupertinoColors.white,
+                                // thumbColor: Color.fromARGB(255, 255, 20, 110),
+                                thumbColor:
+                                    const Color.fromARGB(255, 172, 55, 75),
+                                children: const {
+                                  0: Text("Fixed"),
+                                  1: Text("Variable"),
+                                },
+                                onValueChanged: (value) {
+                                  setState(() {
+                                    _currentSelection = value;
+                                  });
+                                },
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              const Text('Expense Date'),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              TextButton(
+                                child: Text(
+                                  DateFormat().add_yMd().format(DateTime.now()),
+                                  style: const TextStyle(fontSize: 16),
+                                ),
+                                onPressed: () {
+                                  DatePicker.showDatePicker(
+                                    context,
+                                    showTitleActions: true,
+                                    minTime: DateTime(2022, 1, 1),
+                                    maxTime: DateTime(2030, 12, 30),
+                                    theme: const DatePickerTheme(
+                                      headerColor: Colors.black,
+                                      backgroundColor: Colors.black,
+                                      itemStyle: TextStyle(color: Colors.white),
+                                      doneStyle: TextStyle(color: Colors.white),
+                                      cancelStyle:
+                                          TextStyle(color: Colors.white),
+                                    ),
+                                    onConfirm: (date) {
+                                      expenseDateCont = date;
+                                      print('confirm $date');
+                                    },
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ElevatedButton(
+                                  onPressed: () async {
+                                    if (_formExpenseKey.currentState!
+                                        .validate()) {
+                                      // dbHelper.insertExpenses(type, name, amount, date)
+                                      String typeOfExpen = "Fixed";
+                                      if (_currentSelection == 1) {
+                                        typeOfExpen = "Variable";
+                                      }
+                                      Expense expenseSQF = Expense();
+                                      expenseSQF.name = expensesNameCont.text;
+                                      expenseSQF.type = typeOfExpen;
+                                      expenseSQF.amount =
+                                          double.parse(expenseAmountCont.text);
+                                      expenseSQF.date = expenseDateCont;
+                                      await expenseSQF.save();
+                                      loadExpenseData();
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            "New Expese Added",
+                                          ),
+                                        ),
+                                      );
+
+                                      _currentSelection = 1;
+                                      expensesNameCont.text = "";
+                                      expenseAmountCont.text = "";
+                                      expenseDateCont = DateTime.now();
+                                      Navigator.of(context, rootNavigator: true)
+                                          .pop("dialog");
+                                    }
+                                  },
+                                  child: const Text('Save New Expense'))
+                            ],
+                          )
+                        ],
+                      ),
                     ),
                   );
                 },
@@ -737,16 +435,20 @@ class _ExpensesTabState extends State<ExpensesTab> {
                       Container(
                         margin: const EdgeInsets.only(bottom: 7, top: 12),
                         padding: const EdgeInsets.symmetric(horizontal: 7),
-                        decoration: const BoxDecoration(
-                          color: Colors.black26,
+                        decoration: BoxDecoration(
+                          color: Colors.black45,
                           // color: Colors.purple,
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(14),
-                            bottomLeft: Radius.circular(14),
+                          border: Border.all(
+                            color: const Color.fromARGB(255, 172, 55, 75),
+                            width: 1.5,
                           ),
-                          boxShadow: [
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(17),
+                            bottomLeft: Radius.circular(17),
+                          ),
+                          boxShadow: const [
                             BoxShadow(
-                              color: Color.fromARGB(255, 255, 20, 110),
+                              color: Color.fromARGB(255, 172, 55, 75),
                               blurStyle: BlurStyle.outer,
                               blurRadius: 4,
                             )
@@ -773,16 +475,20 @@ class _ExpensesTabState extends State<ExpensesTab> {
                         margin: const EdgeInsets.only(
                             top: 12, bottom: 7, right: 10),
                         padding: const EdgeInsets.symmetric(horizontal: 7),
-                        decoration: const BoxDecoration(
-                          color: Colors.black26,
-                          // color: Colors.purple,
-                          borderRadius: BorderRadius.only(
-                            topRight: Radius.circular(14),
-                            bottomRight: Radius.circular(14),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: const Color.fromARGB(255, 172, 55, 75),
+                            width: 1.5,
                           ),
-                          boxShadow: [
+                          color: Colors.black45,
+                          // color: Colors.purple,
+                          borderRadius: const BorderRadius.only(
+                            topRight: Radius.circular(17),
+                            bottomRight: Radius.circular(17),
+                          ),
+                          boxShadow: const [
                             BoxShadow(
-                              color: Color.fromARGB(255, 255, 20, 110),
+                              color: Color.fromARGB(255, 172, 55, 75),
                               blurStyle: BlurStyle.outer,
                               blurRadius: 4,
                             )
@@ -811,17 +517,22 @@ class _ExpensesTabState extends State<ExpensesTab> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
                 padding: const EdgeInsets.symmetric(vertical: 10),
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   // color: Colors.amber
-                  color: Colors.black26,
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(15),
+                  color: Colors.black45,
+                  border: Border.all(
+                    color: const Color.fromARGB(255, 172, 55, 75),
+                    width: 1.5,
                   ),
-                  boxShadow: [
+
+                  borderRadius: const BorderRadius.all(
+                    Radius.circular(20),
+                  ),
+                  boxShadow: const [
                     BoxShadow(
-                      color: Color.fromARGB(255, 255, 20, 110),
+                      color: Color.fromARGB(255, 172, 55, 75),
                       blurStyle: BlurStyle.outer,
-                      blurRadius: 5,
+                      blurRadius: 4,
                     )
                   ],
                 ),
@@ -829,13 +540,17 @@ class _ExpensesTabState extends State<ExpensesTab> {
                   children: [
                     const Padding(
                       padding: EdgeInsets.symmetric(vertical: 10.0),
-                      child: Text('Monthly Expenses'),
+                      child: Text(
+                        'Monthly Expenses',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w500),
+                      ),
                     ),
                     Container(
                       decoration: const BoxDecoration(
                         border: Border(
                           top: BorderSide(
-                            color: Color.fromARGB(255, 255, 20, 110),
+                            color: Color.fromARGB(255, 172, 55, 75),
                             // width: 1.5,
                           ),
                         ),
@@ -863,14 +578,11 @@ class _ExpensesTabState extends State<ExpensesTab> {
                                         _sortColumnIndex = columnIndex;
                                         _sortAsc = _sortExpenseName;
                                       }
-                                      expenseMonthly.sort((a, b) => num.parse(
-                                              a.name.toString())
-                                          .compareTo(
-                                              num.parse(b.name.toString())));
+                                      expenseMonthly.sort((a, b) =>
+                                          (a.name!).compareTo((b.name!)));
                                       if (!_sortAsc) {
-                                        expenseMonthly.sort((a, b) => (b.name
-                                                .toString())
-                                            .compareTo((a.name.toString())));
+                                        expenseMonthly.sort((a, b) =>
+                                            (b.name!).compareTo((a.name!)));
                                       }
                                     });
                                   }
@@ -889,15 +601,11 @@ class _ExpensesTabState extends State<ExpensesTab> {
                                         _sortColumnIndex = columnIndex;
                                         _sortAsc = _sortExpenseAmount;
                                       }
-                                      expenseMonthly.sort((a, b) => num.parse(
-                                              a.amount.toString())
-                                          .compareTo(
-                                              num.parse(b.amount.toString())));
+                                      expenseMonthly.sort((a, b) =>
+                                          (a.amount!).compareTo((b.amount!)));
                                       if (!_sortAsc) {
                                         expenseMonthly.sort((a, b) =>
-                                            num.parse(b.amount.toString())
-                                                .compareTo(num.parse(
-                                                    a.amount.toString())));
+                                            (b.amount!).compareTo((a.amount!)));
                                       }
                                     });
                                   }
@@ -915,13 +623,11 @@ class _ExpensesTabState extends State<ExpensesTab> {
                                         _sortColumnIndex = columnIndex;
                                         _sortAsc = _sortExpenseFixed;
                                       }
-                                      expenseMonthly.sort((a, b) => a.type
-                                          .toString()
-                                          .compareTo(b.type.toString()));
+                                      expenseMonthly.sort(
+                                          (a, b) => a.type!.compareTo(b.type!));
                                       if (!_sortAsc) {
-                                        expenseMonthly.sort((a, b) => b.type
-                                            .toString()
-                                            .compareTo(a.type.toString()));
+                                        expenseMonthly.sort((a, b) =>
+                                            b.type!.compareTo(a.type!));
                                       }
                                     });
                                   }
@@ -939,15 +645,11 @@ class _ExpensesTabState extends State<ExpensesTab> {
                                         _sortColumnIndex = columnIndex;
                                         _sortAsc = _sortExpenseDate;
                                       }
-                                      expenseMonthly.sort((a, b) => num.parse(
-                                              a.date.toString())
-                                          .compareTo(
-                                              num.parse(b.date.toString())));
+                                      expenseMonthly.sort((a, b) =>
+                                          (a.date!).compareTo((b.date!)));
                                       if (!_sortAsc) {
-                                        expenseMonthly.sort((a, b) => num.parse(
-                                                b.date.toString())
-                                            .compareTo(
-                                                num.parse(a.date.toString())));
+                                        expenseMonthly.sort((a, b) =>
+                                            (b.date!).compareTo((a.date!)));
                                       }
                                     });
                                   }
@@ -970,17 +672,22 @@ class _ExpensesTabState extends State<ExpensesTab> {
                     width: 185,
                     height: 300,
                     margin: const EdgeInsets.symmetric(vertical: 10),
-                    decoration: const BoxDecoration(
-                      color: Colors.black26,
-                      // color: Colors.blueAccent,
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(15),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: const Color.fromARGB(255, 172, 55, 75),
+                        width: 1.5,
                       ),
-                      boxShadow: [
+
+                      color: Colors.black45,
+                      // color: Colors.blueAccent,
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(20),
+                      ),
+                      boxShadow: const [
                         BoxShadow(
-                          color: Color.fromARGB(255, 255, 20, 110),
+                          color: Color.fromARGB(255, 172, 55, 75),
                           blurStyle: BlurStyle.outer,
-                          blurRadius: 5,
+                          blurRadius: 4,
                         )
                       ],
                     ),
@@ -1030,15 +737,20 @@ class _ExpensesTabState extends State<ExpensesTab> {
                   ),
                   Container(
                     width: 185,
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       // color: Colors.pinkAccent,
-                      color: Colors.black26,
-                      borderRadius: BorderRadius.all(Radius.circular(15)),
-                      boxShadow: [
+                      color: Colors.black45,
+                      borderRadius: const BorderRadius.all(Radius.circular(20)),
+                      border: Border.all(
+                        color: const Color.fromARGB(255, 172, 55, 75),
+                        width: 1.5,
+                      ),
+
+                      boxShadow: const [
                         BoxShadow(
-                          color: Color.fromARGB(255, 255, 20, 110),
+                          color: Color.fromARGB(255, 172, 55, 75),
                           blurStyle: BlurStyle.outer,
-                          blurRadius: 5,
+                          blurRadius: 4,
                         )
                       ],
                     ),
@@ -1052,6 +764,7 @@ class _ExpensesTabState extends State<ExpensesTab> {
                         overflowMode: LegendItemOverflowMode.wrap,
                         shouldAlwaysShowScrollbar: false,
                       ),
+                      palette: [variableExpColor, fixedExpColor],
                       tooltipBehavior: TooltipBehavior(enable: true),
                       series: <CircularSeries>[
                         PieSeries<FixedVariableData, String>(
@@ -1073,18 +786,23 @@ class _ExpensesTabState extends State<ExpensesTab> {
                   Container(
                     margin: const EdgeInsets.symmetric(vertical: 10),
                     width: 185,
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       // color: Colors.deepPurple,
-                      color: Colors.black26,
-                      boxShadow: [
+                      border: Border.all(
+                        color: const Color.fromARGB(255, 172, 55, 75),
+                        width: 1.5,
+                      ),
+
+                      color: Colors.black45,
+                      boxShadow: const [
                         BoxShadow(
-                          color: Color.fromARGB(255, 255, 20, 110),
+                          color: Color.fromARGB(255, 172, 55, 75),
                           blurStyle: BlurStyle.outer,
                           blurRadius: 4,
                         )
                       ],
 
-                      borderRadius: BorderRadius.all(Radius.circular(15)),
+                      borderRadius: const BorderRadius.all(Radius.circular(20)),
                     ),
                     child: SfCircularChart(
                       title: ChartTitle(text: 'Fixed Expenses'),
@@ -1095,6 +813,7 @@ class _ExpensesTabState extends State<ExpensesTab> {
                         overflowMode: LegendItemOverflowMode.wrap,
                         shouldAlwaysShowScrollbar: false,
                       ),
+                      palette: [variableExpColor, fixedExpColor],
                       tooltipBehavior: TooltipBehavior(enable: true),
                       series: <CircularSeries>[
                         DoughnutSeries<FixedVariableData, String>(
@@ -1112,17 +831,20 @@ class _ExpensesTabState extends State<ExpensesTab> {
                   Container(
                     width: 185,
                     margin: const EdgeInsets.symmetric(vertical: 10),
-                    decoration: const BoxDecoration(
-                      // color: Colors.deepOrange,
-                      color: Colors.black26,
-                      boxShadow: [
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: const Color.fromARGB(255, 172, 55, 75),
+                        width: 1.5,
+                      ),
+                      color: Colors.black45,
+                      boxShadow: const [
                         BoxShadow(
-                          color: Color.fromARGB(255, 255, 20, 110),
+                          color: Color.fromARGB(255, 172, 55, 75),
                           blurStyle: BlurStyle.outer,
                           blurRadius: 4,
                         )
                       ],
-                      borderRadius: BorderRadius.all(Radius.circular(15)),
+                      borderRadius: const BorderRadius.all(Radius.circular(20)),
                     ),
                     child: SfCircularChart(
                       title: ChartTitle(text: 'Variable Expenses'),
@@ -1145,11 +867,14 @@ class _ExpensesTabState extends State<ExpensesTab> {
                           explodeIndex: 1,
                         )
                       ],
+                      palette: [variableExpColor, fixedExpColor],
                     ),
                   ),
                 ],
               ),
-              ExpenseBarCharts(selectedYear: selectedYear),
+              SizedBox(
+                  height: 350,
+                  child: ExpenseBarCharts(selectedYear: selectedYear)),
             ],
           ),
         ]),
@@ -1179,7 +904,7 @@ class _ExpensesTabState extends State<ExpensesTab> {
                   return AlertDialog(
                     scrollable: true,
                     title: const Text('Expense'),
-                    backgroundColor: Colors.black54,
+                    backgroundColor: Colors.black87,
                     content: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -1237,42 +962,60 @@ class _ExpensesTabState extends State<ExpensesTab> {
                           children: [
                             ElevatedButton(
                               onPressed: () async {
-                                data.name = expenseNameUpdate.text;
-                                data.amount =
-                                    double.parse(expenseAmountUpdate.text);
-                                data.type = expenseTypeUpdate.text;
-                                data.date = expenseDateUpdate;
-                                await data.save();
-                                loadExpenseData();
-                                Navigator.of(context, rootNavigator: true)
-                                    .pop("dialog");
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                      "Expesnse Updated Successfully",
+                                if (await confirm(
+                                  context,
+                                  title: const Text('Confirm'),
+                                  content:
+                                      const Text('You sure to update data?'),
+                                  textOK: const Text('Yes'),
+                                  textCancel: const Text('Nah'),
+                                )) {
+                                  data.name = expenseNameUpdate.text;
+                                  data.amount =
+                                      double.parse(expenseAmountUpdate.text);
+                                  data.type = expenseTypeUpdate.text;
+                                  data.date = expenseDateUpdate;
+                                  await data.save();
+                                  loadExpenseData();
+                                  Navigator.of(context, rootNavigator: true)
+                                      .pop("dialog");
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        "Expesnse Updated Successfully",
+                                      ),
                                     ),
-                                  ),
-                                );
+                                  );
+                                }
                               },
                               child: const Text("Update"),
                             ),
                             ElevatedButton(
                               onPressed: () async {
-                                await Expense()
-                                    .select()
-                                    .id
-                                    .equals(data.id)
-                                    .delete();
-                                loadExpenseData();
-                                Navigator.of(context, rootNavigator: true)
-                                    .pop("dialog");
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                      "Expense Deleted Successfully",
+                                if (await confirm(context,
+                                    title: const Text('Confirm'),
+                                    content: const Text('Are you sure!'),
+                                    textOK: const Text(
+                                      'Yes',
+                                      style: TextStyle(color: Colors.redAccent),
                                     ),
-                                  ),
-                                );
+                                    textCancel: const Text('No'))) {
+                                  await Expense()
+                                      .select()
+                                      .id
+                                      .equals(data.id)
+                                      .delete();
+                                  loadExpenseData();
+                                  Navigator.of(context, rootNavigator: true)
+                                      .pop("dialog");
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        "Expense Deleted Successfully",
+                                      ),
+                                    ),
+                                  );
+                                }
                               },
                               child: const Text(
                                 "Delete",

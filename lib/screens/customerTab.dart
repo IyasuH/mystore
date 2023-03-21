@@ -2,6 +2,7 @@
 
 import 'dart:io';
 
+import 'package:confirm_dialog/confirm_dialog.dart';
 import 'package:excel/excel.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -112,6 +113,8 @@ class _CustomerTabState extends State<CustomerTab> {
     super.initState();
   }
 
+  final _fromClientKey = GlobalKey<FormState>();
+  String textFieldVlidMsg = "Please enter some value";
   final clientSQF = Client();
   @override
   Widget build(BuildContext context) {
@@ -158,126 +161,187 @@ class _CustomerTabState extends State<CustomerTab> {
                   title: const Text('New Customer'),
                   backgroundColor: Colors.black54,
                   // ignore: prefer_const_constructors
-                  content: Column(
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('Name'),
-                          TextFormField(
-                            controller: customerNameCont,
-                            textCapitalization: TextCapitalization.sentences,
-                            decoration: const InputDecoration(hintText: 'Name'),
-                          ),
-                          const SizedBox(height: 5),
-                          const Text('Company Name'),
-                          TextFormField(
-                            controller: companyNameCont,
-                            textCapitalization: TextCapitalization.sentences,
-                            decoration:
-                                const InputDecoration(hintText: 'Company Name'),
-                          ),
-                          const SizedBox(height: 5),
-                          const Text('Bank Name'),
-                          TextFormField(
-                            controller: bankNameCont,
-                            textCapitalization: TextCapitalization.sentences,
-                            decoration:
-                                const InputDecoration(hintText: 'Bank Name'),
-                          ),
-                          const SizedBox(height: 5),
-                          const Text('Bank Account'),
-                          TextFormField(
-                            controller: bankAccountCont,
-                            keyboardType: TextInputType.number,
-                            decoration:
-                                const InputDecoration(hintText: 'Bank Number'),
-                          ),
-                          const SizedBox(height: 5),
-                          const Text('Tin Number'),
-                          TextFormField(
-                            controller: tinNumberCont,
-                            keyboardType: TextInputType.number,
-                            decoration:
-                                const InputDecoration(hintText: 'Tin Number'),
-                          ),
-                          const SizedBox(height: 5),
-                          const Text('City'),
-                          TextFormField(
-                            controller: cityCont,
-                            textCapitalization: TextCapitalization.sentences,
-                            decoration: const InputDecoration(hintText: 'City'),
-                          ),
-                          const SizedBox(height: 5),
-                          const Text('Phone Number'),
-                          TextFormField(
-                            controller: phoneNumberCont,
-                            keyboardType: TextInputType.number,
-                            decoration:
-                                const InputDecoration(hintText: 'Phone Number'),
-                          ),
-                          const SizedBox(height: 5),
-                          const SizedBox(height: 5),
-                          const Text('Frequency Of Purchase'),
-                          TextFormField(
-                            controller: frequencyOfPurchCont,
-                            keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(
-                                hintText: 'Frequency Of Purchase'),
-                          ),
-                          const SizedBox(height: 5),
-                          const Text('Total Purchase'),
-                          TextFormField(
-                            controller: totalPurchCont,
-                            keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(
-                                hintText: 'Total Purchase'),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Row(
-                        children: [
-                          ElevatedButton(
-                            onPressed: () async {
-                              Client clientSQF = Client();
-                              clientSQF.name = customerNameCont.text;
-                              clientSQF.companyName = companyNameCont.text;
-                              clientSQF.bankName = bankNameCont.text;
-                              clientSQF.bankNumber = bankAccountCont.text;
-                              clientSQF.tinNumber = tinNumberCont.text;
-                              clientSQF.city = cityCont.text;
-                              clientSQF.phoneN = phoneNumberCont.text;
-                              clientSQF.purchaseFreq =
-                                  int.parse(frequencyOfPurchCont.text);
-                              clientSQF.totPurchase =
-                                  double.parse(totalPurchCont.text);
-                              await clientSQF.save();
-                              loadClientData();
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                // ignore: prefer_const_constructors
-                                SnackBar(
-                                  content: const Text("New Customer Added"),
-                                ),
-                              );
-                              customerNameCont.text = "";
-                              companyNameCont.text = "";
-                              tinNumberCont.text = "";
-                              cityCont.text = "";
-                              phoneNumberCont.text = "";
-                              frequencyOfPurchCont.text = "";
-                              totalPurchCont.text = "";
-                              bankAccountCont.text = "";
-                              Navigator.of(context, rootNavigator: true)
-                                  .pop("dialog");
-                            },
-                            child: const Text('Create New Customer'),
-                          )
-                        ],
-                      )
-                    ],
+                  content: Form(
+                    key: _fromClientKey,
+                    child: Column(
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('Name'),
+                            TextFormField(
+                              controller: customerNameCont,
+                              textCapitalization: TextCapitalization.sentences,
+                              decoration:
+                                  const InputDecoration(hintText: 'Name'),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return textFieldVlidMsg;
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 5),
+                            const Text('Company Name'),
+                            TextFormField(
+                              controller: companyNameCont,
+                              textCapitalization: TextCapitalization.sentences,
+                              decoration: const InputDecoration(
+                                  hintText: 'Company Name'),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return textFieldVlidMsg;
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 5),
+                            const Text('Bank Name'),
+                            TextFormField(
+                              controller: bankNameCont,
+                              textCapitalization: TextCapitalization.sentences,
+                              decoration:
+                                  const InputDecoration(hintText: 'Bank Name'),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return textFieldVlidMsg;
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 5),
+                            const Text('Bank Account'),
+                            TextFormField(
+                              controller: bankAccountCont,
+                              keyboardType: TextInputType.number,
+                              decoration: const InputDecoration(
+                                  hintText: 'Bank Number'),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return textFieldVlidMsg;
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 5),
+                            const Text('Tin Number'),
+                            TextFormField(
+                              controller: tinNumberCont,
+                              keyboardType: TextInputType.number,
+                              decoration:
+                                  const InputDecoration(hintText: 'Tin Number'),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return textFieldVlidMsg;
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 5),
+                            const Text('City'),
+                            TextFormField(
+                              controller: cityCont,
+                              textCapitalization: TextCapitalization.sentences,
+                              decoration:
+                                  const InputDecoration(hintText: 'City'),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return textFieldVlidMsg;
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 5),
+                            const Text('Phone Number'),
+                            TextFormField(
+                              controller: phoneNumberCont,
+                              keyboardType: TextInputType.number,
+                              decoration: const InputDecoration(
+                                  hintText: 'Phone Number'),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return textFieldVlidMsg;
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 5),
+                            const SizedBox(height: 5),
+                            const Text('Frequency Of Purchase'),
+                            TextFormField(
+                              controller: frequencyOfPurchCont,
+                              keyboardType: TextInputType.number,
+                              decoration: const InputDecoration(
+                                  hintText: 'Frequency Of Purchase'),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return textFieldVlidMsg;
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 5),
+                            const Text('Total Purchase'),
+                            TextFormField(
+                              controller: totalPurchCont,
+                              keyboardType: TextInputType.number,
+                              decoration: const InputDecoration(
+                                  hintText: 'Total Purchase'),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return textFieldVlidMsg;
+                                }
+                                return null;
+                              },
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Row(
+                          children: [
+                            ElevatedButton(
+                              onPressed: () async {
+                                if (_fromClientKey.currentState!.validate()) {
+                                  Client clientSQF = Client();
+                                  clientSQF.name = customerNameCont.text;
+                                  clientSQF.companyName = companyNameCont.text;
+                                  clientSQF.bankName = bankNameCont.text;
+                                  clientSQF.bankNumber = bankAccountCont.text;
+                                  clientSQF.tinNumber = tinNumberCont.text;
+                                  clientSQF.city = cityCont.text;
+                                  clientSQF.phoneN = phoneNumberCont.text;
+                                  clientSQF.purchaseFreq =
+                                      int.parse(frequencyOfPurchCont.text);
+                                  clientSQF.totPurchase =
+                                      double.parse(totalPurchCont.text);
+                                  await clientSQF.save();
+                                  loadClientData();
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    // ignore: prefer_const_constructors
+                                    SnackBar(
+                                      content: const Text("New Customer Added"),
+                                    ),
+                                  );
+                                  customerNameCont.text = "";
+                                  companyNameCont.text = "";
+                                  tinNumberCont.text = "";
+                                  cityCont.text = "";
+                                  phoneNumberCont.text = "";
+                                  frequencyOfPurchCont.text = "";
+                                  totalPurchCont.text = "";
+                                  bankAccountCont.text = "";
+                                  Navigator.of(context, rootNavigator: true)
+                                      .pop("dialog");
+                                }
+                              },
+                              child: const Text('Create New Customer'),
+                            )
+                          ],
+                        )
+                      ],
+                    ),
                   ),
                 );
               },
@@ -305,13 +369,18 @@ class _CustomerTabState extends State<CustomerTab> {
                         const BoxShadow(
                           color: Color.fromARGB(255, 234, 164, 45),
                           blurStyle: BlurStyle.outer,
-                          blurRadius: 5,
+                          blurRadius: 4,
                         )
                       ],
-                      color: Colors.black12,
+                      border: Border.all(
+                        color: const Color.fromARGB(255, 234, 164, 45),
+                        width: 1.5,
+                      ),
+
+                      color: Colors.black45,
                       // color: Color.fromARGB(50, 203, 145, 0),
                       borderRadius: const BorderRadius.all(
-                        Radius.circular(15),
+                        Radius.circular(20),
                       ),
                     ),
                     child: Row(
@@ -343,10 +412,15 @@ class _CustomerTabState extends State<CustomerTab> {
                         height: 140,
                         margin: const EdgeInsets.symmetric(vertical: 20),
                         padding: const EdgeInsets.all(15),
-                        decoration: const BoxDecoration(
-                          color: Colors.black12,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: const Color.fromARGB(255, 234, 164, 45),
+                            width: 1.5,
+                          ),
+
+                          color: Colors.black45,
                           // color: Color.fromARGB(50, 203, 145, 0),
-                          boxShadow: [
+                          boxShadow: const [
                             BoxShadow(
                               color: Color.fromARGB(255, 234, 164, 45),
                               blurStyle: BlurStyle.outer,
@@ -354,8 +428,8 @@ class _CustomerTabState extends State<CustomerTab> {
                             )
                           ],
 
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(10),
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(20),
                           ),
                         ),
                         child: Column(
@@ -364,7 +438,7 @@ class _CustomerTabState extends State<CustomerTab> {
                           // ignore: prefer_const_literals_to_create_immutables
                           children: [
                             const Text(
-                              '58',
+                              '',
                               style: TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.w700,
@@ -392,19 +466,24 @@ class _CustomerTabState extends State<CustomerTab> {
                         height: 140,
                         margin: const EdgeInsets.symmetric(vertical: 20),
                         padding: const EdgeInsets.all(15),
-                        decoration: const BoxDecoration(
-                          color: Colors.black12,
+                        decoration: BoxDecoration(
+                          color: Colors.black45,
+                          border: Border.all(
+                            color: const Color.fromARGB(255, 234, 164, 45),
+                            width: 1.5,
+                          ),
+
                           // color: Color.fromARGB(50, 203, 145, 0),
-                          boxShadow: [
+                          boxShadow: const [
                             BoxShadow(
                               color: Color.fromARGB(255, 234, 164, 45),
                               blurStyle: BlurStyle.outer,
-                              blurRadius: 5,
+                              blurRadius: 4,
                             )
                           ],
 
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(10),
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(20),
                           ),
                         ),
                         child: Column(
@@ -445,20 +524,24 @@ class _CustomerTabState extends State<CustomerTab> {
                     margin: const EdgeInsets.only(top: 10),
                     padding: const EdgeInsets.symmetric(horizontal: 10.0),
                     height: 52,
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       // color: Color.fromARGB(50, 203, 145, 0),
-                      color: Colors.black12,
-                      boxShadow: [
+                      color: Colors.black45,
+                      border: Border.all(
+                        color: const Color.fromARGB(255, 234, 164, 45),
+                        width: 1.5,
+                      ),
+
+                      boxShadow: const [
                         BoxShadow(
                           color: Color.fromARGB(255, 234, 164, 45),
                           blurStyle: BlurStyle.outer,
-                          blurRadius: 5,
+                          blurRadius: 4,
                         )
                       ],
-
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(15),
-                          topRight: Radius.circular(15)),
+                      borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(20),
+                          topRight: Radius.circular(20)),
                     ),
                     child: Row(
                       // ignore: prefer_const_constructors
@@ -477,10 +560,11 @@ class _CustomerTabState extends State<CustomerTab> {
                           width: 155,
                           padding: const EdgeInsets.symmetric(horizontal: 8),
                           decoration: const BoxDecoration(
-                            color: Colors.black12,
+                            color: Colors.black45,
                             border: Border(
                               bottom: BorderSide(
                                 color: Color.fromARGB(255, 235, 164, 45),
+                                width: 1.5,
                               ),
                             ),
                           ),
@@ -511,18 +595,22 @@ class _CustomerTabState extends State<CustomerTab> {
                     padding: const EdgeInsets.only(
                         left: 10, right: 3, bottom: 7, top: 5),
                     height: 395,
-                    decoration: const BoxDecoration(
-                      color: Colors.black12,
-                      boxShadow: [
+                    decoration: BoxDecoration(
+                      color: Colors.black45,
+                      border: Border.all(
+                        color: const Color.fromARGB(255, 234, 164, 45),
+                        width: 1.5,
+                      ),
+                      boxShadow: const [
                         BoxShadow(
                           color: Color.fromARGB(255, 234, 164, 45),
                           blurStyle: BlurStyle.outer,
-                          blurRadius: 5,
+                          blurRadius: 4,
                         )
                       ],
-                      borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(15),
-                        bottomRight: Radius.circular(15),
+                      borderRadius: const BorderRadius.only(
+                        bottomLeft: Radius.circular(20),
+                        bottomRight: Radius.circular(20),
                       ),
                     ),
                     child: ListView.builder(
@@ -547,7 +635,7 @@ class _CustomerTabState extends State<CustomerTab> {
                                 context: context,
                                 builder: (BuildContext context) {
                                   return AlertDialog(
-                                    backgroundColor: Colors.black54,
+                                    backgroundColor: Colors.black87,
                                     scrollable: true,
                                     title: const Text('Client Info'),
                                     // ignore: prefer_const_constructors
@@ -632,33 +720,84 @@ class _CustomerTabState extends State<CustomerTab> {
                                           children: [
                                             ElevatedButton(
                                                 onPressed: () async {
-                                                  clientSQFL[index].name =
-                                                      clientNameUpdate.text;
-                                                  clientSQFL[index]
-                                                          .companyName =
-                                                      companyNameUpdate.text;
-                                                  clientSQFL[index].bankName =
-                                                      bankNameUpdate.text;
-                                                  clientSQFL[index].bankNumber =
-                                                      bankNumberUpdate.text;
-                                                  clientSQFL[index].tinNumber =
-                                                      tinNumberUpdate.text;
-                                                  clientSQFL[index].city =
-                                                      cityUpdate.text;
-                                                  clientSQFL[index].phoneN =
-                                                      phoneNumberUpdate.text;
-                                                  clientSQFL[index]
-                                                          .purchaseFreq =
-                                                      int.parse(
-                                                          frequencyOfPurchUpdate
-                                                              .text);
-                                                  clientSQFL[index]
-                                                          .totPurchase =
-                                                      double.parse(
-                                                          totalPurchUpdate
-                                                              .text);
-                                                  await clientSQFL[index]
-                                                      .save();
+                                                  if (await confirm(
+                                                    context,
+                                                    title:
+                                                        const Text('Confirm'),
+                                                    content: const Text(
+                                                        'You sure to update data?'),
+                                                    textOK: const Text('Yes'),
+                                                    textCancel:
+                                                        const Text('Nah'),
+                                                  )) {
+                                                    clientSQFL[index].name =
+                                                        clientNameUpdate.text;
+                                                    clientSQFL[index]
+                                                            .companyName =
+                                                        companyNameUpdate.text;
+                                                    clientSQFL[index].bankName =
+                                                        bankNameUpdate.text;
+                                                    clientSQFL[index]
+                                                            .bankNumber =
+                                                        bankNumberUpdate.text;
+                                                    clientSQFL[index]
+                                                            .tinNumber =
+                                                        tinNumberUpdate.text;
+                                                    clientSQFL[index].city =
+                                                        cityUpdate.text;
+                                                    clientSQFL[index].phoneN =
+                                                        phoneNumberUpdate.text;
+                                                    clientSQFL[index]
+                                                            .purchaseFreq =
+                                                        int.parse(
+                                                            frequencyOfPurchUpdate
+                                                                .text);
+                                                    clientSQFL[index]
+                                                            .totPurchase =
+                                                        double.parse(
+                                                            totalPurchUpdate
+                                                                .text);
+                                                    await clientSQFL[index]
+                                                        .save();
+                                                    loadClientData();
+                                                    Navigator.of(context,
+                                                            rootNavigator: true)
+                                                        .pop("dialog");
+                                                    ScaffoldMessenger.of(
+                                                            context)
+                                                        .showSnackBar(
+                                                      const SnackBar(
+                                                        content: Text(
+                                                          "Client Info Updated Successfully",
+                                                        ),
+                                                      ),
+                                                    );
+
+                                                    // clientSQFL[index]. = clientNameUpdate.text;
+                                                  }
+                                                },
+                                                child: const Text("Update")),
+                                            ElevatedButton(
+                                              onPressed: () async {
+                                                if (await confirm(context,
+                                                    title:
+                                                        const Text('Confirm'),
+                                                    content: const Text(
+                                                        'Are you sure!'),
+                                                    textOK: const Text(
+                                                      'Yes',
+                                                      style: TextStyle(
+                                                          color:
+                                                              Colors.redAccent),
+                                                    ),
+                                                    textCancel:
+                                                        const Text('No'))) {
+                                                  await Client()
+                                                      .select()
+                                                      .id
+                                                      .equals(
+                                                          clientSQFL[index].id)
+                                                      .delete();
                                                   loadClientData();
                                                   Navigator.of(context,
                                                           rootNavigator: true)
@@ -667,33 +806,10 @@ class _CustomerTabState extends State<CustomerTab> {
                                                       .showSnackBar(
                                                     const SnackBar(
                                                       content: Text(
-                                                        "Client Info Updated Successfully",
-                                                      ),
+                                                          "Client Info deleted Successfully"),
                                                     ),
                                                   );
-
-                                                  // clientSQFL[index]. = clientNameUpdate.text;
-                                                },
-                                                child: const Text("Update")),
-                                            ElevatedButton(
-                                              onPressed: () async {
-                                                await Client()
-                                                    .select()
-                                                    .id
-                                                    .equals(
-                                                        clientSQFL[index].id)
-                                                    .delete();
-                                                loadClientData();
-                                                Navigator.of(context,
-                                                        rootNavigator: true)
-                                                    .pop("dialog");
-                                                ScaffoldMessenger.of(context)
-                                                    .showSnackBar(
-                                                  const SnackBar(
-                                                    content: Text(
-                                                        "Client Info deleted Successfully"),
-                                                  ),
-                                                );
+                                                }
                                               },
                                               child: const Text(
                                                 "Delete",

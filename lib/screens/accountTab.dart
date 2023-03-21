@@ -1,5 +1,5 @@
 // ignore: file_names
-// ignore_for_file: depend_on_referenced_packages
+// ignore_for_file: depend_on_referenced_packages, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
 import 'package:dotted_border/dotted_border.dart';
@@ -33,6 +33,8 @@ class _AcoountTabState extends State<AcoountTab> {
     super.initState();
   }
 
+  String textFieldVlidMsg = "Please enter some value";
+  final _formBankKey = GlobalKey<FormState>();
   final bankSQF = Bank();
   @override
   Widget build(BuildContext context) {
@@ -48,35 +50,14 @@ class _AcoountTabState extends State<AcoountTab> {
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
+              children: const [
+                Text(
                   'Account',
                   style: TextStyle(
                     fontSize: 25,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                Container(
-                  width: 45,
-                  height: 45,
-                  decoration: const BoxDecoration(
-                    color: Colors.black12,
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(12),
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.blueGrey,
-                        blurStyle: BlurStyle.outer,
-                        blurRadius: 7,
-                      )
-                    ],
-                  ),
-                  child: IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.notifications_active_outlined),
-                  ),
-                )
               ],
             ),
             Padding(
@@ -87,16 +68,17 @@ class _AcoountTabState extends State<AcoountTab> {
                   Container(
                     height: 100,
                     width: 170,
-                    decoration: const BoxDecoration(
-                      color: Colors.black12,
-                      boxShadow: [
+                    decoration: BoxDecoration(
+                      color: Colors.black45,
+                      boxShadow: const [
                         BoxShadow(
                           color: Colors.blueGrey,
                           blurStyle: BlurStyle.outer,
-                          blurRadius: 7,
+                          blurRadius: 4,
                         )
                       ],
-                      borderRadius: BorderRadius.all(
+                      border: Border.all(color: Colors.blueGrey, width: 2),
+                      borderRadius: const BorderRadius.all(
                         Radius.circular(24),
                       ),
                     ),
@@ -127,18 +109,19 @@ class _AcoountTabState extends State<AcoountTab> {
                   Container(
                     height: 100,
                     width: 170,
-                    decoration: const BoxDecoration(
-                      color: Colors.black12,
-                      borderRadius: BorderRadius.all(
+                    decoration: BoxDecoration(
+                      color: Colors.black45,
+                      borderRadius: const BorderRadius.all(
                         Radius.circular(24),
                       ),
-                      boxShadow: [
+                      boxShadow: const [
                         BoxShadow(
                           color: Colors.blueGrey,
                           blurStyle: BlurStyle.outer,
-                          blurRadius: 7,
+                          blurRadius: 4,
                         )
                       ],
+                      border: Border.all(color: Colors.blueGrey, width: 2),
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -188,13 +171,13 @@ class _AcoountTabState extends State<AcoountTab> {
                             builder: (BuildContext context) {
                               // ignore: prefer_const_constructors
                               return AlertDialog(
-                                backgroundColor: Colors.black54,
+                                backgroundColor: Colors.black87,
                                 scrollable: true,
                                 title: const Text('Add Account'),
                                 // backgroundColor:
                                 //     const Color.fromARGB(255, 60, 59, 59),
-                                content: SizedBox(
-                                  height: 400,
+                                content: Form(
+                                  key: _formBankKey,
                                   child: Column(children: [
                                     Column(
                                       crossAxisAlignment:
@@ -209,6 +192,13 @@ class _AcoountTabState extends State<AcoountTab> {
                                           onChanged: ((value) {}),
                                           decoration: const InputDecoration(
                                               hintText: 'Bank Name'),
+                                          validator: (value) {
+                                            if (value == null ||
+                                                value.isEmpty) {
+                                              return textFieldVlidMsg;
+                                            }
+                                            return null;
+                                          },
                                         ),
                                         const SizedBox(height: 10),
                                         const Text('Account Number'),
@@ -217,6 +207,13 @@ class _AcoountTabState extends State<AcoountTab> {
                                           keyboardType: TextInputType.number,
                                           decoration: const InputDecoration(
                                               hintText: 'Account Number'),
+                                          validator: (value) {
+                                            if (value == null ||
+                                                value.isEmpty) {
+                                              return textFieldVlidMsg;
+                                            }
+                                            return null;
+                                          },
                                         ),
                                         const SizedBox(height: 10),
                                         const Text('Amount'),
@@ -225,6 +222,13 @@ class _AcoountTabState extends State<AcoountTab> {
                                           keyboardType: TextInputType.number,
                                           decoration: const InputDecoration(
                                               hintText: 'Current Amount'),
+                                          validator: (value) {
+                                            if (value == null ||
+                                                value.isEmpty) {
+                                              return textFieldVlidMsg;
+                                            }
+                                            return null;
+                                          },
                                         ),
                                         const SizedBox(height: 10),
                                         const Text("Account Created At"),
@@ -265,31 +269,35 @@ class _AcoountTabState extends State<AcoountTab> {
                                     const SizedBox(height: 20),
                                     ElevatedButton(
                                       onPressed: () async {
-                                        bankSQF.name = bankNameCont.text;
-                                        bankSQF.accountNumber =
-                                            bankNumCont.text;
-                                        bankSQF.amount =
-                                            double.parse(bankAmountCont.text);
-                                        bankSQF.accountDate =
-                                            bankCreatedateFCont;
-                                        await bankSQF.save();
-                                        loadTotBank();
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          const SnackBar(
-                                            content: Text(
-                                              "New Expese Added",
+                                        if (_formBankKey.currentState!
+                                            .validate()) {
+                                          bankSQF.name = bankNameCont.text;
+                                          bankSQF.accountNumber =
+                                              bankNumCont.text;
+                                          bankSQF.amount =
+                                              double.parse(bankAmountCont.text);
+                                          bankSQF.accountDate =
+                                              bankCreatedateFCont;
+                                          await bankSQF.save();
+                                          loadTotBank();
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                "New Expese Added",
+                                              ),
                                             ),
-                                          ),
-                                        );
-                                        bankNameCont.text = "";
-                                        bankNumCont.text = "";
-                                        bankAmountCont.text = "";
-                                        bankCreatedateFCont = DateTime.now();
-                                        // ignore: use_build_context_synchronously
-                                        Navigator.of(context,
-                                                rootNavigator: true)
-                                            .pop("dialog");
+                                          );
+                                          bankNameCont.text = "";
+                                          bankNumCont.text = "";
+                                          bankAmountCont.text = "";
+                                          bankCreatedateFCont = DateTime.now();
+                                          // ignore: use_build_context_synchronously
+                                          Navigator.of(context,
+                                                  rootNavigator: true)
+                                              .pop("dialog");
+                                        }
+                                        ;
                                       },
                                       child: const Text("Save New Account"),
                                     ),
@@ -308,7 +316,7 @@ class _AcoountTabState extends State<AcoountTab> {
                         width: 400,
                         height: 42,
                         decoration: const BoxDecoration(
-                          color: Colors.black12,
+                          color: Colors.black45,
                           borderRadius: BorderRadius.all(
                             Radius.circular(24),
                           ),
@@ -343,7 +351,7 @@ class _AcoountTabState extends State<AcoountTab> {
                   decoration: const BoxDecoration(
                       // color: Colors.amber,
                       ),
-                  height: 410,
+                  height: 425,
                   child: ClipRRect(
                     borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(20),
@@ -356,22 +364,24 @@ class _AcoountTabState extends State<AcoountTab> {
                         return Container(
                           margin: const EdgeInsets.symmetric(
                               vertical: 10, horizontal: 4.0),
-                          height: 195,
+                          height: 200,
                           // width: 314.8,
                           padding:
                               const EdgeInsets.fromLTRB(15, 6.0, 15.0, 5.0),
-                          decoration: const BoxDecoration(
-                            borderRadius: BorderRadius.all(
+                          decoration: BoxDecoration(
+                            borderRadius: const BorderRadius.all(
                               Radius.circular(20),
                             ),
-                            boxShadow: [
+                            boxShadow: const [
                               BoxShadow(
                                 color: Colors.blueGrey,
                                 blurStyle: BlurStyle.outer,
-                                blurRadius: 7,
+                                blurRadius: 4,
                               )
                             ],
-                            color: Colors.black12,
+                            border:
+                                Border.all(color: Colors.blueGrey, width: 2),
+                            color: Colors.black45,
                           ),
                           child: Column(
                             children: <Widget>[
@@ -452,9 +462,7 @@ class _AcoountTabState extends State<AcoountTab> {
                                             'assets/MasterCard.png'),
                                       )
                                     ],
-                                    // backgroundImage:
-                                    //     const AssetImage('assets/masterCard.png'),
-                                    backgroundColor: Colors.black38,
+                                    backgroundColor: Colors.black54,
                                     shape: AvatarShape.rectangle(
                                       75,
                                       55,

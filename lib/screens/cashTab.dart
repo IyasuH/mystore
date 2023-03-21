@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously, depend_on_referenced_packages
 
+import 'package:confirm_dialog/confirm_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:intl/intl.dart';
@@ -74,7 +75,7 @@ class _CashTabState extends State<CashTab> {
               ),
             ),
             SizedBox(
-              height: 650,
+              height: 663,
               child: ClipRRect(
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(20),
@@ -111,14 +112,17 @@ class _CashTabState extends State<CashTab> {
                           ),
                           margin: const EdgeInsets.symmetric(
                               horizontal: 5, vertical: 7),
-                          decoration: const BoxDecoration(
-                            // color: Colors.amber,
-                            borderRadius: BorderRadius.all(Radius.circular(15)),
-                            boxShadow: [
+                          decoration: BoxDecoration(
+                            color: Colors.black45,
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(20)),
+                            border:
+                                Border.all(color: Colors.blueGrey, width: 1.5),
+                            boxShadow: const [
                               BoxShadow(
                                 color: Colors.blueGrey,
                                 blurStyle: BlurStyle.outer,
-                                blurRadius: 5,
+                                blurRadius: 4,
                               )
                             ],
                           ),
@@ -151,14 +155,17 @@ class _CashTabState extends State<CashTab> {
                           height: 270,
                           margin: const EdgeInsets.symmetric(
                               vertical: 13, horizontal: 3),
-                          decoration: const BoxDecoration(
-                            // color: Colors.amber,
-                            borderRadius: BorderRadius.all(Radius.circular(15)),
-                            boxShadow: [
+                          decoration: BoxDecoration(
+                            color: Colors.black45,
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(20)),
+                            border:
+                                Border.all(color: Colors.blueGrey, width: 1.5),
+                            boxShadow: const [
                               BoxShadow(
                                 color: Colors.blueGrey,
                                 blurStyle: BlurStyle.outer,
-                                blurRadius: 5,
+                                blurRadius: 4,
                               )
                             ],
                           ),
@@ -217,14 +224,17 @@ class _CashTabState extends State<CashTab> {
                             horizontal: 5,
                             vertical: 7,
                           ),
-                          decoration: const BoxDecoration(
-                            // color: Colors.greenAccent,
-                            borderRadius: BorderRadius.all(Radius.circular(15)),
-                            boxShadow: [
+                          decoration: BoxDecoration(
+                            color: Colors.black45,
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(20)),
+                            border:
+                                Border.all(color: Colors.blueGrey, width: 1.5),
+                            boxShadow: const [
                               BoxShadow(
                                 color: Colors.blueGrey,
                                 blurStyle: BlurStyle.outer,
-                                blurRadius: 5,
+                                blurRadius: 4,
                               )
                             ],
                           ),
@@ -256,14 +266,17 @@ class _CashTabState extends State<CashTab> {
                           height: 270,
                           margin: const EdgeInsets.symmetric(
                               vertical: 13, horizontal: 3),
-                          decoration: const BoxDecoration(
-                            // color: Colors.greenAccent,
-                            borderRadius: BorderRadius.all(Radius.circular(15)),
-                            boxShadow: [
+                          decoration: BoxDecoration(
+                            color: Colors.black45,
+                            border:
+                                Border.all(color: Colors.blueGrey, width: 1.5),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(20)),
+                            boxShadow: const [
                               BoxShadow(
                                 color: Colors.blueGrey,
                                 blurStyle: BlurStyle.outer,
-                                blurRadius: 5,
+                                blurRadius: 4,
                               )
                             ],
                           ),
@@ -320,7 +333,7 @@ class _CashTabState extends State<CashTab> {
                       return AlertDialog(
                         scrollable: true,
                         title: const Text('Account'),
-                        backgroundColor: Colors.black54,
+                        backgroundColor: Colors.black87,
                         content: Column(children: [
                           // ignore: prefer_const_constructors
                           Column(
@@ -391,45 +404,66 @@ class _CashTabState extends State<CashTab> {
                               children: [
                                 ElevatedButton(
                                   onPressed: () async {
-                                    data.name = bankNameUpdate.text;
-                                    data.amount =
-                                        double.parse(bankAmountUpdate.text);
-                                    data.accountNumber =
-                                        bankAmountAccNumberUp.text;
-                                    data.accountDate = accountCreatedDateUp;
-                                    data.updatedAt = DateTime.now();
-                                    await data.save();
-                                    loadBankData();
-                                    Navigator.of(context, rootNavigator: true)
-                                        .pop("dialog");
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text(
-                                          "Account Updated Successfully",
+                                    if (await confirm(
+                                      context,
+                                      title: const Text('Confirm'),
+                                      content: const Text(
+                                          'You sure to update data?'),
+                                      textOK: const Text('Yes'),
+                                      textCancel: const Text('Nah'),
+                                    )) {
+                                      data.name = bankNameUpdate.text;
+                                      data.amount =
+                                          double.parse(bankAmountUpdate.text);
+                                      data.accountNumber =
+                                          bankAmountAccNumberUp.text;
+                                      data.accountDate = accountCreatedDateUp;
+                                      data.updatedAt = DateTime.now();
+                                      await data.save();
+                                      loadBankData();
+                                      Navigator.of(context, rootNavigator: true)
+                                          .pop("dialog");
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            "Account Updated Successfully",
+                                          ),
                                         ),
-                                      ),
-                                    );
+                                      );
+                                    }
                                   },
                                   child: const Text("Update"),
                                 ),
                                 ElevatedButton(
                                   onPressed: () async {
-                                    // delete using ID
-                                    await Bank()
-                                        .select()
-                                        .id
-                                        .equals(data.id)
-                                        .delete();
-                                    loadBankData();
-                                    Navigator.of(context, rootNavigator: true)
-                                        .pop("dialog");
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text(
-                                          "Account Deleted Successfully",
+                                    if (await confirm(context,
+                                        title: const Text('Confirm'),
+                                        content: const Text('Are you sure!'),
+                                        textOK: const Text(
+                                          'Yes',
+                                          style: TextStyle(
+                                              color: Colors.redAccent),
                                         ),
-                                      ),
-                                    );
+                                        textCancel: const Text('No'))) {
+                                      // delete using ID
+                                      await Bank()
+                                          .select()
+                                          .id
+                                          .equals(data.id)
+                                          .delete();
+                                      loadBankData();
+                                      Navigator.of(context, rootNavigator: true)
+                                          .pop("dialog");
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            "Account Deleted Successfully",
+                                          ),
+                                        ),
+                                      );
+                                    }
                                   },
                                   child: const Text("Delete",
                                       style: TextStyle(
@@ -478,7 +512,7 @@ class _CashTabState extends State<CashTab> {
                         return AlertDialog(
                             scrollable: true,
                             title: const Text('Cash'),
-                            backgroundColor: Colors.black54,
+                            backgroundColor: Colors.black87,
                             content: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [

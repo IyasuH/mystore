@@ -2,6 +2,7 @@
 // ignore_for_file: non_constant_identifier_names, use_build_context_synchronously, depend_on_referenced_packages, unnecessary_brace_in_string_interps
 import 'dart:io';
 
+import 'package:confirm_dialog/confirm_dialog.dart';
 import 'package:excel/excel.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -9,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../Widgets/yearlySales.dart';
 import '../models/model.dart';
 import '../models/yearMonthList.dart';
 // since there is some kind of conflict with context i imported as Path
@@ -16,241 +18,6 @@ import 'package:path/path.dart' as Path;
 import 'package:intl/intl.dart';
 
 // ignore: must_be_immutable
-class SalesBarChart extends StatefulWidget {
-  String selectedYear;
-  SalesBarChart({super.key, required this.selectedYear});
-
-  @override
-  State<SalesBarChart> createState() => _SalesBarChartState();
-}
-
-class _SalesBarChartState extends State<SalesBarChart> {
-  Color salesColor = const Color.fromRGBO(0, 188, 212, 1);
-  int betweenSapce = 0;
-  List<Sale> saleSQFL = [];
-  List<Sale> saleYearly = [];
-  loadSaleData() async {
-    saleSQFL = await Sale().select().toList();
-    saleYearly = [];
-    for (var element in saleSQFL) {
-      if ((element.date!).year == int.parse(widget.selectedYear)) {
-        saleYearly.add(element);
-      }
-    }
-    setState(() {});
-  }
-
-  @override
-  void initState() {
-    loadSaleData();
-    super.initState();
-  }
-
-  BarChartGroupData generateGroupData(
-    int x,
-    double sales,
-  ) {
-    return BarChartGroupData(
-      x: x,
-      groupVertically: true,
-      barRods: [
-        BarChartRodData(
-          toY: sales,
-          fromY: 0,
-          color: salesColor,
-          width: 10,
-        )
-      ],
-    );
-  }
-
-  Widget bottomTitles(double value, TitleMeta meta) {
-    const style = TextStyle(
-        color: Color.fromARGB(255, 187, 187, 187),
-        fontSize: 12,
-        fontWeight: FontWeight.w500);
-    String text;
-    switch (value.toInt()) {
-      case 1:
-        text = 'Jan';
-        break;
-      case 2:
-        text = 'Feb';
-        break;
-      case 3:
-        text = 'Mar';
-        break;
-      case 4:
-        text = 'Apr';
-        break;
-      case 5:
-        text = 'May';
-        break;
-      case 6:
-        text = 'Jun';
-        break;
-      case 7:
-        text = 'Jul';
-        break;
-      case 8:
-        text = 'Aug';
-        break;
-      case 9:
-        text = 'Sep';
-        break;
-      case 10:
-        text = 'Oct';
-        break;
-      case 11:
-        text = 'Nov';
-        break;
-      case 12:
-        text = 'Dec';
-        break;
-      default:
-        text = '';
-    }
-    return SideTitleWidget(
-      axisSide: meta.axisSide,
-      child: Text(text, style: style),
-    );
-  }
-
-  double JanSales = 0,
-      FebSales = 0,
-      MarSales = 0,
-      AprSales = 0,
-      MaySales = 0,
-      JunSales = 0,
-      JulSales = 0,
-      AugSales = 0,
-      SepSales = 0,
-      OctSales = 0,
-      NovSales = 0,
-      DecSales = 0;
-
-  List<BarChartGroupData> monthSales = [];
-
-  @override
-  Widget build(BuildContext context) {
-    for (var element in saleYearly) {
-      if ((element.date!).month == 1) {
-        JanSales += num.parse(element.revenue.toString());
-      } else if ((element.date!).month == 2) {
-        FebSales += num.parse(element.revenue.toString());
-      } else if ((element.date!).month == 3) {
-        MarSales += num.parse(element.revenue.toString());
-      } else if ((element.date!).month == 4) {
-        AprSales += num.parse(element.revenue.toString());
-      } else if ((element.date!).month == 5) {
-        MaySales += num.parse(element.revenue.toString());
-      } else if ((element.date!).month == 6) {
-        JunSales += num.parse(element.revenue.toString());
-      } else if ((element.date!).month == 7) {
-        JulSales += num.parse(element.revenue.toString());
-      } else if ((element.date!).month == 8) {
-        AugSales += num.parse(element.revenue.toString());
-      } else if ((element.date!).month == 9) {
-        SepSales += num.parse(element.revenue.toString());
-      } else if ((element.date!).month == 10) {
-        OctSales += num.parse(element.revenue.toString());
-      } else if ((element.date!).month == 11) {
-        NovSales += num.parse(element.revenue.toString());
-      } else if ((element.date!).month == 12) {
-        DecSales += num.parse(element.revenue.toString());
-      }
-      // HERE at leats write for loop to avoid repetation
-      monthSales = [
-        generateGroupData(1, JanSales),
-        generateGroupData(2, FebSales),
-        generateGroupData(3, MarSales),
-        generateGroupData(4, AprSales),
-        generateGroupData(5, MaySales),
-        generateGroupData(6, JunSales),
-        generateGroupData(7, JulSales),
-        generateGroupData(8, AugSales),
-        generateGroupData(9, SepSales),
-        generateGroupData(10, OctSales),
-        generateGroupData(11, NovSales),
-        generateGroupData(12, DecSales),
-      ];
-    }
-
-    return Container(
-      margin: const EdgeInsets.fromLTRB(7, 5, 7, 10),
-      decoration: const BoxDecoration(
-        color: Colors.black26,
-        // color: Colors.indigo,
-        borderRadius: BorderRadius.all(Radius.circular(15)),
-        boxShadow: [
-          BoxShadow(
-            color: Color.fromRGBO(0, 188, 212, 1),
-            blurStyle: BlurStyle.outer,
-            blurRadius: 5,
-          )
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            IconButton(
-                onPressed: () {
-                  JanSales = 0;
-                  FebSales = 0;
-                  MarSales = 0;
-                  AprSales = 0;
-                  MaySales = 0;
-                  JunSales = 0;
-                  JulSales = 0;
-                  AugSales = 0;
-                  SepSales = 0;
-                  OctSales = 0;
-                  NovSales = 0;
-                  DecSales = 0;
-                  loadSaleData();
-                },
-                icon: const Icon(Icons.candlestick_chart_outlined)),
-            SizedBox(
-              height: 205,
-              width: 800,
-              child: ListView(scrollDirection: Axis.horizontal, children: [
-                BarChart(
-                  BarChartData(
-                    alignment: BarChartAlignment.spaceBetween,
-                    backgroundColor: Colors.red,
-                    titlesData: FlTitlesData(
-                      leftTitles: AxisTitles(),
-                      rightTitles: AxisTitles(),
-                      topTitles: AxisTitles(),
-                      bottomTitles: AxisTitles(
-                        sideTitles: SideTitles(
-                          showTitles: true,
-                          getTitlesWidget: bottomTitles,
-                          reservedSize: 20,
-                        ),
-                      ),
-                    ),
-                    barTouchData: BarTouchData(
-                      touchTooltipData: BarTouchTooltipData(
-                        tooltipBgColor: const Color.fromARGB(255, 40, 40, 40),
-                      ),
-                    ),
-                    borderData: FlBorderData(show: false),
-                    gridData: FlGridData(show: false),
-                    barGroups: monthSales,
-                  ),
-                ),
-              ]),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 class SalesTab extends StatefulWidget {
   const SalesTab({super.key});
@@ -278,6 +45,7 @@ class _SalesTabState extends State<SalesTab> {
     itemSQFNAML = await Item().select().toList();
   }
 
+  // This variables are for XL file genration
   List<String> salesTbleRows = [];
   List<Map> salesItemMap = [];
   String salesSheetName = "Sheet1"; // Expense
@@ -446,6 +214,9 @@ class _SalesTabState extends State<SalesTab> {
       (DateFormat().add_y().format(DateTime.now())).toString();
   // List monthlySales = [];
   DateFormat dateFormat = DateFormat("yyyy-MM-dd");
+
+  final _formSalesKey = GlobalKey<FormState>();
+  String textFieldVlidMsg = "Please enter some value";
   @override
   Widget build(BuildContext context) {
     TextEditingController quantityCont = TextEditingController();
@@ -495,233 +266,257 @@ class _SalesTabState extends State<SalesTab> {
                     return AlertDialog(
                       scrollable: true,
                       title: const Text('Add Sales(needs edit)'),
-                      backgroundColor: Colors.black54,
-                      content: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('Item'),
-                          const SizedBox(height: 10),
-                          Container(
-                            decoration: const BoxDecoration(
-                              color: Colors.black26,
-                            ),
-                            child: DropdownButton(
-                              value: selectedItem,
-                              onChanged: (int? newValue) {
-                                if (mounted) {
-                                  setState(() {
-                                    selectedItem = newValue!;
-                                  });
-                                }
-                              },
-                              items: itemSQFNAML.map((data) {
-                                return DropdownMenuItem(
-                                    value: data.id,
-                                    child: Text(
-                                        '${data.name!}  ${data.quantity}  ${data.singlePrice}'));
-                              }).toList(),
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          const Text('Client'),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Container(
-                                // width: 150,
-                                decoration: const BoxDecoration(
-                                  color: Colors.black26,
-                                ),
-                                child: DropdownButton(
-                                  value: selectedClient,
-                                  onChanged: (int? newValue) {
-                                    if (mounted) {
-                                      setState(() {
-                                        selectedClient = newValue!;
-                                      });
-                                    }
-                                  },
-                                  items: clientSQFNAML.map((data) {
-                                    return DropdownMenuItem(
-                                        value: data.id,
-                                        child: Text(
-                                            '${data.name!}  ${data.companyName}'));
-                                  }).toList(),
-                                ),
+                      backgroundColor: Colors.black87,
+                      content: Form(
+                        key: _formSalesKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('Item'),
+                            const SizedBox(height: 10),
+                            Container(
+                              decoration: const BoxDecoration(
+                                color: Colors.black26,
                               ),
-                              ElevatedButton(
-                                child: const Text('New client'),
-                                onPressed: () {},
-                              )
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          const Text('Bank'),
-                          Container(
-                            decoration: const BoxDecoration(
-                              color: Colors.black26,
-                            ),
-                            child: DropdownButton(
-                              value: selectedBank,
-                              onChanged: (int? newValue) {
-                                if (mounted) {
-                                  setState(() {
-                                    selectedBank = newValue!;
-                                  });
-                                }
-                              },
-                              items: bankSQFNAML.map((data) {
-                                return DropdownMenuItem(
-                                    value: data.id,
-                                    child: Text(
-                                        '${data.name!}  ${data.accountNumber}'));
-                              }).toList(),
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          const Text('Quantity'),
-                          TextFormField(
-                            controller: quantityCont,
-                            keyboardType: TextInputType.number,
-                            decoration:
-                                const InputDecoration(hintText: 'Quantity'),
-                          ),
-                          const SizedBox(height: 10),
-                          const Text('Sold Date'),
-                          TextButton(
-                            child: Text(
-                              DateFormat().add_yMd().format(DateTime.now()),
-                              style: const TextStyle(fontSize: 16),
-                            ),
-                            onPressed: () {
-                              DatePicker.showDatePicker(
-                                context,
-                                showTitleActions: true,
-                                minTime: DateTime(2022, 1, 1),
-                                maxTime: DateTime(2030, 12, 30),
-                                theme: const DatePickerTheme(
-                                  headerColor: Colors.black,
-                                  backgroundColor: Colors.black,
-                                  itemStyle: TextStyle(color: Colors.white),
-                                  doneStyle: TextStyle(color: Colors.white),
-                                  cancelStyle: TextStyle(color: Colors.white),
-                                ),
-                                onConfirm: (date) {
-                                  print('date is $date');
-                                  itemSoldDateCont = date;
+                              child: DropdownButton(
+                                value: selectedItem,
+                                onChanged: (int? newValue) {
+                                  if (mounted) {
+                                    setState(() {
+                                      selectedItem = newValue!;
+                                    });
+                                  }
                                 },
-                              );
-                            },
-                          ),
-                          const SizedBox(height: 10),
-                          const Text('Price'),
-                          TextFormField(
-                            controller: salesRevenu,
-                            keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(
-                                hintText: 'Sales Revenue'),
-                          ),
-                          const SizedBox(height: 10),
-                          const Text('Additional Info'),
-                          TextFormField(
-                            controller: addInfoCont,
-                            keyboardType: TextInputType.multiline,
-                            decoration:
-                                const InputDecoration(hintText: 'Add Info'),
-                          ),
-                          const SizedBox(height: 15),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              ElevatedButton(
-                                  onPressed: () async {
-                                    // Before creating new row in Sales table first lets update parent tables
-                                    // ITEM UPDATE
-                                    // item - quantity, purchaseFreq, totPurchase
-                                    var itemSold = await Item()
-                                        .select()
-                                        .id
-                                        .equals(selectedItem)
-                                        .toSingle();
-                                    await Item()
-                                        .select()
-                                        .id
-                                        .equals(selectedItem)
-                                        .update({
-                                      "quantity": itemSold!.quantity! -
-                                          int.parse(quantityCont.text),
-                                      "purchaseFreq": itemSold.purchaseFreq! +
-                                          int.parse(quantityCont.text),
-                                      "totPurchase": itemSold.totPurchase! +
-                                          double.parse(salesRevenu.text)
+                                items: itemSQFNAML.map((data) {
+                                  return DropdownMenuItem(
+                                      value: data.id,
+                                      child: Text(
+                                          '${data.name!}  ${data.quantity}  ${data.singlePrice}'));
+                                }).toList(),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            const Text('Client'),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  // width: 150,
+                                  decoration: const BoxDecoration(
+                                    color: Colors.black26,
+                                  ),
+                                  child: DropdownButton(
+                                    value: selectedClient,
+                                    onChanged: (int? newValue) {
+                                      if (mounted) {
+                                        setState(() {
+                                          selectedClient = newValue!;
+                                        });
+                                      }
+                                    },
+                                    items: clientSQFNAML.map((data) {
+                                      return DropdownMenuItem(
+                                          value: data.id,
+                                          child: Text(
+                                              '${data.name!}  ${data.companyName}'));
+                                    }).toList(),
+                                  ),
+                                ),
+                                ElevatedButton(
+                                  child: const Text('New client'),
+                                  onPressed: () {},
+                                )
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            const Text('Bank'),
+                            Container(
+                              decoration: const BoxDecoration(
+                                color: Colors.black26,
+                              ),
+                              child: DropdownButton(
+                                value: selectedBank,
+                                onChanged: (int? newValue) {
+                                  if (mounted) {
+                                    setState(() {
+                                      selectedBank = newValue!;
                                     });
-                                    // CLIENT UPDATE
-                                    // client - purchaseFreq, totPurchase
-                                    var clientBuy = await Client()
-                                        .select()
-                                        .id
-                                        .equals(selectedClient)
-                                        .toSingle();
-                                    await Client()
-                                        .select()
-                                        .id
-                                        .equals(selectedClient)
-                                        .update({
-                                      "purchaseFreq": clientBuy!.purchaseFreq! +
-                                          int.parse(quantityCont.text),
-                                      "totPurchase": clientBuy.totPurchase! +
-                                          double.parse(salesRevenu.text),
-                                    });
-                                    // BANK UPDATE
-                                    // bank - Amount
-                                    var bankCredited = await Bank()
-                                        .select()
-                                        .id
-                                        .equals(selectedBank)
-                                        .toSingle();
-                                    await Bank()
-                                        .select()
-                                        .id
-                                        .equals(selectedBank)
-                                        .update({
-                                      "amount": bankCredited!.amount! +
-                                          double.parse(salesRevenu.text),
-                                    });
-                                    // then finaly lets save the new row
-                                    // SALE INSERT
-                                    // ALL
-                                    Sale saleSQF = Sale();
-                                    saleSQF.ItemId = selectedItem;
-                                    saleSQF.ClientId = selectedClient;
-                                    saleSQF.BankId = selectedBank;
-                                    saleSQF.quantity =
-                                        int.parse(quantityCont.text);
-                                    saleSQF.date = itemSoldDateCont;
-                                    saleSQF.revenue =
-                                        double.parse(salesRevenu.text);
-                                    saleSQF.info = addInfoCont.text;
-                                    await saleSQF.save();
-                                    loadSaleData();
-                                    loadBankDataNAM();
-                                    loadClientDataNAM();
-                                    loadItemDataNAM();
-                                    // await Item().select().id.equals(selectedItem).update
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text("New Sales info added"),
-                                      ),
-                                    );
-                                    quantityCont.text = "";
-                                    itemSoldDateCont = DateTime.now();
-                                    salesRevenu.text = "";
-                                    addInfoCont.text = "";
-                                    Navigator.of(context, rootNavigator: true)
-                                        .pop("dialog");
+                                  }
+                                },
+                                items: bankSQFNAML.map((data) {
+                                  return DropdownMenuItem(
+                                      value: data.id,
+                                      child: Text(
+                                          '${data.name!}  ${data.accountNumber}'));
+                                }).toList(),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            const Text('Quantity'),
+                            TextFormField(
+                              controller: quantityCont,
+                              keyboardType: TextInputType.number,
+                              decoration:
+                                  const InputDecoration(hintText: 'Quantity'),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return textFieldVlidMsg;
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 10),
+                            const Text('Sold Date'),
+                            TextButton(
+                              child: Text(
+                                DateFormat().add_yMd().format(DateTime.now()),
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                              onPressed: () {
+                                DatePicker.showDatePicker(
+                                  context,
+                                  showTitleActions: true,
+                                  minTime: DateTime(2022, 1, 1),
+                                  maxTime: DateTime(2030, 12, 30),
+                                  theme: const DatePickerTheme(
+                                    headerColor: Colors.black,
+                                    backgroundColor: Colors.black,
+                                    itemStyle: TextStyle(color: Colors.white),
+                                    doneStyle: TextStyle(color: Colors.white),
+                                    cancelStyle: TextStyle(color: Colors.white),
+                                  ),
+                                  onConfirm: (date) {
+                                    print('date is $date');
+                                    itemSoldDateCont = date;
                                   },
-                                  child: const Text('Save Sales Data'))
-                            ],
-                          )
-                        ],
+                                );
+                              },
+                            ),
+                            const SizedBox(height: 10),
+                            const Text('Price'),
+                            TextFormField(
+                              controller: salesRevenu,
+                              keyboardType: TextInputType.number,
+                              decoration: const InputDecoration(
+                                  hintText: 'Sales Revenue'),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return textFieldVlidMsg;
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 10),
+                            const Text('Additional Info'),
+                            TextFormField(
+                              controller: addInfoCont,
+                              keyboardType: TextInputType.multiline,
+                              decoration:
+                                  const InputDecoration(hintText: 'Add Info'),
+                            ),
+                            const SizedBox(height: 15),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                ElevatedButton(
+                                    onPressed: () async {
+                                      if (_formSalesKey.currentState!
+                                          .validate()) {
+                                        // Before creating new row in Sales table first lets update parent tables
+                                        // ITEM UPDATE
+                                        // item - quantity, purchaseFreq, totPurchase
+                                        var itemSold = await Item()
+                                            .select()
+                                            .id
+                                            .equals(selectedItem)
+                                            .toSingle();
+                                        await Item()
+                                            .select()
+                                            .id
+                                            .equals(selectedItem)
+                                            .update({
+                                          "quantity": itemSold!.quantity! -
+                                              int.parse(quantityCont.text),
+                                          "purchaseFreq":
+                                              itemSold.purchaseFreq! +
+                                                  int.parse(quantityCont.text),
+                                          "totPurchase": itemSold.totPurchase! +
+                                              double.parse(salesRevenu.text)
+                                        });
+                                        // CLIENT UPDATE
+                                        // client - purchaseFreq, totPurchase
+                                        var clientBuy = await Client()
+                                            .select()
+                                            .id
+                                            .equals(selectedClient)
+                                            .toSingle();
+                                        await Client()
+                                            .select()
+                                            .id
+                                            .equals(selectedClient)
+                                            .update({
+                                          "purchaseFreq":
+                                              clientBuy!.purchaseFreq! +
+                                                  int.parse(quantityCont.text),
+                                          "totPurchase": clientBuy
+                                                  .totPurchase! +
+                                              double.parse(salesRevenu.text),
+                                        });
+                                        // BANK UPDATE
+                                        // bank - Amount
+                                        var bankCredited = await Bank()
+                                            .select()
+                                            .id
+                                            .equals(selectedBank)
+                                            .toSingle();
+                                        await Bank()
+                                            .select()
+                                            .id
+                                            .equals(selectedBank)
+                                            .update({
+                                          "amount": bankCredited!.amount! +
+                                              double.parse(salesRevenu.text),
+                                        });
+                                        // then finaly lets save the new row
+                                        // SALE INSERT
+                                        // ALL
+                                        Sale saleSQF = Sale();
+                                        saleSQF.ItemId = selectedItem;
+                                        saleSQF.ClientId = selectedClient;
+                                        saleSQF.BankId = selectedBank;
+                                        saleSQF.quantity =
+                                            int.parse(quantityCont.text);
+                                        saleSQF.date = itemSoldDateCont;
+                                        saleSQF.revenue =
+                                            double.parse(salesRevenu.text);
+                                        saleSQF.info = addInfoCont.text;
+                                        await saleSQF.save();
+                                        loadSaleData();
+                                        loadBankDataNAM();
+                                        loadClientDataNAM();
+                                        loadItemDataNAM();
+                                        // await Item().select().id.equals(selectedItem).update
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          const SnackBar(
+                                            content:
+                                                Text("New Sales info added"),
+                                          ),
+                                        );
+                                        quantityCont.text = "";
+                                        itemSoldDateCont = DateTime.now();
+                                        salesRevenu.text = "";
+                                        addInfoCont.text = "";
+                                        Navigator.of(context,
+                                                rootNavigator: true)
+                                            .pop("dialog");
+                                      }
+                                    },
+                                    child: const Text('Save Sales Data'))
+                              ],
+                            )
+                          ],
+                        ),
                       ),
                     );
                   });
@@ -766,14 +561,18 @@ class _SalesTabState extends State<SalesTab> {
                         Container(
                           margin: const EdgeInsets.only(bottom: 7, top: 12),
                           padding: const EdgeInsets.symmetric(horizontal: 7),
-                          decoration: const BoxDecoration(
-                            color: Colors.black26,
+                          decoration: BoxDecoration(
+                            color: Colors.black45,
                             // color: Colors.purple,
-                            borderRadius: BorderRadius.only(
+                            borderRadius: const BorderRadius.only(
                               topLeft: Radius.circular(14),
                               bottomLeft: Radius.circular(14),
                             ),
-                            boxShadow: [
+                            border: Border.all(
+                              color: const Color.fromRGBO(0, 188, 212, 1),
+                              width: 1.0,
+                            ),
+                            boxShadow: const [
                               BoxShadow(
                                 color: Color.fromRGBO(0, 188, 212, 1),
                                 blurStyle: BlurStyle.outer,
@@ -801,14 +600,19 @@ class _SalesTabState extends State<SalesTab> {
                           margin: const EdgeInsets.only(
                               top: 12, bottom: 7, right: 10),
                           padding: const EdgeInsets.symmetric(horizontal: 7),
-                          decoration: const BoxDecoration(
-                            color: Colors.black26,
+                          decoration: BoxDecoration(
+                            color: Colors.black45,
                             // color: Colors.purple,
-                            borderRadius: BorderRadius.only(
+                            borderRadius: const BorderRadius.only(
                               topRight: Radius.circular(14),
                               bottomRight: Radius.circular(14),
                             ),
-                            boxShadow: [
+                            border: Border.all(
+                              color: const Color.fromRGBO(0, 188, 212, 1),
+                              width: 1.0,
+                            ),
+
+                            boxShadow: const [
                               BoxShadow(
                                 color: Color.fromRGBO(0, 188, 212, 1),
                                 blurStyle: BlurStyle.outer,
@@ -838,15 +642,19 @@ class _SalesTabState extends State<SalesTab> {
                 ),
                 Container(
                   margin:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                   padding: const EdgeInsets.symmetric(vertical: 10),
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     // color: Colors.amber
-                    color: Colors.black26,
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(15),
+                    color: Colors.black45,
+                    borderRadius: const BorderRadius.all(
+                      Radius.circular(22),
                     ),
-                    boxShadow: [
+                    border: Border.all(
+                      color: const Color.fromRGBO(0, 188, 212, 1),
+                      width: 1.0,
+                    ),
+                    boxShadow: const [
                       BoxShadow(
                         color: Color.fromRGBO(0, 188, 212, 1),
                         blurStyle: BlurStyle.outer,
@@ -882,7 +690,7 @@ class _SalesTabState extends State<SalesTab> {
                                   columns: [
                                     const DataColumn(label: Text('Id')),
                                     DataColumn(
-                                        label: Text('Item'),
+                                        label: const Text('Item'),
                                         onSort: ((columnIndex, sortAscending) {
                                           if (mounted) {
                                             setState(() {
@@ -894,17 +702,13 @@ class _SalesTabState extends State<SalesTab> {
                                                 _sortColumnIndex = columnIndex;
                                                 _sortAsc = _sortItemName;
                                               }
-                                              saleMonthly.sort((a, b) => num
-                                                      .parse(
-                                                          a.ItemId.toString())
-                                                  .compareTo(num.parse(
-                                                      b.ItemId.toString())));
+                                              saleMonthly.sort((a, b) =>
+                                                  (a.ItemId!)
+                                                      .compareTo((b.ItemId!)));
                                               if (!_sortAsc) {
-                                                saleMonthly.sort((a, b) => num
-                                                        .parse(
-                                                            b.ItemId.toString())
-                                                    .compareTo(num.parse(
-                                                        a.ItemId.toString())));
+                                                saleMonthly.sort((a, b) => (b
+                                                        .ItemId!)
+                                                    .compareTo((a.ItemId!)));
                                               }
                                             });
                                           }
@@ -924,16 +728,12 @@ class _SalesTabState extends State<SalesTab> {
                                               _sortAsc = _sortQunantity;
                                             }
                                             saleMonthly.sort((a, b) =>
-                                                num.parse(a.quantity.toString())
-                                                    .compareTo(num.parse(b
-                                                        .quantity
-                                                        .toString())));
+                                                (a.quantity!)
+                                                    .compareTo((b.quantity!)));
                                             if (!_sortAsc) {
-                                              saleMonthly.sort((a, b) => num
-                                                      .parse(
-                                                          b.quantity.toString())
-                                                  .compareTo(num.parse(
-                                                      a.quantity.toString())));
+                                              saleMonthly.sort((a, b) => (b
+                                                      .quantity!)
+                                                  .compareTo((a.quantity!)));
                                             }
                                           });
                                         }
@@ -954,15 +754,12 @@ class _SalesTabState extends State<SalesTab> {
                                               _sortAsc = _sortAmount;
                                             }
                                             saleMonthly.sort((a, b) =>
-                                                num.parse(a.revenue.toString())
-                                                    .compareTo(num.parse(
-                                                        b.revenue.toString())));
+                                                (a.revenue!)
+                                                    .compareTo((b.revenue!)));
                                             if (!_sortAsc) {
-                                              saleMonthly.sort((a, b) => num
-                                                      .parse(
-                                                          b.revenue.toString())
-                                                  .compareTo(num.parse(
-                                                      a.revenue.toString())));
+                                              saleMonthly.sort((a, b) =>
+                                                  (b.revenue!)
+                                                      .compareTo((a.revenue!)));
                                             }
                                           });
                                         }
@@ -983,15 +780,11 @@ class _SalesTabState extends State<SalesTab> {
                                               _sortAsc = _sortDate;
                                             }
                                             saleMonthly.sort((a, b) =>
-                                                num.parse(a.date.toString())
-                                                    .compareTo(num.parse(
-                                                        b.date.toString())));
+                                                (a.date!).compareTo((b.date!)));
                                             if (!_sortAsc) {
                                               saleMonthly.sort(
-                                                (a, b) =>
-                                                    num.parse(b.date.toString())
-                                                        .compareTo(num.parse(
-                                                            a.date.toString())),
+                                                (a, b) => (b.date!)
+                                                    .compareTo((a.date!)),
                                               );
                                             }
                                           });
@@ -1015,10 +808,15 @@ class _SalesTabState extends State<SalesTab> {
                       width: 170,
                       margin: const EdgeInsets.symmetric(vertical: 10),
                       padding: const EdgeInsets.all(7),
-                      decoration: const BoxDecoration(
-                        color: Colors.black26,
-                        borderRadius: BorderRadius.all(Radius.circular(15)),
-                        boxShadow: [
+                      decoration: BoxDecoration(
+                        color: Colors.black45,
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(22)),
+                        border: Border.all(
+                          color: const Color.fromRGBO(0, 188, 212, 1),
+                          width: 1.0,
+                        ),
+                        boxShadow: const [
                           BoxShadow(
                             color: Color.fromRGBO(0, 188, 212, 1),
                             blurStyle: BlurStyle.outer,
@@ -1061,10 +859,15 @@ class _SalesTabState extends State<SalesTab> {
                       width: 170,
                       margin: const EdgeInsets.symmetric(vertical: 10),
                       padding: const EdgeInsets.all(7),
-                      decoration: const BoxDecoration(
-                        color: Colors.black26,
-                        borderRadius: BorderRadius.all(Radius.circular(15)),
-                        boxShadow: [
+                      decoration: BoxDecoration(
+                        color: Colors.black45,
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(22)),
+                        border: Border.all(
+                          color: const Color.fromRGBO(0, 188, 212, 1),
+                          width: 1.0,
+                        ),
+                        boxShadow: const [
                           BoxShadow(
                             color: Color.fromRGBO(0, 188, 212, 1),
                             blurStyle: BlurStyle.outer,
@@ -1104,7 +907,9 @@ class _SalesTabState extends State<SalesTab> {
                     )
                   ],
                 ),
-                SalesBarChart(selectedYear: selectedYear),
+                SizedBox(
+                    height: 350,
+                    child: SalesBarChart(selectedYear: selectedYear)),
               ],
             )
           ],
@@ -1137,142 +942,151 @@ class _SalesTabState extends State<SalesTab> {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
-                  return StatefulBuilder(
-                      builder: (BuildContext context, StateSetter setState) {
-                    return AlertDialog(
-                      scrollable: true,
-                      title: const Text('Sales'),
-                      backgroundColor: Colors.black54,
-                      content: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text("Item Id"),
-                          Container(
-                            decoration: const BoxDecoration(
-                              color: Colors.black26,
-                            ),
-                            child: DropdownButton(
-                              value: updatedItem,
-                              onChanged: (int? newValue) {
-                                if (mounted) {
-                                  setState(() {
-                                    updatedItem = newValue!;
-                                  });
-                                }
-                              },
-                              items: itemSQFNAML.map((data) {
-                                return DropdownMenuItem(
-                                    value: data.id, child: Text(data.name!));
-                              }).toList(),
-                            ),
+                  return AlertDialog(
+                    scrollable: true,
+                    title: const Text('Sales'),
+                    backgroundColor: Colors.black87,
+                    content: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text("Item Id"),
+                        Container(
+                          decoration: const BoxDecoration(
+                            color: Colors.black26,
                           ),
-                          const SizedBox(
-                            height: 14,
-                          ),
-                          const Text("Client Id"),
-
-                          Container(
-                            decoration: const BoxDecoration(
-                              color: Colors.black26,
-                            ),
-                            child: DropdownButton(
-                              value: updatedClient,
-                              onChanged: (int? newValue) {
-                                if (mounted) {
-                                  setState(() {
-                                    updatedClient = newValue!;
-                                  });
-                                }
-                              },
-                              items: clientSQFNAML.map((data) {
-                                return DropdownMenuItem(
-                                    value: data.id, child: Text(data.name!));
-                              }).toList(),
-                            ),
-                          ),
-
-                          const SizedBox(
-                            height: 14,
-                          ),
-                          const Text("Bank Id"),
-                          Container(
-                            decoration: const BoxDecoration(
-                              color: Colors.black26,
-                            ),
-                            child: DropdownButton(
-                              value: updatedBank,
-                              onChanged: (int? newValue) {
-                                if (mounted) {
-                                  setState(() {
-                                    updatedBank = newValue!;
-                                  });
-                                }
-                              },
-                              items: bankSQFNAML.map((data) {
-                                return DropdownMenuItem(
-                                    value: data.id, child: Text(data.name!));
-                              }).toList(),
-                            ),
-                          ),
-
-                          const SizedBox(
-                            height: 14,
-                          ),
-                          const Text("Quantity"),
-                          TextFormField(
-                            controller: quantityUpdate,
-                          ),
-                          const SizedBox(
-                            height: 14,
-                          ),
-                          const Text("Date"),
-                          // ignore: prefer_const_constructors
-                          TextButton(
-                            child: Text(
-                              DateFormat().add_yMd().format(dateUpdate),
-                              style: const TextStyle(fontSize: 16),
-                            ),
-                            onPressed: () {
-                              DatePicker.showDatePicker(
-                                context,
-                                showTitleActions: true,
-                                minTime: DateTime(2022, 1, 1),
-                                maxTime: DateTime(2030, 12, 30),
-                                theme: const DatePickerTheme(
-                                  headerColor: Colors.black,
-                                  backgroundColor: Colors.black,
-                                  itemStyle: TextStyle(color: Colors.white),
-                                  doneStyle: TextStyle(color: Colors.white),
-                                  cancelStyle: TextStyle(color: Colors.white),
-                                ),
-                                onConfirm: (date) {
-                                  dateUpdate = date;
-                                },
-                              );
+                          child: DropdownButton(
+                            value: updatedItem,
+                            onChanged: (int? newValue) {
+                              if (mounted) {
+                                setState(() {
+                                  updatedItem = newValue!;
+                                });
+                              }
                             },
+                            items: itemSQFNAML.map((data) {
+                              return DropdownMenuItem(
+                                  value: data.id, child: Text(data.name!));
+                            }).toList(),
                           ),
-                          const SizedBox(
-                            height: 14,
+                        ),
+                        const SizedBox(
+                          height: 14,
+                        ),
+                        const Text("Client Id"),
+
+                        Container(
+                          decoration: const BoxDecoration(
+                            color: Colors.black26,
                           ),
-                          const Text("Revenue"),
-                          TextFormField(
-                            controller: revenueUpdate,
+                          child: DropdownButton(
+                            value: updatedClient,
+                            onChanged: (int? newValue) {
+                              if (mounted) {
+                                setState(() {
+                                  updatedClient = newValue!;
+                                });
+                              }
+                            },
+                            items: clientSQFNAML.map((data) {
+                              return DropdownMenuItem(
+                                  value: data.id, child: Text(data.name!));
+                            }).toList(),
                           ),
-                          const SizedBox(
-                            height: 14,
+                        ),
+
+                        const SizedBox(
+                          height: 14,
+                        ),
+                        const Text("Bank Id"),
+                        Container(
+                          decoration: const BoxDecoration(
+                            color: Colors.black26,
                           ),
-                          const Text("Add info"),
-                          TextFormField(
-                            controller: addInfoUpdate,
+                          child: DropdownButton(
+                            value: updatedBank,
+                            onChanged: (int? newValue) {
+                              if (mounted) {
+                                setState(() {
+                                  updatedBank = newValue!;
+                                });
+                              }
+                            },
+                            items: bankSQFNAML.map((data) {
+                              return DropdownMenuItem(
+                                  value: data.id, child: Text(data.name!));
+                            }).toList(),
                           ),
-                          const SizedBox(
-                            height: 15,
+                        ),
+
+                        const SizedBox(
+                          height: 14,
+                        ),
+                        const Text("Quantity"),
+                        TextFormField(
+                          readOnly: true,
+                          controller: quantityUpdate,
+                        ),
+                        const SizedBox(
+                          height: 14,
+                        ),
+                        const Text("Date"),
+                        // ignore: prefer_const_constructors
+                        TextButton(
+                          child: Text(
+                            DateFormat().add_yMd().format(dateUpdate),
+                            style: const TextStyle(fontSize: 16),
                           ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              ElevatedButton(
-                                onPressed: () async {
+                          onPressed: () {
+                            DatePicker.showDatePicker(
+                              context,
+                              showTitleActions: true,
+                              minTime: DateTime(2022, 1, 1),
+                              maxTime: DateTime(2030, 12, 30),
+                              theme: const DatePickerTheme(
+                                headerColor: Colors.black,
+                                backgroundColor: Colors.black,
+                                itemStyle: TextStyle(color: Colors.white),
+                                doneStyle: TextStyle(color: Colors.white),
+                                cancelStyle: TextStyle(color: Colors.white),
+                              ),
+                              onConfirm: (date) {
+                                dateUpdate = date;
+                              },
+                            );
+                          },
+                        ),
+                        const SizedBox(
+                          height: 14,
+                        ),
+                        const Text("Revenue"),
+                        TextFormField(
+                          readOnly: true,
+                          controller: revenueUpdate,
+                        ),
+                        const SizedBox(
+                          height: 14,
+                        ),
+                        const Text("Add info"),
+                        TextFormField(
+                          readOnly: true,
+                          controller: addInfoUpdate,
+                        ),
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () async {
+                                if (await confirm(context,
+                                    title: const Text('Confirm'),
+                                    content: const Text('Are you sure!'),
+                                    textOK: const Text(
+                                      'Yes',
+                                      style: TextStyle(color: Colors.redAccent),
+                                    ),
+                                    textCancel: const Text('No'))) {
                                   // ITEM UPDATE
                                   // + quantity, - purchaseFreq, - totPurchase
                                   var itemUnsold = await Item()
@@ -1340,16 +1154,17 @@ class _SalesTabState extends State<SalesTab> {
                                       ),
                                     ),
                                   );
-                                },
-                                child: const Text("Delete",
-                                    style: TextStyle(color: Colors.redAccent)),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    );
-                  });
+                                }
+                              },
+                              child: const Text("Delete",
+                                  style: TextStyle(color: Colors.redAccent)),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  );
+                  // });
                   // ignore: prefer_const_constructors
                 },
               );
