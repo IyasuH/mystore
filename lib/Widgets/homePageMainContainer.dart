@@ -32,6 +32,7 @@ class homeMainContainer extends StatefulWidget {
   State<homeMainContainer> createState() => _homeMainContainerState();
 }
 
+// ignore: camel_case_types
 class _homeMainContainerState extends State<homeMainContainer> {
   @override
   Widget build(BuildContext context) {
@@ -40,21 +41,22 @@ class _homeMainContainerState extends State<homeMainContainer> {
 
   Container _buildHomeMainContaier() {
     return Container(
-      height: 131,
+      height: 135,
       decoration: BoxDecoration(
-        color: Colors.black26,
+        color: Colors.black45,
         borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(17),
-          topRight: Radius.circular(17),
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
         ),
         // Radius.circular(15),
         // ),
-        boxShadow: [
+        border: Border.all(color: Colors.blueGrey, width: .4),
+        boxShadow: const [
           BoxShadow(
-            color: widget.secondaryColor,
+            color: Colors.blueGrey,
             blurStyle: BlurStyle.outer,
-            blurRadius: 5,
-            spreadRadius: 1.1,
+            blurRadius: 2,
+            // spreadRadius: 1.1,
           ),
         ],
       ),
