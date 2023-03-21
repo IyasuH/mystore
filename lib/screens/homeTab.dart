@@ -5,7 +5,6 @@ import 'package:mystore/screens/salesTab.dart';
 import 'package:mystore/screens/settingTab.dart';
 
 import '../Widgets/homePageMainContainer.dart';
-import '../models/clients.dart';
 import '../models/model.dart';
 import '../models/weeklyData.dart';
 import 'customerTab.dart';
@@ -41,7 +40,7 @@ class _HomeTabState extends State<HomeTab> {
   Color profitPrimaryColor = const Color.fromARGB(255, 38, 255, 0);
   Color profitSecondaryColor = const Color.fromARGB(30, 19, 224, 0);
 
-  Color expensePrimaryColor = const Color.fromARGB(255, 255, 20, 110);
+  Color expensePrimaryColor = const Color.fromARGB(255, 228, 77, 100);
   Color expenseSecondaryColor = const Color.fromARGB(30, 194, 0, 91);
 
   Color clientsPrimaryColor = const Color.fromARGB(255, 234, 164, 45);
@@ -135,7 +134,17 @@ class _HomeTabState extends State<HomeTab> {
   // container that returns top clients
   topclients() {
     return Container(
-      color: Colors.black26,
+      // color: Colors.black45,
+      decoration: const BoxDecoration(
+        color: Colors.black45,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.blueGrey,
+            blurStyle: BlurStyle.outer,
+            blurRadius: 2,
+          ),
+        ],
+      ),
       child: Padding(
         padding: const EdgeInsets.only(left: 8, right: 8, top: 8),
         child: Column(
@@ -184,13 +193,13 @@ class _HomeTabState extends State<HomeTab> {
                 itemBuilder: (BuildContext context, int index) {
                   return Container(
                     margin: const EdgeInsets.symmetric(vertical: 3),
-                    // padding: EdgeInsets.only(top: 3),
-                    height: 60,
+                    padding: const EdgeInsets.only(top: 9, bottom: 9),
+                    height: 61,
                     decoration: const BoxDecoration(
                       border: Border(
                         top: BorderSide(
-                          width: 1.5,
-                          color: Color.fromARGB(80, 203, 145, 0),
+                          width: .5,
+                          color: Colors.blueGrey,
                         ),
                       ),
                     ),
@@ -223,11 +232,6 @@ class _HomeTabState extends State<HomeTab> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              topClients[index].change == 1
-                                  ? const Icon(Icons.arrow_drop_up_sharp,
-                                      color: Colors.green, size: 32)
-                                  : const Icon(Icons.arrow_drop_down_sharp,
-                                      color: Colors.red, size: 32),
                               Text(
                                 '\$ ${topClientEver[index].totPurchase}',
                                 style: const TextStyle(
@@ -296,14 +300,19 @@ class _HomeTabState extends State<HomeTab> {
                 Container(
                   width: 45,
                   height: 45,
-                  decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.all(
+                  decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.all(
                         Radius.circular(13),
                       ),
-                      boxShadow: [
+                      color: Colors.black45,
+                      border: Border.all(
+                        color: Colors.blueGrey,
+                        width: 1.0,
+                      ),
+                      boxShadow: const [
                         BoxShadow(
-                          color: Colors.green,
-                          blurRadius: 7,
+                          color: Colors.blueGrey,
+                          blurRadius: 4,
                           blurStyle: BlurStyle.outer,
                         )
                       ]),
@@ -315,7 +324,7 @@ class _HomeTabState extends State<HomeTab> {
                         );
                       },
                       icon: const Icon(
-                        size: 30,
+                        // size: 30,
                         Icons.person,
                         // color: Color.fromARGB(255, 80, 220, 63),
                       )),
@@ -324,7 +333,7 @@ class _HomeTabState extends State<HomeTab> {
             ),
           ),
           SizedBox(
-            height: 615,
+            height: 630,
             child: ClipRRect(
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(10),

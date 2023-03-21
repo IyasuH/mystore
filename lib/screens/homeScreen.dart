@@ -43,23 +43,24 @@ class _HomeScreenState extends State<HomeScreen> {
       // backgroundColor: Colors.black,
       body: tabs[_currentTab],
       bottomNavigationBar: Container(
-        margin: const EdgeInsets.all(7),
+        // margin: const EdgeInsets.only(top: 10),
         decoration: const BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(43)),
-          boxShadow: [
-            BoxShadow(
-              color: Color.fromARGB(80, 19, 224, 0),
-              spreadRadius: 1.5,
-              blurRadius: 5,
-              blurStyle: BlurStyle.outer,
-            )
-          ],
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(30), topRight: Radius.circular(30)),
+          // boxShadow: [
+          //   BoxShadow(
+          //     // color: Color.fromARGB(80, 19, 224, 0),
+          //     color: Color.fromARGB(255, 1, 203, 105),
+          //     spreadRadius: 1.5,
+          //     blurRadius: 6,
+          //     blurStyle: BlurStyle.outer,
+          //   )
+          // ],
         ),
         // I used ClipRRect to creat round edge for the bottom nav bar container
         child: ClipRRect(
-          borderRadius: const BorderRadius.all(
-            Radius.circular(43),
-          ),
+          borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(30), topRight: Radius.circular(30)),
           child: BottomNavigationBar(
             type: BottomNavigationBarType.fixed,
             backgroundColor: Colors.black45,
@@ -78,6 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
             },
             // List of bottom navigation bar buttons
             items: [
+              // icons defined twice one when it get active and one when it is not
               BottomNavigationBarItem(
                   activeIcon: Container(
                     height: bottNavButtH,
