@@ -18,6 +18,7 @@ class homePageMore extends StatefulWidget {
   State<homePageMore> createState() => _homePageMoreState();
 }
 
+// ignore: camel_case_types
 class _homePageMoreState extends State<homePageMore> {
   @override
   Widget build(BuildContext context) {
@@ -34,17 +35,19 @@ class _homePageMoreState extends State<homePageMore> {
       ),
       child: Container(
         height: 40,
-        decoration: BoxDecoration(
-          color: widget.primaryColor,
-          borderRadius: const BorderRadius.only(
-              bottomLeft: Radius.circular(17),
-              bottomRight: Radius.circular(17)),
+        decoration: const BoxDecoration(
+          color: Colors.black45,
+          borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(20),
+              bottomRight: Radius.circular(20)),
+          // ignore: prefer_const_literals_to_create_immutables
+          // border: Border.all(color: Colors.blueGrey, width: .7),
           boxShadow: [
             BoxShadow(
-              color: widget.secondaryColor,
+              color: Colors.blueGrey,
               blurStyle: BlurStyle.outer,
-              blurRadius: 5,
-              spreadRadius: 1.1,
+              blurRadius: 3,
+              // spreadRadius: 1.1,
             ),
           ],
         ),
@@ -53,18 +56,18 @@ class _homePageMoreState extends State<homePageMore> {
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
+            children: [
               Text(
                 'More',
                 style: TextStyle(
                   letterSpacing: 1.1,
                   fontWeight: FontWeight.w800,
-                  color: Colors.black87,
+                  color: widget.primaryColor,
                 ),
               ),
               Icon(
                 size: 25.0,
-                color: Colors.black87,
+                color: widget.primaryColor,
                 Icons.arrow_forward_ios_sharp,
               )
             ],
