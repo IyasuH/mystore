@@ -1,4 +1,4 @@
-// ignore_for_file: non_constant_identifier_names, must_be_immutable
+// ignore_for_file: non_constant_identifier_names, must_be_immutable, file_names
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -21,16 +21,16 @@ class _ExpenseBarChartsState extends State<ExpenseBarCharts> {
   List<Expense> expenseYearly = [];
   loadExpenseData() async {
     expenseSQFL = await Expense().select().toList();
-    print("reloading expenseSQFL");
+    // print("reloading expenseSQFL");
     expenseYearly = [];
     for (var element in expenseSQFL) {
       if ((element.date!).year == int.parse(widget.selectedYear)) {
         expenseYearly.add(element);
       }
     }
-    print(expenseYearly);
+    // print(expenseYearly);
     setState(() {});
-    build(context);
+    // build(context);
   }
 
   @override
@@ -200,22 +200,22 @@ class _ExpenseBarChartsState extends State<ExpenseBarCharts> {
             ? DecFixed += num.parse(element.amount.toString())
             : DecVariable += num.parse(element.amount.toString());
       }
-      monthExpenses = [
-        generateGroupData(1, JanFixed, JanVariable),
-        generateGroupData(2, FebFixed, FebVariable),
-        generateGroupData(3, MarFixed, MarVariable),
-        generateGroupData(4, AprFixed, AprVariable),
-        generateGroupData(5, MayFixed, MayVariable),
-        generateGroupData(6, JunFixed, JunVariable),
-        generateGroupData(7, JulFixed, JulVariable),
-        generateGroupData(8, AugFixed, AugVariable),
-        generateGroupData(9, SepFixed, SepVariable),
-        generateGroupData(10, OctFixed, OctVariable),
-        generateGroupData(11, NovFixed, NovVariable),
-        generateGroupData(12, DecFixed, DecVariable),
-      ];
       // }
     }
+    monthExpenses = [
+      generateGroupData(1, JanFixed, JanVariable),
+      generateGroupData(2, FebFixed, FebVariable),
+      generateGroupData(3, MarFixed, MarVariable),
+      generateGroupData(4, AprFixed, AprVariable),
+      generateGroupData(5, MayFixed, MayVariable),
+      generateGroupData(6, JunFixed, JunVariable),
+      generateGroupData(7, JulFixed, JulVariable),
+      generateGroupData(8, AugFixed, AugVariable),
+      generateGroupData(9, SepFixed, SepVariable),
+      generateGroupData(10, OctFixed, OctVariable),
+      generateGroupData(11, NovFixed, NovVariable),
+      generateGroupData(12, DecFixed, DecVariable),
+    ];
 
     return Padding(
       padding: const EdgeInsets.all(24),

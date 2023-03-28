@@ -1,7 +1,6 @@
-// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: non_constant_identifier_names, file_names
 
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../models/model.dart';
@@ -206,21 +205,21 @@ class _SalesBarChartState extends State<SalesBarChart> {
         DecSales += num.parse(element.revenue.toString());
       }
       // HERE at leats write for loop to avoid repetation
-      monthSales = [
-        generateGroupData(0, JanSales),
-        generateGroupData(1, FebSales),
-        generateGroupData(2, MarSales),
-        generateGroupData(3, AprSales),
-        generateGroupData(4, MaySales),
-        generateGroupData(5, JunSales),
-        generateGroupData(6, JulSales),
-        generateGroupData(7, AugSales),
-        generateGroupData(8, SepSales),
-        generateGroupData(9, OctSales),
-        generateGroupData(10, NovSales),
-        generateGroupData(11, DecSales),
-      ];
     }
+    monthSales = [
+      generateGroupData(0, JanSales),
+      generateGroupData(1, FebSales),
+      generateGroupData(2, MarSales),
+      generateGroupData(3, AprSales),
+      generateGroupData(4, MaySales),
+      generateGroupData(5, JunSales),
+      generateGroupData(6, JulSales),
+      generateGroupData(7, AugSales),
+      generateGroupData(8, SepSales),
+      generateGroupData(9, OctSales),
+      generateGroupData(10, NovSales),
+      generateGroupData(11, DecSales),
+    ];
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),

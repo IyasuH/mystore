@@ -1,18 +1,18 @@
+// ignore_for_file: file_names, camel_case_types, non_constant_identifier_names
 import 'package:flutter/material.dart';
 import 'package:mystore/Widgets/splineAreaCart.dart';
 import 'package:mystore/models/weeklyData.dart';
 
 import 'circularProgressBars.dart';
 
+// ignore: must_be_immutable
 class homeMainContainer extends StatefulWidget {
   Color primaryColor;
   Color secondaryColor;
   String chartName;
   String secondaryHeader;
   String primaryQuantity;
-  // ignore: non_constant_identifier_names
   List<SplineAreaData> SplinChartData;
-  // ignore: non_constant_identifier_names
   double CicularBarVal;
 
   homeMainContainer({
@@ -22,9 +22,7 @@ class homeMainContainer extends StatefulWidget {
     required this.chartName,
     required this.secondaryHeader,
     required this.primaryQuantity,
-    // ignore: non_constant_identifier_names
     required this.SplinChartData,
-    // ignore: non_constant_identifier_names
     required this.CicularBarVal,
   });
 
@@ -32,7 +30,6 @@ class homeMainContainer extends StatefulWidget {
   State<homeMainContainer> createState() => _homeMainContainerState();
 }
 
-// ignore: camel_case_types
 class _homeMainContainerState extends State<homeMainContainer> {
   @override
   Widget build(BuildContext context) {

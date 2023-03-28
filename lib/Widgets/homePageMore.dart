@@ -1,5 +1,8 @@
+// ignore_for_file: file_names, camel_case_types
+
 import 'package:flutter/material.dart';
 
+// ignore: must_be_immutable
 class homePageMore extends StatefulWidget {
   Widget routeToPage;
   Color primaryColor;
@@ -18,7 +21,6 @@ class homePageMore extends StatefulWidget {
   State<homePageMore> createState() => _homePageMoreState();
 }
 
-// ignore: camel_case_types
 class _homePageMoreState extends State<homePageMore> {
   @override
   Widget build(BuildContext context) {

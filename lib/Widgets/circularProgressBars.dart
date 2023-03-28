@@ -1,4 +1,4 @@
-// ignore: file_names
+// ignore_for_file: file_names
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -25,6 +25,7 @@ class CircualrProgressBar extends StatefulWidget {
 }
 
 class _CircualrProgressBarState extends State<CircualrProgressBar> {
+  // ignore: unused_field
   late Timer _timer;
   double salesProgressValue = 0;
   _CircualrProgressBarState();
