@@ -1,5 +1,4 @@
-// ignore: file_names
-// ignore_for_file: non_constant_identifier_names, use_build_context_synchronously
+// ignore_for_file: non_constant_identifier_names, use_build_context_synchronously, file_names
 
 import 'dart:io';
 
@@ -12,8 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart' as Path;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:fl_chart/fl_chart.dart';
-// ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import '../Widgets/yearlyExpense.dart';
@@ -53,9 +50,9 @@ class _ExpensesTabState extends State<ExpensesTab> {
   List<List> monthExpenseFXL = [];
   List<Expense> expenseSQFL = [];
   List<Expense> expenseMonthly = [];
-  Color fixedExpColor = Color.fromARGB(255, 225, 129, 143);
-  Color variableExpColor = Color.fromARGB(255, 142, 159, 225);
-  Color expenseShadowColor = Color.fromARGB(255, 172, 55, 75);
+  Color fixedExpColor = const Color.fromARGB(255, 225, 129, 143);
+  Color variableExpColor = const Color.fromARGB(255, 142, 159, 225);
+  Color expenseShadowColor = const Color.fromARGB(255, 172, 55, 75);
   loadExpenseData() async {
     expenseSQFL = await Expense().select().toList();
     expenseMonthly = [];
@@ -101,6 +98,7 @@ class _ExpensesTabState extends State<ExpensesTab> {
   List<Map> expenseItemMap = [];
   String expenseSheetName = "Sheet1"; // Expense
   int expenseColuNum = 4;
+  // ignore: prefer_typing_uninitialized_variables
   var expenseSelectedExcel;
 
   // This function is just to pick XL file from folder
@@ -115,7 +113,13 @@ class _ExpensesTabState extends State<ExpensesTab> {
       getList();
     } else {
       // snacbar here
-      print("No file selected");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            "No file selected",
+          ),
+        ),
+      );
     }
   }
 
@@ -125,7 +129,13 @@ class _ExpensesTabState extends State<ExpensesTab> {
     expenseItemMap.clear();
     if (expenseSelectedExcel[expenseSheetName].rows.length <= 1) {
       // snackbar here
-      print("Row number is less than 1");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            "Row number is less than 1",
+          ),
+        ),
+      );
     } else {
       for (var i = 1;
           i < expenseSelectedExcel[expenseSheetName].rows.length;
@@ -141,8 +151,8 @@ class _ExpensesTabState extends State<ExpensesTab> {
           "type": expenseTbleRows[i + 2],
           "date": expenseTbleRows[i + 3],
         });
-        print('date');
-        print(expenseTbleRows[i + 3]);
+        // print('date');
+        // print(expenseTbleRows[i + 3]);
       }
       for (var ele in expenseItemMap) {
         saveExpense(ele);
@@ -175,9 +185,8 @@ class _ExpensesTabState extends State<ExpensesTab> {
   Widget build(BuildContext context) {
     TextEditingController expensesNameCont = TextEditingController();
     TextEditingController expenseAmountCont = TextEditingController();
-    DateFormat dateFormat = DateFormat("yyyy/MM/dd");
     DateTime expenseDateCont = DateTime.now();
-    int? _currentSelection = 0;
+    int? currentSelection = 0;
     fixedMonthlyExpense = 0;
     variableMonthlyExpense = 0;
     monthlyExpense = [];
@@ -191,7 +200,6 @@ class _ExpensesTabState extends State<ExpensesTab> {
         fixedExpenseData.add(FixedVariableData(ele.name!, ele.amount!));
         fixedMonthlyExpense = (fixedMonthlyExpense + ele.amount!).toInt();
       } else if (ele.type == "Variable") {
-        print(ele.amount);
         monthlyVariableCost += ele.amount!;
         variableExpenseData.add(FixedVariableData(ele.name!, ele.amount!));
         variableMonthlyExpense = (variableMonthlyExpense + ele.amount!).toInt();
@@ -233,7 +241,14 @@ class _ExpensesTabState extends State<ExpensesTab> {
                     ..createSync(recursive: true)
                     ..writeAsBytesSync(fileBytes);
                   // here snackbar to tell the file name
-                  print("Saved");
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        "File saved Successfully in \n /storage/emulated/0/Download/",
+                      ),
+                    ),
+                  );
+                  // print("Saved");
                 }
               }
             },
@@ -294,7 +309,7 @@ class _ExpensesTabState extends State<ExpensesTab> {
                               const Text('Type'),
                               const SizedBox(height: 10),
                               CupertinoSlidingSegmentedControl(
-                                groupValue: _currentSelection,
+                                groupValue: currentSelection,
                                 padding: const EdgeInsets.all(5),
                                 // backgroundColor: CupertinoColors.white,
                                 // thumbColor: Color.fromARGB(255, 255, 20, 110),
@@ -306,7 +321,7 @@ class _ExpensesTabState extends State<ExpensesTab> {
                                 },
                                 onValueChanged: (value) {
                                   setState(() {
-                                    _currentSelection = value;
+                                    currentSelection = value;
                                   });
                                 },
                               ),
@@ -341,7 +356,6 @@ class _ExpensesTabState extends State<ExpensesTab> {
                                     ),
                                     onConfirm: (date) {
                                       expenseDateCont = date;
-                                      print('confirm $date');
                                     },
                                   );
                                 },
@@ -360,7 +374,7 @@ class _ExpensesTabState extends State<ExpensesTab> {
                                         .validate()) {
                                       // dbHelper.insertExpenses(type, name, amount, date)
                                       String typeOfExpen = "Fixed";
-                                      if (_currentSelection == 1) {
+                                      if (currentSelection == 1) {
                                         typeOfExpen = "Variable";
                                       }
                                       Expense expenseSQF = Expense();
@@ -380,7 +394,7 @@ class _ExpensesTabState extends State<ExpensesTab> {
                                         ),
                                       );
 
-                                      _currentSelection = 1;
+                                      currentSelection = 1;
                                       expensesNameCont.text = "";
                                       expenseAmountCont.text = "";
                                       expenseDateCont = DateTime.now();

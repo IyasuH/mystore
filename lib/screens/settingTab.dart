@@ -1,5 +1,4 @@
-// ignore: file_names
-// ignore_for_file: use_build_context_synchronously, depend_on_referenced_packages
+// ignore_for_file: use_build_context_synchronously, depend_on_referenced_packages, file_names
 
 import 'dart:io';
 
@@ -134,11 +133,11 @@ class _SettingTabState extends State<SettingTab> {
     setState(() {});
   }
 
-  var personOne;
-  loadPersonData() async {
-    personOne = await Personal().select().id.equals(1).toSingle();
-    setState(() {});
-  }
+  // var personOne;
+  // loadPersonData() async {
+  //   personOne = await Personal().select().id.equals(1).toSingle();
+  //   setState(() {});
+  // }
 
   TextEditingController perosonalNameUpdate = TextEditingController();
   @override
@@ -147,7 +146,7 @@ class _SettingTabState extends State<SettingTab> {
     loadAllExpensesData();
     loadAllClinetData();
     loadAllItemsData();
-    loadPersonData();
+    // loadPersonData();
     super.initState();
   }
 
@@ -192,23 +191,22 @@ class _SettingTabState extends State<SettingTab> {
                   const SizedBox(
                     height: 7,
                   ),
-                  Text(
+                  const Text(
                     // This Thing alsomaking error
                     // I think it is because it is trying to load name before it load from database
                     // error says `getter 'name' was called on null`
-                    personOne.name,
-                    // 'Eyasu',
-                    style: const TextStyle(
+                    // personOne.name,
+                    'Eyasu',
+                    style: TextStyle(
                         fontSize: 17,
                         wordSpacing: 1.5,
                         letterSpacing: 1.2,
                         height: 1.6,
                         fontWeight: FontWeight.w500),
                   ),
-                  Text(
-                    '${personOne.name}@mystore.co',
-                    style: const TextStyle(
-                        color: Color.fromARGB(255, 145, 145, 145)),
+                  const Text(
+                    '@mystore.co',
+                    style: TextStyle(color: Color.fromARGB(255, 145, 145, 145)),
                   ),
                   const SizedBox(
                     height: 7,
@@ -216,7 +214,7 @@ class _SettingTabState extends State<SettingTab> {
                   ElevatedButton(
                     style: const ButtonStyle(),
                     onPressed: () async {
-                      perosonalNameUpdate.text = personOne.name;
+                      // perosonalNameUpdate.text = personOne.name;
                       showDialog(
                           context: context,
                           builder: (BuildContext context) {
@@ -239,10 +237,10 @@ class _SettingTabState extends State<SettingTab> {
                                     children: [
                                       ElevatedButton(
                                           onPressed: () async {
-                                            personOne.name =
-                                                perosonalNameUpdate.text;
-                                            await personOne.save();
-                                            loadPersonData();
+                                            // personOne.name =
+                                            //     perosonalNameUpdate.text;
+                                            // await personOne.save();
+                                            // loadPersonData();
                                             Navigator.of(context,
                                                     rootNavigator: true)
                                                 .pop("dialog");
@@ -332,7 +330,21 @@ class _SettingTabState extends State<SettingTab> {
                         File(join(outPutFile))
                           ..createSync(recursive: true)
                           ..writeAsBytesSync(fileBytes);
-                        print("Saved");
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              "No file selected",
+                            ),
+                          ),
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              "File saved in \n /storage/emulated/0/Download/",
+                            ),
+                          ),
+                        );
+                        // print("Saved");
                       }
                     }
                   },
@@ -469,7 +481,7 @@ class _SettingTabState extends State<SettingTab> {
                       Row(
                         children: [
                           Container(
-                            margin: EdgeInsets.only(right: 10),
+                            margin: const EdgeInsets.only(right: 10),
                             height: 60,
                             width: 60,
                             decoration: BoxDecoration(
@@ -518,7 +530,7 @@ class _SettingTabState extends State<SettingTab> {
                       Row(
                         children: [
                           Container(
-                              margin: EdgeInsets.only(right: 10),
+                              margin: const EdgeInsets.only(right: 10),
                               height: 60,
                               width: 60,
                               decoration: BoxDecoration(

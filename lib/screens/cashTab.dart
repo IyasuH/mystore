@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously, depend_on_referenced_packages
+// ignore_for_file: use_build_context_synchronously, depend_on_referenced_packages, file_names
 
 import 'package:confirm_dialog/confirm_dialog.dart';
 import 'package:flutter/material.dart';
@@ -495,8 +495,6 @@ class _CashTabState extends State<CashTab> {
                     await Item().select().id.equals(data.ItemId).toSingle();
                 var clientSelected =
                     await Client().select().id.equals(data.ClientId).toSingle();
-                var cashId =
-                    await Bank().select().id.equals(data.BankId).toSingle();
                 TextStyle topicStyle = const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w500,

@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, file_names
 
 import 'dart:io';
 
@@ -28,6 +28,7 @@ class _StockTabState extends State<StockTab> {
   String itemSheetName = "Sheet1"; // Item
   // every `Item` sheet should have the 6 column length
   int itemColuNum = 6;
+  // ignore: prefer_typing_uninitialized_variables
   var itemSelectedExcel;
   // This function is just to pick XL file from folder
   pickFile() async {
@@ -35,14 +36,20 @@ class _StockTabState extends State<StockTab> {
         .pickFiles(type: FileType.custom, allowedExtensions: ['xlsx']);
     if (result != null) {
       File xlFile = File(result.files.single.path!);
-      PlatformFile detailFile = result.files.first;
       var bytes = xlFile.readAsBytesSync();
       var excel = Excel.decodeBytes(bytes);
       itemSelectedExcel = excel;
       getList();
     } else {
       // snacbar here
-      print("No file selected");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            "No file selected",
+          ),
+        ),
+      );
+      // print("No file selected");
     }
   }
 
@@ -53,15 +60,23 @@ class _StockTabState extends State<StockTab> {
     if (itemSelectedExcel[itemSheetName].rows.length <= 1) {
       // so here return someMsg on screen
       // snacbar here
-      print("Row number is less than 1");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            "Row number is less than 1",
+          ),
+        ),
+      );
+
+      // print("Row number is less than 1");
     } else {
       for (var i = 1; i < itemSelectedExcel[itemSheetName].rows.length; i++) {
         for (var row in itemSelectedExcel[itemSheetName].rows[i]) {
           stockTbleRows.add(row.value.toString());
         }
       }
-      print("stock list");
-      print(stockTbleRows);
+      // print("stock list");
+      // print(stockTbleRows);
       for (var i = 0; i < stockTbleRows.length; i += itemColuNum) {
         stockItemMap.add({
           "name": stockTbleRows[i + 0],
@@ -72,8 +87,8 @@ class _StockTabState extends State<StockTab> {
           "totPurchase": stockTbleRows[i + 5],
         });
       }
-      print("stock maps");
-      print(stockItemMap);
+      // print("stock maps");
+      // print(stockItemMap);
       for (var ele in stockItemMap) {
         saveItem(ele);
       }
@@ -387,13 +402,11 @@ class _StockTabState extends State<StockTab> {
                                                           .text = "";
                                                       itemBSellingPriceCont
                                                           .text = "";
-                                                      // ignore: use_build_context_synchronously
                                                       Navigator.of(context,
                                                               rootNavigator:
                                                                   true)
                                                           .pop("dialog");
                                                     }
-                                                    ;
                                                   },
                                                   child: const Text(
                                                       "Create New Item"))

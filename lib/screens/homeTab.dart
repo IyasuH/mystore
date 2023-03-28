@@ -1,3 +1,5 @@
+// ignore_for_file: file_names, prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:mystore/Widgets/homePageMore.dart';
 import 'package:mystore/screens/expenseTab.dart';
@@ -263,7 +265,6 @@ class _HomeTabState extends State<HomeTab> {
           Padding(
             padding: const EdgeInsets.fromLTRB(13, 25, 13, 15),
             child: Row(
-              // ignore: prefer_const_constructors
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Column(
@@ -285,7 +286,6 @@ class _HomeTabState extends State<HomeTab> {
                     const SizedBox(
                       height: 7,
                     ),
-                    // ignore: prefer_const_constructors
                     Text(
                       'Welcome Back!',
                       style: const TextStyle(

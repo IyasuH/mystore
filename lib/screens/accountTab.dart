@@ -1,5 +1,4 @@
-// ignore: file_names
-// ignore_for_file: depend_on_referenced_packages, use_build_context_synchronously
+// ignore_for_file: depend_on_referenced_packages, use_build_context_synchronously, file_names
 
 import 'package:flutter/material.dart';
 import 'package:dotted_border/dotted_border.dart';
@@ -41,7 +40,6 @@ class _AcoountTabState extends State<AcoountTab> {
     TextEditingController bankNameCont = TextEditingController();
     TextEditingController bankNumCont = TextEditingController();
     TextEditingController bankAmountCont = TextEditingController();
-    DateFormat dateFormat = DateFormat("yyyy/MM/dd");
     DateTime bankCreatedateFCont = DateTime.now();
     return SafeArea(
       child: Padding(
@@ -259,7 +257,6 @@ class _AcoountTabState extends State<AcoountTab> {
                                               ),
                                               onConfirm: (date) {
                                                 bankCreatedateFCont = date;
-                                                print('confirm $date');
                                               },
                                             );
                                           },
@@ -270,6 +267,7 @@ class _AcoountTabState extends State<AcoountTab> {
                                     ElevatedButton(
                                       onPressed: () async {
                                         if (_formBankKey.currentState!
+                                            // ignore: duplicate_ignore
                                             .validate()) {
                                           bankSQF.name = bankNameCont.text;
                                           bankSQF.accountNumber =
@@ -292,12 +290,10 @@ class _AcoountTabState extends State<AcoountTab> {
                                           bankNumCont.text = "";
                                           bankAmountCont.text = "";
                                           bankCreatedateFCont = DateTime.now();
-                                          // ignore: use_build_context_synchronously
                                           Navigator.of(context,
                                                   rootNavigator: true)
                                               .pop("dialog");
                                         }
-                                        ;
                                       },
                                       child: const Text("Save New Account"),
                                     ),

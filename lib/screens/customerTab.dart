@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously, depend_on_referenced_packages
+// ignore_for_file: use_build_context_synchronously, depend_on_referenced_packages, file_names
 
 import 'dart:io';
 
@@ -6,7 +6,6 @@ import 'package:confirm_dialog/confirm_dialog.dart';
 import 'package:excel/excel.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:mystore/models/model.dart';
 
 class CustomerTab extends StatefulWidget {
@@ -26,6 +25,7 @@ class _CustomerTabState extends State<CustomerTab> {
   // every `Client` sheet should have the 6 column length
   int clientColuNum = 9;
 
+  // ignore: prefer_typing_uninitialized_variables
   var clientSelectedExcel;
   // This function is just to pick XL file from folder
   pickFile() async {
@@ -39,7 +39,13 @@ class _CustomerTabState extends State<CustomerTab> {
       getList();
     } else {
       // snacbar here
-      print("No file selected");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            "No file selected",
+          ),
+        ),
+      );
     }
   }
 
@@ -49,7 +55,13 @@ class _CustomerTabState extends State<CustomerTab> {
     clientItemMap.clear();
     if (clientSelectedExcel[clientSheetName].rows.length <= 1) {
       // snacbar here
-      print("Row number is less than 1");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            "Row number is less than 1",
+          ),
+        ),
+      );
     } else {
       for (var i = 1;
           i < clientSelectedExcel[clientSheetName].rows.length;
@@ -92,6 +104,14 @@ class _CustomerTabState extends State<CustomerTab> {
     clientSQFList.totPurchase = double.parse(ele['totPurchase']);
     await clientSQFList.save();
     // snacbar here to that tells data saved
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(
+          "Data saved successfully",
+        ),
+      ),
+    );
+
     loadClientData();
   }
 
@@ -148,7 +168,7 @@ class _CustomerTabState extends State<CustomerTab> {
             onPressed: () {
               pickFile();
             },
-            icon: Icon(Icons.file_present)),
+            icon: const Icon(Icons.file_present)),
         IconButton(
           icon: const Icon(Icons.add),
           onPressed: () {
@@ -519,7 +539,6 @@ class _CustomerTabState extends State<CustomerTab> {
                       ),
                     ],
                   ),
-
                   Container(
                     margin: const EdgeInsets.only(top: 10),
                     padding: const EdgeInsets.symmetric(horizontal: 10.0),

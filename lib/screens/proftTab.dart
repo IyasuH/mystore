@@ -327,7 +327,6 @@ class _ProfitTabState extends State<ProfitTab> {
         sunExpes += ele.amount!;
       }
     }
-
     monProfit = monSales * .25 - monExpes;
     tuesProfit = tuesSales * .25 - tuesExpes;
     wedProfit = wedSales * .25 - wedPExpes;

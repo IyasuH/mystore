@@ -1,11 +1,9 @@
-// ignore: file_names
-// ignore_for_file: non_constant_identifier_names, use_build_context_synchronously, depend_on_referenced_packages, unnecessary_brace_in_string_interps
+// ignore_for_file: non_constant_identifier_names, use_build_context_synchronously, depend_on_referenced_packages, unnecessary_brace_in_string_interps, file_names
 import 'dart:io';
 
 import 'package:confirm_dialog/confirm_dialog.dart';
 import 'package:excel/excel.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -14,6 +12,7 @@ import '../Widgets/yearlySales.dart';
 import '../models/model.dart';
 import '../models/yearMonthList.dart';
 // since there is some kind of conflict with context i imported as Path
+// ignore: library_prefixes
 import 'package:path/path.dart' as Path;
 import 'package:intl/intl.dart';
 
@@ -50,6 +49,7 @@ class _SalesTabState extends State<SalesTab> {
   List<Map> salesItemMap = [];
   String salesSheetName = "Sheet1"; // Expense
   int salesColuNum = 7;
+  // ignore: prefer_typing_uninitialized_variables
   var salesSelectedExcel;
 
   // This function is just to pick XL file from folder
@@ -64,7 +64,15 @@ class _SalesTabState extends State<SalesTab> {
       getList();
     } else {
       // snacbar here
-      print("No file selected");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            "No file selected",
+          ),
+        ),
+      );
+
+      // print("No file selected");
     }
   }
 
@@ -74,7 +82,14 @@ class _SalesTabState extends State<SalesTab> {
     salesItemMap.clear();
     if (salesSelectedExcel[salesSheetName].rows.length <= 1) {
       // snackbar here
-      print("Row number is less than 1");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            "Row number is less than 1",
+          ),
+        ),
+      );
+      // print("Row number is less than 1");
     } else {
       for (var i = 1; i < salesSelectedExcel[salesSheetName].rows.length; i++) {
         for (var row in salesSelectedExcel[salesSheetName].rows[i]) {
@@ -244,7 +259,14 @@ class _SalesTabState extends State<SalesTab> {
                     ..createSync(recursive: true)
                     ..writeAsBytesSync(fileBytes);
                   // here snackbar to tell the file name
-                  print("Saved");
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        "File Saved in \n /storage/emulated/0/Download/ directory",
+                      ),
+                    ),
+                  );
+                  // print("Saved");
                 }
               }
             },
@@ -386,7 +408,6 @@ class _SalesTabState extends State<SalesTab> {
                                     cancelStyle: TextStyle(color: Colors.white),
                                   ),
                                   onConfirm: (date) {
-                                    print('date is $date');
                                     itemSoldDateCont = date;
                                   },
                                 );
@@ -927,7 +948,7 @@ class _SalesTabState extends State<SalesTab> {
   int updatedClient = 1;
   int updatedBank = 1;
   List<DataRow> _salesRow() {
-    Future<Item?> itemName;
+    // Future<Item?> itemName;
     return saleMonthly
         .map(
           (data) => DataRow(
