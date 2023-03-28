@@ -1,10 +1,38 @@
-import 'dart:ui';
+// ignore_for_file: file_names, unrelated_type_equality_checks, non_constant_identifier_names, must_be_immutable
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 class YearlyBarChart extends StatefulWidget {
-  const YearlyBarChart({super.key});
+  double JanProfit;
+  double FebProfit;
+  double MarProfit;
+  double AprProfit;
+  double MayProfit;
+  double JunProfit;
+  double JulProfit;
+  double AugProfit;
+  double SepProfit;
+  double OctProfit;
+  double NovProfit;
+  double DecProfit;
+  double TotalProfit;
+  YearlyBarChart({
+    super.key,
+    required this.AprProfit,
+    required this.AugProfit,
+    required this.DecProfit,
+    required this.FebProfit,
+    required this.JanProfit,
+    required this.JulProfit,
+    required this.JunProfit,
+    required this.MarProfit,
+    required this.MayProfit,
+    required this.NovProfit,
+    required this.OctProfit,
+    required this.SepProfit,
+    required this.TotalProfit,
+  });
 
   final Color barBackgroundColor = Colors.black38;
   final Color barColor = Colors.black45;
@@ -18,9 +46,11 @@ class _YearlyBarChartState extends State<YearlyBarChart> {
   final Duration animDuration = const Duration(milliseconds: 250);
 
   int touchedIndex = -1;
-
+  double totalProfit = 0;
   @override
   Widget build(BuildContext context) {
+    // print("Is this loading!");
+    double totalProfit = widget.TotalProfit;
     return Stack(
       children: <Widget>[
         Padding(
@@ -28,9 +58,9 @@ class _YearlyBarChartState extends State<YearlyBarChart> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              const Text(
-                '\$ 27,235.99',
-                style: TextStyle(
+              Text(
+                '\$ $totalProfit',
+                style: const TextStyle(
                   color: Colors.green,
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -101,30 +131,41 @@ class _YearlyBarChartState extends State<YearlyBarChart> {
         (i) {
           switch (i) {
             case 0:
-              return makeGroupData(0, 5, isTouched: i == touchedIndex);
+              return makeGroupData(0, widget.JanProfit,
+                  isTouched: i == touchedIndex);
             case 1:
-              return makeGroupData(1, 6.5, isTouched: i == touchedIndex);
+              return makeGroupData(1, widget.FebProfit,
+                  isTouched: i == touchedIndex);
             case 2:
-              return makeGroupData(2, 5, isTouched: i == touchedIndex);
+              return makeGroupData(2, widget.MarProfit,
+                  isTouched: i == touchedIndex);
             case 3:
-              return makeGroupData(3, 7.5, isTouched: i == touchedIndex);
+              return makeGroupData(3, widget.AprProfit,
+                  isTouched: i == touchedIndex);
             case 4:
-              return makeGroupData(4, 9, isTouched: i == touchedIndex);
+              return makeGroupData(4, widget.MayProfit,
+                  isTouched: i == touchedIndex);
             case 5:
-              return makeGroupData(5, 11.5, isTouched: i == touchedIndex);
+              return makeGroupData(5, widget.JunProfit,
+                  isTouched: i == touchedIndex);
             case 6:
-              return makeGroupData(6, 6.5, isTouched: i == touchedIndex);
+              return makeGroupData(6, widget.JulProfit,
+                  isTouched: i == touchedIndex);
             case 7:
-              return makeGroupData(7, 5, isTouched: i == touchedIndex);
+              return makeGroupData(7, widget.AugProfit,
+                  isTouched: i == touchedIndex);
             case 8:
-              return makeGroupData(8, 7.5, isTouched: i == touchedIndex);
+              return makeGroupData(8, widget.SepProfit,
+                  isTouched: i == touchedIndex);
             case 9:
-              return makeGroupData(9, 9, isTouched: i == touchedIndex);
+              return makeGroupData(9, widget.OctProfit,
+                  isTouched: i == touchedIndex);
             case 10:
-              return makeGroupData(10, 11.5, isTouched: i == touchedIndex);
+              return makeGroupData(10, widget.NovProfit,
+                  isTouched: i == touchedIndex);
             case 11:
-              return makeGroupData(11, 6.5, isTouched: i == touchedIndex);
-
+              return makeGroupData(11, widget.DecProfit,
+                  isTouched: i == touchedIndex);
             default:
               return throw Error();
           }
@@ -190,10 +231,10 @@ class _YearlyBarChartState extends State<YearlyBarChart> {
               ),
               children: <TextSpan>[
                 TextSpan(
-                  text: (rod.toY - 1).toString(),
+                  text: (rod.toY).toString(),
                   style: TextStyle(
                     color: widget.touchedBarColor,
-                    fontSize: 16,
+                    fontSize: 14,
                     fontWeight: FontWeight.w500,
                   ),
                 ),

@@ -1,8 +1,27 @@
+// ignore_for_file: file_names
+
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 class WeeklyBarChart extends StatefulWidget {
-  const WeeklyBarChart({super.key});
+  double monProfit;
+  double tuesProfit;
+  double wedProfit;
+  double thurProfit;
+  double firProfit;
+  double satProfit;
+  double sunProfit;
+
+  WeeklyBarChart({
+    super.key,
+    required this.monProfit,
+    required this.tuesProfit,
+    required this.wedProfit,
+    required this.thurProfit,
+    required this.firProfit,
+    required this.satProfit,
+    required this.sunProfit,
+  });
 
   final Color barBackgroundColor = Colors.black38;
   final Color barColor = Colors.black45;
@@ -14,11 +33,18 @@ class WeeklyBarChart extends StatefulWidget {
 
 class WeeklyBarChartState extends State<WeeklyBarChart> {
   final Duration animDuration = const Duration(milliseconds: 250);
-
+  double totalProfit = 0;
   int touchedIndex = -1;
 
   @override
   Widget build(BuildContext context) {
+    totalProfit = widget.monProfit +
+        widget.tuesProfit +
+        widget.wedProfit +
+        widget.thurProfit +
+        widget.firProfit +
+        widget.satProfit +
+        widget.sunProfit;
     return AspectRatio(
       aspectRatio: 1,
       child: Stack(
@@ -28,9 +54,9 @@ class WeeklyBarChartState extends State<WeeklyBarChart> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                const Text(
-                  '\$ 27,235.99',
-                  style: TextStyle(
+                Text(
+                  '\$ $totalProfit',
+                  style: const TextStyle(
                     color: Colors.green,
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -100,19 +126,26 @@ class WeeklyBarChartState extends State<WeeklyBarChart> {
   List<BarChartGroupData> showingGroups() => List.generate(7, (i) {
         switch (i) {
           case 0:
-            return makeGroupData(0, 5, isTouched: i == touchedIndex);
+            return makeGroupData(0, widget.monProfit,
+                isTouched: i == touchedIndex);
           case 1:
-            return makeGroupData(1, 6.5, isTouched: i == touchedIndex);
+            return makeGroupData(1, widget.tuesProfit,
+                isTouched: i == touchedIndex);
           case 2:
-            return makeGroupData(2, 5, isTouched: i == touchedIndex);
+            return makeGroupData(2, widget.wedProfit,
+                isTouched: i == touchedIndex);
           case 3:
-            return makeGroupData(3, 7.5, isTouched: i == touchedIndex);
+            return makeGroupData(3, widget.thurProfit,
+                isTouched: i == touchedIndex);
           case 4:
-            return makeGroupData(4, 9, isTouched: i == touchedIndex);
+            return makeGroupData(4, widget.firProfit,
+                isTouched: i == touchedIndex);
           case 5:
-            return makeGroupData(5, 11.5, isTouched: i == touchedIndex);
+            return makeGroupData(5, widget.satProfit,
+                isTouched: i == touchedIndex);
           case 6:
-            return makeGroupData(6, 6.5, isTouched: i == touchedIndex);
+            return makeGroupData(6, widget.sunProfit,
+                isTouched: i == touchedIndex);
           default:
             return throw Error();
         }
@@ -161,7 +194,7 @@ class WeeklyBarChartState extends State<WeeklyBarChart> {
               ),
               children: <TextSpan>[
                 TextSpan(
-                  text: (rod.toY - 1).toString(),
+                  text: (rod.toY).toString(),
                   style: TextStyle(
                     color: widget.touchedBarColor,
                     fontSize: 16,
@@ -201,7 +234,7 @@ class WeeklyBarChartState extends State<WeeklyBarChart> {
         ),
         leftTitles: AxisTitles(
           sideTitles: SideTitles(
-            interval: 5,
+            interval: 50,
             showTitles: true,
             reservedSize: 40,
           ),
