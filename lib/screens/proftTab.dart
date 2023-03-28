@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import 'package:mystore/Widgets/dailyProfit.dart';
 import 'package:mystore/Widgets/monthlyProfit.dart';
 import 'package:mystore/Widgets/yearlyProfit.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../Widgets/weeklyProfit.dart';
 import '../models/model.dart';
@@ -15,47 +14,6 @@ class ChartData {
   final int x;
   final double y;
 }
-
-// class profitColumChart extends StatefulWidget {
-//   const profitColumChart({super.key});
-
-//   @override
-//   State<profitColumChart> createState() => _profitColumChartState();
-// }
-
-// class _profitColumChartState extends State<profitColumChart> {
-//   @override
-//   Widget build(BuildContext context) {
-//     // The data source will be dependent on the touched and also  its number
-//     final List<ChartData> profitData = [
-//       ChartData(1, 100),
-//       ChartData(2, 87),
-//       ChartData(3, 65),
-//       ChartData(4, 98),
-//       ChartData(5, 81),
-//       ChartData(6, 120),
-//       ChartData(7, 90),
-//     ];
-//     return Scaffold(
-//       body: Center(
-//           child: SfCartesianChart(series: <ChartSeries<ChartData, int>>[
-//         ColumnSeries(
-//           enableTooltip: false,
-//           color: Colors.green,
-//           isVisibleInLegend: true,
-//           isVisible: true,
-//           // isTrackVisible: true,
-//           dataSource: profitData,
-//           xValueMapper: (ChartData data, _) => data.x,
-//           yValueMapper: (ChartData data, _) => data.y,
-//           borderRadius: const BorderRadius.all(Radius.circular(10)),
-//           // width: 0.9,
-//           // spacing: 0.3,
-//         ),
-//       ])),
-//     );
-//   }
-// }
 
 class ProfitTab extends StatefulWidget {
   const ProfitTab({super.key});
@@ -69,14 +27,24 @@ class _ProfitTabState extends State<ProfitTab> {
   List<Sale> salesTY = [];
   List<Sale> salesTM = [];
   List<Sale> weeklySales = [];
+  List<Sale> last7daysSales = [];
   List<Expense> expenseAll = [];
   List<Expense> expenseTY = [];
   List<Expense> expenseTM = [];
   List<Expense> weeklyExpense = [];
+  List<Expense> last7daysExpense = [];
+  List<double> last7daysProfit = [];
   List<double> monthlyProfit = [];
+  double totalProfitThisMonth = 0;
+  double avgMonthlyProfit = 0;
+  double todaySales = 0;
   double totalSalesRTY = 0;
   double totalExpeseATY = 0;
+  // total profit this year
   double totalProfit = 0;
+  // total weekly profit
+  double totalWeeklyprofit = 0;
+  double avgWeeklyProfit = 0;
   double JanProfit = 0,
       FebProfit = 0,
       MarProfit = 0,
@@ -138,7 +106,23 @@ class _ProfitTabState extends State<ProfitTab> {
       thurExpes = 0,
       firExpes = 0,
       satExpes = 0,
-      sunExpes = 0;
+      sunExpes = 0,
+      //
+      zeroDSales = 0, // which means today
+      firstDSales = 0,
+      secondDSales = 0,
+      thirdDSales = 0,
+      fourthDSales = 0,
+      fithDSales = 0,
+      sixDSales = 0,
+      //
+      zeroDExpes = 0, // which means today
+      firstDExpes = 0,
+      secondDExpes = 0,
+      thirdDExpes = 0,
+      fourthDExpes = 0,
+      fithDExpes = 0,
+      sixDExpes = 0;
 
   loadYearlyData() async {
     salesAll = await Sale().select().toList();
@@ -170,6 +154,8 @@ class _ProfitTabState extends State<ProfitTab> {
     }
     loadMonthlyData();
     loadWeekData();
+    loadLast7daysData();
+    todaySales = (zeroDSales * .25) - zeroDExpes;
     for (var element in salesTY) {
       if ((element.date!).month == 1) {
         JanSales += element.revenue!;
@@ -260,10 +246,14 @@ class _ProfitTabState extends State<ProfitTab> {
 
   loadMonthlyData() {
     monthlyProfit = [];
+    totalProfitThisMonth = 0;
     int numDay = DateTime(DateTime.now().year, DateTime.now().month + 1, 0).day;
     for (var day = 1; day <= numDay; day++) {
+      totalProfitThisMonth += sepcificProfit(day);
       monthlyProfit.add(sepcificProfit(day));
     }
+    // 22 is average working day per month in ETH
+    avgMonthlyProfit = totalProfitThisMonth / 22;
   }
 
   // here frst geting the monday date
@@ -273,10 +263,10 @@ class _ProfitTabState extends State<ProfitTab> {
   // load7daysData(){
 
   // }
+  DateTime today = DateTime.now();
   loadWeekData() {
     weeklySales = [];
     weeklyExpense = [];
-    DateTime today = DateTime.now();
     DateTime startDate = monstRecentMonday(today);
     for (var ele in salesTY) {
       if ((ele.date!.isAfter(startDate) ||
@@ -295,7 +285,7 @@ class _ProfitTabState extends State<ProfitTab> {
     for (var ele in weeklySales) {
       if (DateFormat.EEEE().format(ele.date!) == 'Monday') {
         monSales += ele.revenue!;
-      } else if (DateFormat.EEEE().format(ele.date!) == 'Tuseday') {
+      } else if (DateFormat.EEEE().format(ele.date!) == 'Tuesday') {
         tuesSales += ele.revenue!;
       } else if (DateFormat.EEEE().format(ele.date!) == 'Wednsday') {
         wedSales += ele.revenue!;
@@ -334,11 +324,93 @@ class _ProfitTabState extends State<ProfitTab> {
     firProfit = firSales * .25 - firExpes;
     satProfit = satSales * .25 - satExpes;
     sunProfit = sunSales * .25 - sunExpes;
+    totalWeeklyprofit = monProfit +
+        tuesProfit +
+        wedProfit +
+        thurProfit +
+        firProfit +
+        satProfit +
+        sunProfit;
+    avgWeeklyProfit = totalWeeklyprofit / 7;
+  }
+
+  loadLast7daysData() {
+    last7daysSales = [];
+    last7daysExpense = [];
+    // print("last 7 days func");
+    DateTime startDate = today.subtract(Duration(days: 7));
+    for (var ele in salesTY) {
+      if ((ele.date!.isAfter(startDate) ||
+              ele.date!.isAtSameMomentAs(startDate)) &&
+          (ele.date!.isBefore(today) || ele.date!.isAtSameMomentAs(today))) {
+        last7daysSales.add(ele);
+      }
+    }
+    for (var ele in last7daysSales) {
+      // if (ele.date!.compareTo(today) == 0) {
+      if (DateUtils.isSameDay(ele.date!, today)) {
+        // print("there is profit today");
+        // print(ele.date);
+        zeroDSales += ele.revenue!;
+      } else if (DateUtils.isSameDay(
+          ele.date!, today.subtract(Duration(days: 1)))) {
+        firstDSales += ele.revenue!;
+      } else if (DateUtils.isSameDay(
+          ele.date!, today.subtract(Duration(days: 2)))) {
+        secondDSales += ele.revenue!;
+      } else if (DateUtils.isSameDay(
+          ele.date!, today.subtract(Duration(days: 3)))) {
+        thirdDSales += ele.revenue!;
+      } else if (DateUtils.isSameDay(
+          ele.date!, today.subtract(Duration(days: 4)))) {
+        fourthDSales += ele.revenue!;
+      } else if (DateUtils.isSameDay(
+          ele.date!, today.subtract(Duration(days: 5)))) {
+        fithDSales += ele.revenue!;
+      } else if (DateUtils.isSameDay(
+          ele.date!, today.subtract(Duration(days: 6)))) {
+        sixDSales += ele.revenue!;
+      }
+    }
+    for (var ele in expenseTY) {
+      if ((ele.date!.isAfter(startDate) ||
+              ele.date!.isAtSameMomentAs(startDate)) &&
+          (ele.date!.isBefore(today) || ele.date!.isAtSameMomentAs(today))) {
+        last7daysExpense.add(ele);
+      }
+    }
+    for (var ele in last7daysExpense) {
+      if (ele.date! == today) {
+        zeroDExpes += ele.amount!;
+      } else if (ele.date! == today.subtract(Duration(days: 1))) {
+        firstDExpes += ele.amount!;
+      } else if (ele.date! == today.subtract(Duration(days: 2))) {
+        secondDExpes += ele.amount!;
+      } else if (ele.date! == today.subtract(Duration(days: 1))) {
+        thirdDExpes += ele.amount!;
+      } else if (ele.date! == today.subtract(Duration(days: 1))) {
+        fourthDExpes += ele.amount!;
+      } else if (ele.date! == today.subtract(Duration(days: 1))) {
+        fithDExpes += ele.amount!;
+      } else if (ele.date! == today.subtract(Duration(days: 1))) {
+        sixDExpes += ele.amount!;
+      }
+    }
+    // zeroDSales * .25 - zeroDExpes,
+    last7daysProfit = [
+      // zeroDSales * .25 - zeroDExpes,
+      firstDSales * .25 - firstDExpes,
+      secondDSales * .25 - secondDExpes,
+      thirdDSales * .25 - thirdDExpes,
+      fourthDSales * .25 - fourthDExpes,
+      fithDSales * .25 - fithDExpes,
+      sixDSales * 25 - sixDExpes,
+    ];
   }
 
   @override
   void initState() {
-    print("Is this loading!");
+    // print("Is this loading!");
     loadYearlyData();
     super.initState();
   }
@@ -421,35 +493,41 @@ class _ProfitTabState extends State<ProfitTab> {
             ),
             // calling diferent graphs based on different timely choices
             SizedBox(
-                height: 350,
-                child: _selectedIndex == 0
-                    ? DailyBarChart()
-                    : _selectedIndex == 1
-                        ? WeeklyBarChart(
-                            monProfit: monProfit,
-                            tuesProfit: tuesProfit,
-                            wedProfit: wedProfit,
-                            thurProfit: thurProfit,
-                            firProfit: firProfit,
-                            satProfit: satProfit,
-                            sunProfit: sunProfit,
-                          )
-                        : _selectedIndex == 2
-                            ? MonthlyBarChart(monthlyProfit: monthlyProfit)
-                            : YearlyBarChart(
-                                AprProfit: AprProfit,
-                                AugProfit: AugProfit,
-                                DecProfit: DecProfit,
-                                FebProfit: FebProfit,
-                                JanProfit: JanProfit,
-                                JulProfit: JulProfit,
-                                JunProfit: JunProfit,
-                                MarProfit: MarProfit,
-                                MayProfit: MayProfit,
-                                NovProfit: NovProfit,
-                                OctProfit: OctProfit,
-                                SepProfit: SepProfit,
-                                TotalProfit: totalProfit)),
+              height: 350,
+              child: _selectedIndex == 0
+                  ? DailyBarChart(
+                      todaySales: zeroDSales,
+                      todaysExpense: zeroDExpes,
+                      last7daysProfit: last7daysProfit,
+                    )
+                  : _selectedIndex == 1
+                      ? WeeklyBarChart(
+                          monProfit: monProfit,
+                          tuesProfit: tuesProfit,
+                          wedProfit: wedProfit,
+                          thurProfit: thurProfit,
+                          firProfit: firProfit,
+                          satProfit: satProfit,
+                          sunProfit: sunProfit,
+                        )
+                      : _selectedIndex == 2
+                          ? MonthlyBarChart(monthlyProfit: monthlyProfit)
+                          : YearlyBarChart(
+                              AprProfit: AprProfit,
+                              AugProfit: AugProfit,
+                              DecProfit: DecProfit,
+                              FebProfit: FebProfit,
+                              JanProfit: JanProfit,
+                              JulProfit: JulProfit,
+                              JunProfit: JunProfit,
+                              MarProfit: MarProfit,
+                              MayProfit: MayProfit,
+                              NovProfit: NovProfit,
+                              OctProfit: OctProfit,
+                              SepProfit: SepProfit,
+                              TotalProfit: totalProfit,
+                            ),
+            ),
             Row(
                 // crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -481,9 +559,9 @@ class _ProfitTabState extends State<ProfitTab> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: const [
+                          children: [
                             Text(
-                              '\$ 400',
+                              '\$ $todaySales',
                               style: TextStyle(
                                 fontSize: 20,
                                 color: Colors.green,
@@ -536,9 +614,9 @@ class _ProfitTabState extends State<ProfitTab> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: const [
+                          children: [
                             Text(
-                              '\$ 400',
+                              '\$ $totalProfitThisMonth',
                               style: TextStyle(
                                 fontSize: 20,
                                 color: Colors.green,
@@ -564,7 +642,7 @@ class _ProfitTabState extends State<ProfitTab> {
                               ),
                             ),
                             Text(
-                              '\$400',
+                              '\$ $avgMonthlyProfit',
                               style: TextStyle(
                                 color: Colors.green,
                                 fontSize: 18,
@@ -614,9 +692,9 @@ class _ProfitTabState extends State<ProfitTab> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: const [
+                          children: [
                             Text(
-                              '\$ 400',
+                              '\$ $totalWeeklyprofit',
                               style: TextStyle(
                                 fontSize: 20,
                                 color: Colors.green,
@@ -642,7 +720,7 @@ class _ProfitTabState extends State<ProfitTab> {
                               ),
                             ),
                             Text(
-                              '\$ 400',
+                              '\$ $avgWeeklyProfit',
                               style: TextStyle(
                                 color: Colors.green,
                                 fontSize: 18,
@@ -687,9 +765,9 @@ class _ProfitTabState extends State<ProfitTab> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: const [
+                          children: [
                             Text(
-                              '\$ 400',
+                              '\$ $totalProfit',
                               style: TextStyle(
                                 fontSize: 20,
                                 color: Colors.green,

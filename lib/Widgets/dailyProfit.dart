@@ -2,15 +2,48 @@
 import 'package:flutter/material.dart';
 // ignore: unnecessary_import
 import 'package:flutter/src/widgets/basic.dart';
+import 'package:intl/intl.dart';
 
+// ignore: must_be_immutable
 class DailyBarChart extends StatefulWidget {
-  const DailyBarChart({super.key});
+  List last7daysProfit;
+  double todaySales;
+  double todaysExpense;
+  DailyBarChart({
+    super.key,
+    required this.todaySales,
+    required this.todaysExpense,
+    required this.last7daysProfit,
+  });
 
   @override
   State<DailyBarChart> createState() => _DailyBarChartState();
 }
 
 class _DailyBarChartState extends State<DailyBarChart> {
+  // double zeroProfit = 0;
+  List<String> last7MY = [];
+  List<String> last7Days = [];
+  DateTime today = DateTime.now();
+  loadDays() {
+    last7Days = [];
+    for (var i = 1; i <= 7; i++) {
+      last7MY.add(DateFormat('m/y').format(today.subtract(Duration(days: i))));
+      last7Days.add(DateFormat.E().format(today.subtract(Duration(days: i))));
+    }
+    // last7Days = last7Days.sublist(1);
+  }
+
+  @override
+  void initState() {
+    // zeroProfit = 0;
+    print("todays sales");
+    print(widget.todaySales.toString());
+    // zeroProfit = ((widget.todaySales * .25) - widget.todaysExpense);
+    loadDays();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -20,16 +53,16 @@ class _DailyBarChartState extends State<DailyBarChart> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         // crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          const Text('Sunday',
-              style: TextStyle(
+          Text(DateFormat.EEEE().format(today),
+              style: const TextStyle(
                 fontSize: 26,
                 fontWeight: FontWeight.w500,
               )),
           // const SizedBox(
           //   height: 0,
           // ),
-          const Text(
-            'March 26, 2023',
+          Text(
+            DateFormat('MMMM d, y').format(today),
             style: TextStyle(fontSize: 16, color: Colors.grey),
           ),
           Row(
@@ -38,9 +71,9 @@ class _DailyBarChartState extends State<DailyBarChart> {
             children: [
               Column(
                 children: [
-                  const Text(
-                    '\$ 4000',
-                    style: TextStyle(
+                  Text(
+                    widget.todaySales.toString(),
+                    style: const TextStyle(
                       fontSize: 18,
                       color: Color.fromARGB(255, 84, 195, 88),
                     ),
@@ -55,16 +88,17 @@ class _DailyBarChartState extends State<DailyBarChart> {
                 ],
               ),
               Column(
-                children: const [
+                children: [
                   Text(
-                    '\$ 2,500',
-                    style: TextStyle(
+                    ((widget.todaySales * .25) - widget.todaysExpense)
+                        .toString(),
+                    style: const TextStyle(
                       color: Color.fromRGBO(76, 175, 80, 1),
                       fontSize: 25,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  Text(
+                  const Text(
                     'Todays Profit',
                     style: TextStyle(
                       color: Colors.blueGrey,
@@ -78,8 +112,8 @@ class _DailyBarChartState extends State<DailyBarChart> {
               ),
               Column(
                 children: [
-                  const Text('\$ 500',
-                      style: TextStyle(
+                  Text(widget.todaysExpense.toString(),
+                      style: const TextStyle(
                         fontSize: 18,
                         color: Color.fromARGB(255, 84, 195, 88),
                       )),
@@ -106,7 +140,8 @@ class _DailyBarChartState extends State<DailyBarChart> {
               borderRadius: const BorderRadius.all(Radius.circular(20)),
               child: ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  itemCount: 6,
+                  // itemCount: last7Days.length,
+                  itemCount: widget.last7daysProfit.length,
                   itemBuilder: (BuildContext context, int index) {
                     return Container(
                       margin: const EdgeInsets.symmetric(horizontal: 7),
@@ -118,22 +153,22 @@ class _DailyBarChartState extends State<DailyBarChart> {
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
+                        children: [
                           Text(
-                            'Sat',
-                            style: TextStyle(
+                            last7Days[index],
+                            style: const TextStyle(
                               fontSize: 22,
                               color: Colors.green,
                             ),
                           ),
                           Text(
-                            '\$ 1000',
-                            style: TextStyle(
+                            widget.last7daysProfit[index].toString(),
+                            style: const TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.w500),
                           ),
                           Text(
-                            '03/23',
-                            style: TextStyle(color: Colors.grey),
+                            last7MY[index],
+                            style: const TextStyle(color: Colors.grey),
                           )
                         ],
                       ),
