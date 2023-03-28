@@ -35,7 +35,6 @@ class WeeklyBarChartState extends State<WeeklyBarChart> {
   final Duration animDuration = const Duration(milliseconds: 250);
   double totalProfit = 0;
   int touchedIndex = -1;
-
   @override
   Widget build(BuildContext context) {
     totalProfit = widget.monProfit +
