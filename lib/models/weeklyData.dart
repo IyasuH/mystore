@@ -1,7 +1,10 @@
-// ignore: file_names
+// ignore_for_file: file_names
+
 class SplineAreaData {
   final double day;
   final double daily;
+  // final double x = 100;
+  // final double y = 100;
   SplineAreaData({required this.day, required this.daily});
 }
 

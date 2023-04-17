@@ -46,6 +46,7 @@ class _DailyBarChartState extends State<DailyBarChart> {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
     return Padding(
       padding: const EdgeInsets.only(
           bottom: 8.0, top: 20.0, left: 10.0, right: 10.0),
@@ -58,12 +59,9 @@ class _DailyBarChartState extends State<DailyBarChart> {
                 fontSize: 26,
                 fontWeight: FontWeight.w500,
               )),
-          // const SizedBox(
-          //   height: 0,
-          // ),
           Text(
             DateFormat('MMMM d, y').format(today),
-            style: TextStyle(fontSize: 16, color: Colors.grey),
+            style: const TextStyle(fontSize: 16, color: Colors.grey),
           ),
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -131,6 +129,7 @@ class _DailyBarChartState extends State<DailyBarChart> {
           Container(
             height: 125,
             width: 380,
+            // width: screenWidth - 70,
             // color: Colors.amber
             decoration: const BoxDecoration(
               // color: Colors.black26,
