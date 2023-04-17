@@ -465,6 +465,8 @@ class _ProfitTabState extends State<ProfitTab> {
 
   @override
   Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profit'),
@@ -493,7 +495,8 @@ class _ProfitTabState extends State<ProfitTab> {
             ),
             // calling diferent graphs based on different timely choices
             SizedBox(
-              height: 350,
+              height: 360,
+              // height: screenHeight - 500,
               child: _selectedIndex == 0
                   ? DailyBarChart(
                       todaySales: zeroDSales,
@@ -536,6 +539,7 @@ class _ProfitTabState extends State<ProfitTab> {
                     children: [
                       Container(
                         height: 185,
+                        // height: screenHeight - 660,
                         width: 180,
                         padding: const EdgeInsets.all(10),
                         margin: const EdgeInsets.only(
@@ -591,6 +595,7 @@ class _ProfitTabState extends State<ProfitTab> {
                       ),
                       Container(
                         height: 240,
+                        // height: screenHeight - 600,
                         width: 180,
                         padding: const EdgeInsets.all(10),
                         margin: const EdgeInsets.only(
@@ -669,6 +674,7 @@ class _ProfitTabState extends State<ProfitTab> {
                     children: [
                       Container(
                         height: 240,
+                        // height: screenHeight - 600,
                         width: 180,
                         padding: const EdgeInsets.all(10),
                         margin: const EdgeInsets.only(
@@ -742,6 +748,7 @@ class _ProfitTabState extends State<ProfitTab> {
                       ),
                       Container(
                         height: 185,
+                        // height: screenHeight - 660,
                         width: 180,
                         padding: const EdgeInsets.all(10),
                         margin: const EdgeInsets.only(

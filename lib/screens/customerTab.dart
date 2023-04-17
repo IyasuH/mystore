@@ -138,6 +138,8 @@ class _CustomerTabState extends State<CustomerTab> {
   final clientSQF = Client();
   @override
   Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
     // TextField controllers for inserting new client
     TextEditingController customerNameCont = TextEditingController();
     TextEditingController companyNameCont = TextEditingController();
@@ -381,7 +383,8 @@ class _CustomerTabState extends State<CustomerTab> {
                     margin: const EdgeInsets.symmetric(vertical: 10),
                     padding: const EdgeInsets.symmetric(
                         vertical: 18, horizontal: 30),
-                    height: 80,
+                    height: 75,
+                    // height: screenHeight - 780,
                     // ignore: prefer_const_constructors
                     decoration: BoxDecoration(
                       // ignore: prefer_const_literals_to_create_immutables
@@ -428,8 +431,11 @@ class _CustomerTabState extends State<CustomerTab> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Container(
+                        // width: screenWidth - 320,
                         width: 160,
+                        // margin: EdgeInsets.symmetric(horizontal: 15),
                         height: 140,
+                        // height: screenHeight - 715,
                         margin: const EdgeInsets.symmetric(vertical: 20),
                         padding: const EdgeInsets.all(15),
                         decoration: BoxDecoration(
@@ -484,6 +490,7 @@ class _CustomerTabState extends State<CustomerTab> {
                       Container(
                         width: 160,
                         height: 140,
+                        // height: screenHeight - 715,
                         margin: const EdgeInsets.symmetric(vertical: 20),
                         padding: const EdgeInsets.all(15),
                         decoration: BoxDecoration(
@@ -543,6 +550,7 @@ class _CustomerTabState extends State<CustomerTab> {
                     margin: const EdgeInsets.only(top: 10),
                     padding: const EdgeInsets.symmetric(horizontal: 10.0),
                     height: 52,
+                    // height: screenHeight - 800,
                     decoration: BoxDecoration(
                       // color: Color.fromARGB(50, 203, 145, 0),
                       color: Colors.black45,
@@ -612,8 +620,9 @@ class _CustomerTabState extends State<CustomerTab> {
                   ),
                   Container(
                     padding: const EdgeInsets.only(
-                        left: 10, right: 3, bottom: 7, top: 5),
-                    height: 395,
+                        left: 5, right: 3, bottom: 7, top: 5),
+                    // height: 395,
+                    height: screenHeight - 445,
                     decoration: BoxDecoration(
                       color: Colors.black45,
                       border: Border.all(
@@ -851,7 +860,8 @@ class _CustomerTabState extends State<CustomerTab> {
                                 backgroundColor: Colors.blueGrey,
                               ),
                               Container(
-                                width: 305,
+                                // width: 305,
+                                width: screenWidth - 120,
                                 height: 80,
                                 decoration: const BoxDecoration(
                                   border: Border(

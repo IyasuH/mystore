@@ -152,6 +152,7 @@ class _SettingTabState extends State<SettingTab> {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
@@ -176,7 +177,8 @@ class _SettingTabState extends State<SettingTab> {
               margin: const EdgeInsets.all(12),
               padding: const EdgeInsets.all(10),
               // height: 250,
-              width: 400,
+              // width: 400,
+              width: screenWidth - 30,
               decoration: const BoxDecoration(
                   color: Color.fromARGB(255, 63, 63, 63),
                   // color: Colors.brown,

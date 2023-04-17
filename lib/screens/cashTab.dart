@@ -55,6 +55,7 @@ class _CashTabState extends State<CashTab> {
 
   @override
   Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(13, 23, 13, 8.5),
@@ -75,7 +76,8 @@ class _CashTabState extends State<CashTab> {
               ),
             ),
             SizedBox(
-              height: 663,
+              // height: 663,
+              height: screenHeight - 197,
               child: ClipRRect(
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(20),

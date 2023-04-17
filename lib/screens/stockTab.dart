@@ -150,8 +150,11 @@ class _StockTabState extends State<StockTab> {
   String textFieldVliMdg = "Please enter some value";
   final _formStockKey = GlobalKey<FormState>();
   // final itemSQF = Item();
+  // double screenHeight = 0;
   @override
   Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
     TextEditingController itemNameCont = TextEditingController();
     TextEditingController itemQuantityCont = TextEditingController();
     TextEditingController itemSSellingPriceCont = TextEditingController();
@@ -426,7 +429,8 @@ class _StockTabState extends State<StockTab> {
             ),
           ),
           SizedBox(
-            height: 660,
+            // height: 660,
+            height: screenHeight - 196,
             child: ClipRRect(
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(10),
@@ -442,6 +446,7 @@ class _StockTabState extends State<StockTab> {
                       totalStock_MonthlyChange_Row(),
                       Container(
                         height: 250,
+                        // height: screenHeight - 750,
                         decoration: BoxDecoration(
                           color: Colors.black45,
                           border:
@@ -685,6 +690,7 @@ class _StockTabState extends State<StockTab> {
     return Container(
       // margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
       height: 350,
+      // height: screenHeight - 750,
       decoration: BoxDecoration(
         color: Colors.black45,
         border: Border.all(color: Colors.blueGrey, width: 1.5),

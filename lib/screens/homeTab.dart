@@ -259,6 +259,8 @@ class _HomeTabState extends State<HomeTab> {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
     return SafeArea(
       child: Column(
         children: [
@@ -332,8 +334,9 @@ class _HomeTabState extends State<HomeTab> {
               ],
             ),
           ),
-          SizedBox(
-            height: 630,
+          Container(
+            height: screenHeight - 230,
+            // height: 630,
             child: ClipRRect(
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(10),
@@ -365,6 +368,9 @@ class _HomeTabState extends State<HomeTab> {
                       _clientsContainer(),
                       topclients(),
                       _clientsRouteTo(),
+                      const SizedBox(
+                        height: 21,
+                      ),
                     ],
                   ),
                 ),

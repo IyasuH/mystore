@@ -234,6 +234,7 @@ class _SalesTabState extends State<SalesTab> {
   String textFieldVlidMsg = "Please enter some value";
   @override
   Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
     TextEditingController quantityCont = TextEditingController();
     DateTime itemSoldDateCont = DateTime.now();
     TextEditingController salesRevenu = TextEditingController();
@@ -698,7 +699,8 @@ class _SalesTabState extends State<SalesTab> {
                               ),
                             ),
                           ),
-                          height: 300,
+                          height: 340,
+                          // height: screenHeight - 550,
                           child: ListView(
                             children: [
                               SingleChildScrollView(
@@ -930,6 +932,7 @@ class _SalesTabState extends State<SalesTab> {
                 ),
                 SizedBox(
                     height: 350,
+                    // height: screenHeight - 525,
                     child: SalesBarChart(selectedYear: selectedYear)),
               ],
             )

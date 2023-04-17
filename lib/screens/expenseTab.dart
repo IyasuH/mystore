@@ -183,6 +183,7 @@ class _ExpensesTabState extends State<ExpensesTab> {
   final _formExpenseKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
     TextEditingController expensesNameCont = TextEditingController();
     TextEditingController expenseAmountCont = TextEditingController();
     DateTime expenseDateCont = DateTime.now();
@@ -569,7 +570,8 @@ class _ExpensesTabState extends State<ExpensesTab> {
                           ),
                         ),
                       ),
-                      height: 300,
+                      height: 320,
+                      // height: screenHeight - 550,
                       child: ListView(children: [
                         SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
@@ -685,6 +687,7 @@ class _ExpensesTabState extends State<ExpensesTab> {
                   Container(
                     width: 185,
                     height: 300,
+                    // height: screenHeight - 570,
                     margin: const EdgeInsets.symmetric(vertical: 10),
                     decoration: BoxDecoration(
                       border: Border.all(
@@ -750,6 +753,7 @@ class _ExpensesTabState extends State<ExpensesTab> {
                     ),
                   ),
                   Container(
+                    // height: screenHeight - 570,
                     width: 185,
                     decoration: BoxDecoration(
                       // color: Colors.pinkAccent,
@@ -799,6 +803,7 @@ class _ExpensesTabState extends State<ExpensesTab> {
                 children: [
                   Container(
                     margin: const EdgeInsets.symmetric(vertical: 10),
+                    // height: screenHeight - 570,
                     width: 185,
                     decoration: BoxDecoration(
                       // color: Colors.deepPurple,
@@ -843,6 +848,7 @@ class _ExpensesTabState extends State<ExpensesTab> {
                     ),
                   ),
                   Container(
+                    // height: screenHeight - 570,
                     width: 185,
                     margin: const EdgeInsets.symmetric(vertical: 10),
                     decoration: BoxDecoration(
@@ -887,7 +893,8 @@ class _ExpensesTabState extends State<ExpensesTab> {
                 ],
               ),
               SizedBox(
-                  height: 350,
+                  height: 390,
+                  // height: screenHeight - 500,
                   child: ExpenseBarCharts(selectedYear: selectedYear)),
             ],
           ),

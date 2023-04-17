@@ -37,6 +37,7 @@ class _AcoountTabState extends State<AcoountTab> {
   final bankSQF = Bank();
   @override
   Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
     TextEditingController bankNameCont = TextEditingController();
     TextEditingController bankNumCont = TextEditingController();
     TextEditingController bankAmountCont = TextEditingController();
@@ -347,7 +348,8 @@ class _AcoountTabState extends State<AcoountTab> {
                   decoration: const BoxDecoration(
                       // color: Colors.amber,
                       ),
-                  height: 425,
+                  // height: 425,
+                  height: screenHeight - 425,
                   child: ClipRRect(
                     borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(20),
